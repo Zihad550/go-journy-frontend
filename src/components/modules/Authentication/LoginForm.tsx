@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ButtonSpinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +34,7 @@ export function LoginForm({
       password: "",
     },
   });
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await login(data).unwrap();
@@ -76,6 +77,7 @@ export function LoginForm({
                       placeholder="john@example.com"
                       {...field}
                       value={field.value || ""}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -95,6 +97,7 @@ export function LoginForm({
                       placeholder="********"
                       {...field}
                       value={field.value || ""}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -102,8 +105,9 @@ export function LoginForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <ButtonSpinner />}
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>

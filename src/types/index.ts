@@ -2,6 +2,8 @@ import type { ComponentType } from "react";
 
 export type * from "./api.type";
 export type * from "./auth.type";
+export type * from "./driver.type";
+export type * from "./user.type";
 
 export interface ISidebarItem {
   title: string;
@@ -11,8 +13,6 @@ export interface ISidebarItem {
     component: ComponentType;
   }[];
 }
-
-export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER";
 
 type ZodIssue = {
   code: string;
@@ -37,3 +37,6 @@ export interface IErrorResponse {
   };
   stack?: string;
 }
+
+// export type TGetTupleFromObj = (typeof USER_ROLE)[keyof typeof USER_ROLE];
+export type TGetUnionFromObj<T> = T[keyof T];
