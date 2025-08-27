@@ -6,7 +6,6 @@ import Features from "@/pages/Features";
 import ForgotPassword from "@/pages/ForgotPassword";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
-import NotFoundDemo from "@/pages/NotFoundDemo";
 import Profile from "@/pages/Profile";
 import Register from "@/pages/Register";
 import ResetPassword from "@/pages/ResetPassword";
@@ -58,9 +57,5 @@ export const router = createBrowserRouter([
   {
     Component: Profile,
     path: "/profile",
-  },
-  {
-    Component: NotFoundDemo,
-    path: "/not-found-demo",
   },
 ]);
