@@ -1,4 +1,7 @@
 import App from "@/App";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Role } from "@/constants";
+import { withAuth } from "@/lib/withAuth";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import FAQ from "@/pages/FAQ";
@@ -9,7 +12,11 @@ import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
 import Register from "@/pages/Register";
 import ResetPassword from "@/pages/ResetPassword";
-import { createBrowserRouter } from "react-router";
+import { generateRoutes } from "@/utils/generateRoutes";
+import { createBrowserRouter, Navigate } from "react-router";
+import { adminSidebarItems } from "./adminSidebarItems";
+import { driverSidebarItems } from "./driverSidebarItemsk";
+import { riderSidebarItems } from "./riderSidebarItems";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +43,38 @@ export const router = createBrowserRouter([
         Component: FAQ,
         path: "faq",
       },
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, Role.SUPER_ADMIN),
+    path: "/admin",
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> },
+      ...generateRoutes(adminSidebarItems),
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, Role.ADMIN),
+    path: "/admin",
+    children: [
+      { index: true, element: <Navigate to="/admin/analytics" /> },
+      ...generateRoutes(adminSidebarItems),
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, Role.RIDER),
+    path: "/rider",
+    children: [
+      { index: true, element: <Navigate to="/rider/ride-history" /> },
+      ...generateRoutes(riderSidebarItems),
+    ],
+  },
+  {
+    Component: withAuth(DashboardLayout, Role.DRIVER),
+    path: "/driver",
+    children: [
+      { index: true, element: <Navigate to="/driver/ride-history" /> },
+      ...generateRoutes(driverSidebarItems),
     ],
   },
   {

@@ -39,4 +39,4 @@ export interface IErrorResponse {
 }
 
 // export type TGetTupleFromObj = (typeof USER_ROLE)[keyof typeof USER_ROLE];
-export type TGetUnionFromObj<T> = T[keyof T];
+export type ObjectValues<T> = T[keyof T];
