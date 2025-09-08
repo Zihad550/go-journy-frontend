@@ -20,7 +20,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userData } = useUserInfoQuery(undefined);
 
   const data = {
-    navMain: getSidebarItems(userData?.data?.role),
+    navMain: getSidebarItems(userData?.data?.role || "rider"),
   };
 
   return (

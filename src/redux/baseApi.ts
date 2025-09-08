@@ -1,12 +1,14 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import axiosBaseQuery from "./axiosBaseQuery";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import axiosBaseQuery from './axiosBaseQuery';
 
 export const QueryTagType = {
-  USER: "USER",
+  USER: 'USER',
+  RIDE: 'RIDE',
+  DRIVER: 'DRIVER',
 } as const;
 
 export const baseApi = createApi({
-  reducerPath: "baseApi",
+  reducerPath: 'baseApi',
   baseQuery: axiosBaseQuery(),
   tagTypes: Object.values(QueryTagType),
   endpoints: () => ({}),

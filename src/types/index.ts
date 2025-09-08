@@ -1,9 +1,10 @@
-import type { ComponentType } from "react";
+import type { ComponentType } from 'react';
 
-export type * from "./api.type";
-export type * from "./auth.type";
-export type * from "./driver.type";
-export type * from "./user.type";
+export type * from './api.type';
+export type * from './auth.type';
+export type * from './driver.type';
+export type * from './ride.type';
+export type * from './user.type';
 
 export interface ISidebarItem {
   title: string;

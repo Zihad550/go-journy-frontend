@@ -1,45 +1,45 @@
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
-import { AlertCircle, Info, XCircle } from "lucide-react";
-import * as React from "react";
-import { Button } from "./button";
-import { Card, CardContent } from "./card";
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { AlertCircle, Info, XCircle } from 'lucide-react';
+import * as React from 'react';
+import { Button } from './button';
+import { Card, CardContent } from './card';
 
-const notFoundVariants = cva("text-center space-y-4", {
+const notFoundVariants = cva('text-center space-y-4', {
   variants: {
     variant: {
-      error: "text-destructive",
-      warning: "text-yellow-600",
-      info: "text-blue-600",
+      error: 'text-destructive',
+      warning: 'text-yellow-600',
+      info: 'text-blue-600',
     },
     size: {
-      sm: "p-4",
-      default: "p-6",
-      lg: "p-8",
+      sm: 'p-4',
+      default: 'p-6',
+      lg: 'p-8',
     },
   },
   defaultVariants: {
-    variant: "error",
-    size: "default",
+    variant: 'error',
+    size: 'default',
   },
 });
 
-const iconVariants = cva("mx-auto mb-4", {
+const iconVariants = cva('mx-auto mb-4', {
   variants: {
     variant: {
-      error: "text-destructive",
-      warning: "text-yellow-600",
-      info: "text-blue-600",
+      error: 'text-destructive',
+      warning: 'text-yellow-600',
+      info: 'text-blue-600',
     },
     size: {
-      sm: "h-12 w-12",
-      default: "h-16 w-16",
-      lg: "h-20 w-20",
+      sm: 'h-12 w-12',
+      default: 'h-16 w-16',
+      lg: 'h-20 w-20',
     },
   },
   defaultVariants: {
-    variant: "error",
-    size: "default",
+    variant: 'error',
+    size: 'default',
   },
 });
 
@@ -56,45 +56,47 @@ export interface NotFoundProps
   showGoBack?: boolean;
 }
 
-const getVariantConfig = (variant: "error" | "warning" | "info") => {
+const getVariantConfig = (
+  variant: 'error' | 'warning' | 'info' | null | undefined
+) => {
   const configs = {
     error: {
       icon: XCircle,
-      title: "Something went wrong",
-      message: "We encountered an error while processing your request.",
+      title: 'Something went wrong',
+      message: 'We encountered an error while processing your request.',
     },
     warning: {
       icon: AlertCircle,
-      title: "Attention required",
-      message: "Please check your input and try again.",
+      title: 'Attention required',
+      message: 'Please check your input and try again.',
     },
     info: {
       icon: Info,
-      title: "No data found",
+      title: 'No data found',
       message: "The information you're looking for is not available.",
     },
   };
 
-  return configs[variant] || configs.error;
+  return configs[variant as keyof typeof configs] || configs.error;
 };
 
 const NotFound = React.forwardRef<HTMLDivElement, NotFoundProps>(
   (
     {
       className,
-      variant = "error",
-      size = "default",
+      variant = 'error',
+      size = 'default',
       title,
       message,
       onRetry,
       onGoBack,
-      retryLabel = "Retry",
-      goBackLabel = "Go Back",
+      retryLabel = 'Retry',
+      goBackLabel = 'Go Back',
       showRetry = true,
       showGoBack = true,
       ...props
     },
-    ref,
+    ref
   ) => {
     const config = getVariantConfig(variant);
     const IconComponent = config.icon;
@@ -133,9 +135,9 @@ const NotFound = React.forwardRef<HTMLDivElement, NotFoundProps>(
         </Card>
       </div>
     );
-  },
+  }
 );
 
-NotFound.displayName = "NotFound";
+NotFound.displayName = 'NotFound';
 
 export { NotFound };
