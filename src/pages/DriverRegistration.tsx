@@ -1,13 +1,13 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { CardLoader } from "@/components/ui/card-loader";
+} from '@/components/ui/card';
+import { CardLoader } from '@/components/ui/card-loader';
 import {
   Form,
   FormControl,
@@ -15,15 +15,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ButtonSpinner } from "@/components/ui/spinner";
-import { DriverStatus } from "@/constants/driver.constant";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { ButtonSpinner } from '@/components/ui/spinner';
+import { DriverStatus } from '@/constants/driver.constant';
 import {
   useGetDriverProfileQuery,
   useRegisterDriverMutation,
-} from "@/redux/features/driver/driver.api";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/redux/features/driver/driver.api';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Car,
   CheckCircle,
@@ -31,26 +31,26 @@ import {
   RefreshCw,
   User,
   XCircle,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
-import { Link } from "react-router";
-import { toast } from "sonner";
-import { z } from "zod";
+} from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 const driverRegistrationSchema = z.object({
   vehicle: z.object({
-    name: z.string().min(1, "Vehicle name is required"),
-    model: z.string().min(1, "Vehicle model is required"),
+    name: z.string().min(1, 'Vehicle name is required'),
+    model: z.string().min(1, 'Vehicle model is required'),
   }),
   experience: z
     .number({
       error: (iss) =>
         iss.input === undefined
-          ? "Experience is required"
-          : "Experience must be a number",
+          ? 'Experience is required'
+          : 'Experience must be a number',
     })
-    .min(0, "Experience must be at least 0 years")
-    .max(50, "Experience cannot exceed 50 years"),
+    .min(0, 'Experience must be at least 0 years')
+    .max(50, 'Experience cannot exceed 50 years'),
 });
 
 type DriverRegistrationFormData = z.infer<typeof driverRegistrationSchema>;
@@ -68,8 +68,8 @@ export default function DriverRegistration() {
     resolver: zodResolver(driverRegistrationSchema),
     defaultValues: {
       vehicle: {
-        name: "",
-        model: "",
+        name: '',
+        model: '',
       },
       experience: undefined,
     },
@@ -81,13 +81,13 @@ export default function DriverRegistration() {
 
       if (result.success) {
         toast.success(
-          "Driver registration submitted successfully! Your application is under review.",
+          'Driver registration submitted successfully! Your application is under review.'
         );
         refetch(); // Refresh the driver profile to show the new status
       }
     } catch (error: any) {
       const errorMessage =
-        error?.data?.message || "Registration failed. Please try again.";
+        error?.data?.message || 'Registration failed. Please try again.';
       toast.error(errorMessage);
     }
   };
@@ -149,27 +149,27 @@ export default function DriverRegistration() {
     switch (status) {
       case DriverStatus.PENDING:
         return {
-          title: "You Already Have a Pending Request",
+          title: 'You Already Have a Pending Request',
           description:
             "Your driver application has been submitted and is currently being reviewed by our team. We'll notify you once a decision has been made.",
         };
       case DriverStatus.APPROVED:
         return {
-          title: "Application Approved!",
+          title: 'Application Approved!',
           description:
-            "Congratulations! Your driver application has been approved. You can now start accepting ride requests.",
+            'Congratulations! Your driver application has been approved. You can now start accepting ride requests.',
         };
       case DriverStatus.REJECTED:
         return {
-          title: "Application Rejected",
+          title: 'Application Rejected',
           description:
-            "Unfortunately, your driver application was not approved at this time. You may reapply after addressing any feedback provided.",
+            'Unfortunately, your driver application was not approved at this time. You may reapply after addressing any feedback provided.',
         };
       default:
         return {
-          title: "Become a Driver",
+          title: 'Become a Driver',
           description:
-            "Join our platform and start earning by providing rides to passengers",
+            'Join our platform and start earning by providing rides to passengers',
         };
     }
   };
@@ -296,7 +296,7 @@ export default function DriverRegistration() {
                 {/* Info Text */}
                 <div className="text-center text-sm text-muted-foreground pt-4 border-t">
                   <p>
-                    Application submitted on{" "}
+                    Application submitted on{' '}
                     {new Date(driver.createdAt).toLocaleDateString()}
                   </p>
                   {driver.driverStatus === DriverStatus.PENDING && (
@@ -418,11 +418,11 @@ export default function DriverRegistration() {
                               placeholder="e.g., 5"
                               min="0"
                               max="50"
-                              value={field.value || ""}
+                              value={field.value || ''}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 field.onChange(
-                                  value === "" ? undefined : Number(value),
+                                  value === '' ? undefined : Number(value)
                                 );
                               }}
                               disabled={isLoading}
@@ -463,7 +463,7 @@ export default function DriverRegistration() {
                       notified once approved.
                     </p>
                     <p className="mt-2">
-                      Already have an account?{" "}
+                      Already have an account?{' '}
                       <Link
                         to="/profile"
                         className="text-primary hover:underline"

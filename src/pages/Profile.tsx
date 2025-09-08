@@ -1,18 +1,20 @@
-import Logo from "@/assets/icons/Logo";
-import { ChangePasswordForm } from "@/components/modules/Profile/ChangePasswordForm";
-import { UpdateProfileForm } from "@/components/modules/Profile/UpdateProfileForm";
-import { NotFound } from "@/components/ui/not-found";
-import { PageSpinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUserInfoQuery } from "@/redux/features/user/user.api";
-import { Link, useNavigate } from "react-router";
+import Logo from '@/assets/icons/Logo';
+import { ChangePasswordForm } from '@/components/modules/Profile/ChangePasswordForm';
+import { DriverProfile } from '@/components/modules/Profile/DriverProfile';
+import { UpdateProfileForm } from '@/components/modules/Profile/UpdateProfileForm';
+import { NotFound } from '@/components/ui/not-found';
+import { PageSpinner } from '@/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Role } from '@/constants/role.constant';
+import { useUserInfoQuery } from '@/redux/features/user/user.api';
+import { Link, useNavigate } from 'react-router';
 
 function Profile() {
   const { data, isLoading } = useUserInfoQuery(undefined);
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    navigate("/");
+    navigate('/');
   };
 
   const currentUser = data?.data;
@@ -27,6 +29,8 @@ function Profile() {
         onGoBack={handleGoBack}
       />
     );
+
+  const isDriver = currentUser.role === Role.DRIVER;
 
   return (
     <div className="min-h-svh bg-background">
@@ -43,11 +47,18 @@ function Profile() {
         </div>
 
         {/* Main Content */}
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-4xl">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList
+              className={`grid w-full ${
+                isDriver ? 'grid-cols-3' : 'grid-cols-2'
+              }`}
+            >
               <TabsTrigger value="profile">Update Profile</TabsTrigger>
               <TabsTrigger value="password">Change Password</TabsTrigger>
+              {isDriver && (
+                <TabsTrigger value="driver">Driver Profile</TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="profile" className="mt-6">
@@ -61,6 +72,12 @@ function Profile() {
                 <ChangePasswordForm />
               </div>
             </TabsContent>
+
+            {isDriver && (
+              <TabsContent value="driver" className="mt-6">
+                <DriverProfile />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
 
