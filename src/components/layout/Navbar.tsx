@@ -1,4 +1,5 @@
 import Logo from '@/assets/icons/Logo';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,7 +20,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { NavbarAvailabilityControl } from '@/components/ui/navbar-availability-control';
+import { MobileAvailabilityControl } from '@/components/ui/mobile-availability-control';
 import { Role } from '@/constants';
+import { DriverStatus } from '@/constants/driver.constant';
 import { authApi, useLogoutMutation } from '@/redux/features/auth/auth.api';
 import { useUserInfoQuery } from '@/redux/features/user/user.api';
 import { useGetDriverProfileQuery } from '@/redux/features/driver/driver.api';
@@ -42,10 +46,27 @@ const navigationLinks = [
   { href: '/driver', label: 'Dashboard', role: Role.DRIVER },
 ];
 
+// Helper function to get role display text
+const getRoleDisplayText = (role: string) => {
+  switch (role) {
+    case Role.RIDER:
+      return 'Rider';
+    case Role.DRIVER:
+      return 'Driver';
+    case Role.ADMIN:
+    case Role.SUPER_ADMIN:
+      return 'Management';
+    default:
+      return '';
+  }
+};
+
 export default function Navbar() {
   const { data } = useUserInfoQuery(undefined);
   const { data: driverProfile } = useGetDriverProfileQuery(undefined, {
-    skip: !data?.data?.email || data?.data?.role !== Role.RIDER,
+    skip:
+      !data?.data?.email ||
+      (data?.data?.role !== Role.RIDER && data?.data?.role !== Role.DRIVER),
   });
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
@@ -146,7 +167,24 @@ export default function Navbar() {
           </div>
         </div>
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Driver Availability Control */}
+          {data?.data?.role === Role.DRIVER &&
+            driverProfile?.data?.driverStatus === DriverStatus.APPROVED &&
+            driverProfile?.data?.availability && (
+              <div className="hidden sm:flex">
+                <NavbarAvailabilityControl
+                  currentAvailability={driverProfile.data.availability}
+                  driverId={driverProfile.data._id}
+                />
+              </div>
+            )}
+          {/* Role Chip */}
+          {data?.data?.role && (
+            <Badge variant="secondary" className="hidden sm:inline-flex">
+              {getRoleDisplayText(data.data.role)}
+            </Badge>
+          )}
           <ModeToggle />
           {data?.data?.email && (
             <>
@@ -169,6 +207,23 @@ export default function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  {/* Mobile Driver Availability Control */}
+                  {data?.data?.role === Role.DRIVER &&
+                    driverProfile?.data?.driverStatus ===
+                      DriverStatus.APPROVED &&
+                    driverProfile?.data?.availability && (
+                      <>
+                        <div className="px-2 py-1.5 sm:hidden">
+                          <MobileAvailabilityControl
+                            currentAvailability={
+                              driverProfile.data.availability
+                            }
+                            driverId={driverProfile.data._id}
+                          />
+                        </div>
+                        <DropdownMenuSeparator className="sm:hidden" />
+                      </>
+                    )}
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer">
                       Profile
