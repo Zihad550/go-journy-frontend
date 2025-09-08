@@ -4,6 +4,7 @@ import { lazy } from "react";
 const RideOversight = lazy(() => import("@/pages/Admin/RideOversight"));
 const UserManagement = lazy(() => import("@/pages/Admin/UserManagement"));
 const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
+const DriverManagement = lazy(() => import("@/pages/Admin/DriverManagement"));
 
 export const adminSidebarItems: ISidebarItem[] = [
   {
@@ -23,6 +24,11 @@ export const adminSidebarItems: ISidebarItem[] = [
         title: "User Management",
         url: "/admin/user-management",
         component: UserManagement,
+      },
+      {
+        title: "Driver Registration Management",
+        url: "/admin/driver-management",
+        component: DriverManagement,
       },
     ],
   },
