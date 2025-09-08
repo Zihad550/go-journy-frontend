@@ -1,5 +1,5 @@
-import Logo from "@/assets/icons/Logo";
-import { Button } from "@/components/ui/button";
+import Logo from '@/assets/icons/Logo';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,42 +7,46 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Role } from "@/constants";
-import { authApi, useLogoutMutation } from "@/redux/features/auth/auth.api";
-import { useUserInfoQuery } from "@/redux/features/user/user.api";
-import { useAppDispatch } from "@/redux/hooks";
-import { User } from "lucide-react";
-import React from "react";
-import { Link } from "react-router";
-import { ModeToggle } from "./ModeToggle";
+} from '@/components/ui/popover';
+import { Role } from '@/constants';
+import { authApi, useLogoutMutation } from '@/redux/features/auth/auth.api';
+import { useUserInfoQuery } from '@/redux/features/user/user.api';
+import { useGetDriverProfileQuery } from '@/redux/features/driver/driver.api';
+import { useAppDispatch } from '@/redux/hooks';
+import { User } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router';
+import { ModeToggle } from './ModeToggle';
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home", role: "PUBLIC" },
-  { href: "/about", label: "About", role: "PUBLIC" },
-  { href: "/features", label: "Features", role: "PUBLIC" },
-  { href: "/contact", label: "Contact", role: "PUBLIC" },
-  { href: "/faq", label: "FAQ", role: "PUBLIC" },
-  { href: "/admin", label: "Dashboard", role: Role.ADMIN },
-  { href: "/admin", label: "Dashboard", role: Role.SUPER_ADMIN },
-  { href: "/rider", label: "Dashboard", role: Role.RIDER },
-  { href: "/driver", label: "Dashboard", role: Role.DRIVER },
+  { href: '/', label: 'Home', role: 'PUBLIC' },
+  { href: '/about', label: 'About', role: 'PUBLIC' },
+  { href: '/features', label: 'Features', role: 'PUBLIC' },
+  { href: '/contact', label: 'Contact', role: 'PUBLIC' },
+  { href: '/faq', label: 'FAQ', role: 'PUBLIC' },
+  { href: '/admin', label: 'Dashboard', role: Role.ADMIN },
+  { href: '/admin', label: 'Dashboard', role: Role.SUPER_ADMIN },
+  { href: '/rider', label: 'Dashboard', role: Role.RIDER },
+  { href: '/driver', label: 'Dashboard', role: Role.DRIVER },
 ];
 
 export default function Navbar() {
   const { data } = useUserInfoQuery(undefined);
+  const { data: driverProfile } = useGetDriverProfileQuery(undefined, {
+    skip: !data?.data?.email || data?.data?.role !== Role.RIDER,
+  });
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
@@ -115,7 +119,7 @@ export default function Navbar() {
               <NavigationMenuList className="gap-2">
                 {navigationLinks.map((link, index) => (
                   <React.Fragment key={index}>
-                    {link.role === "PUBLIC" && (
+                    {link.role === 'PUBLIC' && (
                       <NavigationMenuItem>
                         <NavigationMenuLink
                           asChild
@@ -157,7 +161,7 @@ export default function Navbar() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {data?.data?.name || "User"}
+                        {data?.data?.name || 'User'}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {data?.data?.email}
@@ -170,17 +174,40 @@ export default function Navbar() {
                       Profile
                     </Link>
                   </DropdownMenuItem>
+                  {data?.data?.role === Role.RIDER && (
+                    <>
+                      {!driverProfile?.data ? (
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to="/driver-registration"
+                            className="cursor-pointer"
+                          >
+                            Become a Driver
+                          </Link>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to="/driver-registration"
+                            className="cursor-pointer"
+                          >
+                            Driver Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                    </>
+                  )}
                   {data?.data?.role && (
                     <DropdownMenuItem asChild>
                       <Link
                         to={
                           data.data.role === Role.ADMIN
-                            ? "/admin"
+                            ? '/admin'
                             : data.data.role === Role.SUPER_ADMIN
-                              ? "/admin"
-                              : data.data.role === Role.RIDER
-                                ? "/rider"
-                                : "/driver"
+                            ? '/admin'
+                            : data.data.role === Role.RIDER
+                            ? '/rider'
+                            : '/driver'
                         }
                         className="cursor-pointer"
                       >
