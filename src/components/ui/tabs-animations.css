@@ -1,0 +1,136 @@
+/* Tab Content Animations */
+
+/* Fade animations */
+@keyframes fade-in-stagger {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-out-stagger {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Slide animations */
+@keyframes slide-in-stagger {
+  from {
+    opacity: 0;
+    transform: translateX(20px) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes slide-out-stagger {
+  from {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px) translateY(-10px);
+  }
+}
+
+/* Scale animations */
+@keyframes scale-in-stagger {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes scale-out-stagger {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in-stagger {
+  animation-name: fade-in-stagger;
+}
+
+.animate-fade-out-stagger {
+  animation-name: fade-out-stagger;
+}
+
+.animate-slide-in-stagger {
+  animation-name: slide-in-stagger;
+}
+
+.animate-slide-out-stagger {
+  animation-name: slide-out-stagger;
+}
+
+.animate-scale-in-stagger {
+  animation-name: scale-in-stagger;
+}
+
+.animate-scale-out-stagger {
+  animation-name: scale-out-stagger;
+}
+
+/* Smooth transitions for tab triggers */
+.tab-trigger-transition {
+  transition: all 200ms ease-in-out;
+}
+
+.tab-trigger-transition:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tab-trigger-transition[aria-selected='true'] {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-stagger,
+  .animate-fade-out-stagger,
+  .animate-slide-in-stagger,
+  .animate-slide-out-stagger,
+  .animate-scale-in-stagger,
+  .animate-scale-out-stagger,
+  .tab-trigger-transition {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Focus and accessibility improvements */
+.tab-content-focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.tab-content-focus:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
