@@ -1,5 +1,5 @@
 import { baseApi } from "@/redux/baseApi";
-import type { IApiResponse, ILogin, IRegister } from "@/types";
+import type { IApiResponse, ILogin, IRegister, ISendOtp, IVerifyOtp } from "@/types";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -15,7 +15,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/logout",
         method: "POST",
       }),
-      invalidatesTags: ["USER"],
+       invalidatesTags: ["RIDER"],
     }),
     register: builder.mutation<IApiResponse<null>, IRegister>({
       query: (userInfo) => ({
@@ -54,6 +54,26 @@ export const authApi = baseApi.injectEndpoints({
         data: payload,
       }),
     }),
+    sendOtp: builder.mutation<IApiResponse<null>, ISendOtp>({
+      query: (userInfo) => ({
+        url: "/auth/otp/send",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    verifyOtp: builder.mutation<IApiResponse<null>, IVerifyOtp>({
+      query: (userInfo) => ({
+        url: "/auth/otp/verify",
+        method: "POST",
+        data: userInfo,
+      }),
+    }),
+    refreshToken: builder.mutation<IApiResponse<null>, void>({
+      query: () => ({
+        url: "/auth/refresh-token",
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -64,4 +84,7 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useRefreshTokenMutation,
 } = authApi;

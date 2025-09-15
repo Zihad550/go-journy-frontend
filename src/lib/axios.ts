@@ -49,8 +49,7 @@ axiosInstance.interceptors.response.use(
     };
 
     if (
-      error.response.status === 500 &&
-      error.response.data.message === "jwt expired" &&
+      error.response?.status === 401 &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
@@ -65,14 +64,24 @@ axiosInstance.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        await axiosInstance.post("/auth/refresh-token");
+        const refreshResponse = await axiosInstance.post("/auth/refresh-token", {}, { withCredentials: true });
 
-        processQueue(null);
-
-        return axiosInstance(originalRequest);
-      } catch (error) {
-        processQueue(error);
-        return Promise.reject(error);
+        if (refreshResponse.status === 200) {
+          processQueue(null);
+          return axiosInstance(originalRequest);
+        } else {
+          // Refresh failed, redirect to login
+          processQueue(error);
+          window.location.href = '/login';
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        processQueue(refreshError);
+        // Clear any stored auth state
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }

@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Password from "@/components/ui/password";
 import Phone from "@/components/ui/phone";
+import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ const registerSchema = z
       .max(50),
     email: z.email(),
     phone: z.string().min(10, { error: "Phone is too short" }).max(15),
+    address: z.string().min(10, { error: "Address is too short" }),
     password: z.string().min(8, { error: "Password is too short" }),
     confirmPassword: z
       .string()
@@ -52,6 +54,7 @@ export function RegisterForm({
       name: "",
       email: "",
       phone: "",
+      address: "",
       password: "",
       confirmPassword: "",
     },
@@ -62,15 +65,18 @@ export function RegisterForm({
       name: data.name,
       email: data.email,
       phone: data.phone,
+      address: data.address,
       password: data.password,
     };
 
     try {
       await register(userInfo).unwrap();
       toast.success("User created successfully");
-      navigate("/");
-    } catch (error) {
-      console.error(error);
+      navigate("/verify-otp", {
+        state: data.email,
+      });
+    } catch {
+      // Handle registration error
     }
   };
 
@@ -140,6 +146,25 @@ export function RegisterForm({
             />
             <FormField
               control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="123 Main St, City, Country"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    Your full address.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -176,19 +201,25 @@ export function RegisterForm({
           </form>
         </Form>
 
-        {/*<div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
-*/}
-        {/*<Button
+
+        <Button
+          onClick={() => {
+            const redirectUrl = encodeURIComponent(
+              window.location.origin + "/dashboard",
+            );
+            window.location.href = `${config.baseUrl}/auth/google?redirect=${redirectUrl}`;
+          }}
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
         >
-          Login with Google
-        </Button>*/}
+          Register with Google
+        </Button>
       </div>
 
       <div className="text-center text-sm">

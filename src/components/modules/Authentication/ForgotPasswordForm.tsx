@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -6,19 +6,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useForgotPasswordMutation } from "@/redux/features/auth/auth.api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link } from "react-router";
-import { toast } from "sonner";
-import z from "zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { useForgotPasswordMutation } from '@/redux/features/auth/auth.api';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router';
+import { toast } from 'sonner';
+import z from 'zod';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email('Please enter a valid email address'),
 });
 
 export function ForgotPasswordForm({
@@ -31,30 +31,29 @@ export function ForgotPasswordForm({
   const form = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
   const onSubmit = async (data: z.infer<typeof forgotPasswordSchema>) => {
     try {
-      const res = await forgotPassword(data).unwrap();
+      await forgotPassword(data).unwrap();
 
-      console.log(res);
       setIsSubmitted(true);
-      toast.success("Password reset instructions sent to your email");
+      toast.success('Password reset instructions sent to your email');
     } catch {
-      toast.error("Failed to send reset instructions. Please try again.");
+      toast.error('Failed to send reset instructions. Please try again.');
     }
   };
 
   if (isSubmitted) {
     return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className={cn('flex flex-col gap-6', className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Check your email</h1>
           <p className="text-balance text-sm text-muted-foreground">
-            We've sent password reset instructions to{" "}
-            <span className="font-medium">{form.getValues("email")}</span>
+            We've sent password reset instructions to{' '}
+            <span className="font-medium">{form.getValues('email')}</span>
           </p>
         </div>
         <div className="grid gap-4">
@@ -66,7 +65,7 @@ export function ForgotPasswordForm({
             Didn't receive the email? Try again
           </Button>
           <div className="text-center text-sm">
-            Remember your password?{" "}
+            Remember your password?{' '}
             <Link to="/login" replace className="underline underline-offset-4">
               Back to login
             </Link>
@@ -77,7 +76,7 @@ export function ForgotPasswordForm({
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Forgot your password?</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -98,7 +97,7 @@ export function ForgotPasswordForm({
                     <Input
                       placeholder="john@example.com"
                       {...field}
-                      value={field.value || ""}
+                      value={field.value || ''}
                       disabled={isLoading}
                     />
                   </FormControl>
@@ -108,13 +107,13 @@ export function ForgotPasswordForm({
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Sending..." : "Send reset instructions"}
+              {isLoading ? 'Sending...' : 'Send reset instructions'}
             </Button>
           </form>
         </Form>
       </div>
       <div className="text-center text-sm">
-        Remember your password?{" "}
+        Remember your password?{' '}
         <Link to="/login" replace className="underline underline-offset-4">
           Back to login
         </Link>

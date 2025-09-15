@@ -1,4 +1,5 @@
 export const UserAccountStatus = {
-  BLOCKED: "blocked",
-  ACTIVE: "active",
-};
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+  BLOCKED: "BLOCKED",
+} as const;
