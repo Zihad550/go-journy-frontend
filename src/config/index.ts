@@ -3,3 +3,6 @@ const config = {
 };
 
 export default config;
+
+// Export Mapbox configuration
+export * from './mapbox.config';

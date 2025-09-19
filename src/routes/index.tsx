@@ -70,7 +70,7 @@ export const router = createBrowserRouter([
     Component: withAuth(DashboardLayout, Role.RIDER),
     path: "/rider",
     children: [
-      { index: true, element: <Navigate to="/rider/ride-history" /> },
+      { index: true, element: <Navigate to="/rider/analytics" /> },
       ...generateRoutes(riderSidebarItems),
     ],
   },
@@ -78,7 +78,7 @@ export const router = createBrowserRouter([
     Component: withAuth(DashboardLayout, Role.DRIVER),
     path: "/driver",
     children: [
-      { index: true, element: <Navigate to="/driver/ride-history" /> },
+      { index: true, element: <Navigate to="/driver/analytics" /> },
       ...generateRoutes(driverSidebarItems),
     ],
   },
@@ -106,20 +106,20 @@ export const router = createBrowserRouter([
     Component: Profile,
     path: "/profile",
   },
-   {
-     Component: withAuth(DriverRegistration),
-     path: "/driver-registration",
-   },
-   {
-     Component: PaymentSuccess,
-     path: "/payment/success",
-   },
-   {
-     Component: PaymentFail,
-     path: "/payment/fail",
-   },
-   {
-     Component: PaymentCancel,
-     path: "/payment/cancel",
-   },
- ]);
+  {
+    Component: withAuth(DriverRegistration),
+    path: "/driver-registration",
+  },
+  {
+    Component: PaymentSuccess,
+    path: "/payment/success",
+  },
+  {
+    Component: PaymentFail,
+    path: "/payment/fail",
+  },
+  {
+    Component: PaymentCancel,
+    path: "/payment/cancel",
+  },
+]);

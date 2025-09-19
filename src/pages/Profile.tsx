@@ -40,10 +40,27 @@ function Profile() {
           <Link to="/" className="flex items-center gap-2 font-medium">
             <Logo />
           </Link>
-          <div className="text-right">
-            <h1 className="text-2xl font-bold">Profile Settings</h1>
-            <p className="text-sm text-muted-foreground">{currentUser.email}</p>
-          </div>
+           <div className="text-right">
+             <h1 className="text-2xl font-bold">Profile Settings</h1>
+             <p className="text-sm text-muted-foreground">{currentUser.email}</p>
+             <div className="flex items-center gap-2 mt-1">
+               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                 currentUser.isVerified
+                   ? 'bg-green-100 text-green-800'
+                   : 'bg-yellow-100 text-yellow-800'
+               }`}>
+                 {currentUser.isVerified ? '✓ Verified' : '⚠ Unverified'}
+               </span>
+               {!currentUser.isVerified && (
+                 <Link
+                   to="/verify-otp"
+                   className="text-xs text-blue-600 hover:text-blue-800 underline"
+                 >
+                   Verify Email
+                 </Link>
+               )}
+             </div>
+           </div>
         </div>
 
         {/* Main Content */}
@@ -63,7 +80,10 @@ function Profile() {
 
             <TabsContent value="profile" className="mt-6">
               <div className="rounded-lg border bg-card p-6">
-                <UpdateProfileForm currentName={currentUser.name} />
+                <UpdateProfileForm
+                  currentName={currentUser.name}
+                  currentAddress={currentUser.address}
+                />
               </div>
             </TabsContent>
 

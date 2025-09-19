@@ -37,6 +37,26 @@ const destinationIcon = new Icon({
 interface RideMapProps {
   pickupLocation: { lat: string | number; lng: string | number };
   destination: { lat: string | number; lng: string | number };
+  driverLocation?: { lat: string | number; lng: string | number };
+  pois?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    coordinates: { lat: number; lng: number };
+    address: string;
+    distance: number;
+    rating?: number;
+  }>;
+  locationHistory?: Array<{
+    lat: number;
+    lng: number;
+    timestamp?: string;
+    speed?: number;
+    heading?: number;
+  }>;
+  showPOIs?: boolean;
+  showLocationHistory?: boolean;
+  onPOISelect?: (poi: any) => void;
   className?: string;
 }
 

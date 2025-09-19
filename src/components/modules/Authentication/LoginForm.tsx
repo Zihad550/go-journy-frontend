@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Password from "@/components/ui/password";
 import { ButtonSpinner } from "@/components/ui/spinner";
 import config from "@/config";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ export function LoginForm({
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await login(data).unwrap();
+      console.log(res);
 
       if (res.success) {
         toast.success("Logged in successfully");
@@ -48,6 +50,10 @@ export function LoginForm({
       console.log(err);
       if (err?.data?.message === "Password does not match") {
         toast.error("Invalid credentials");
+      } else if (err?.data?.message) {
+        toast.error(err.data.message);
+      } else {
+        toast.error("Login failed. Please try again.");
       }
 
       if (err?.data?.message === "User is not verified") {
@@ -94,8 +100,7 @@ export function LoginForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
+                    <Password
                       placeholder="********"
                       {...field}
                       value={field.value || ""}

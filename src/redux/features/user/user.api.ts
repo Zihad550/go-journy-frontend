@@ -8,15 +8,15 @@ export const userApi = baseApi.injectEndpoints({
         url: "/users/profile",
         method: "GET",
       }),
-      providesTags: ["USER"],
+       providesTags: ["RIDER"],
     }),
-    updateUser: builder.mutation<IApiResponse<IUser>, { name: string }>({
+    updateUser: builder.mutation<IApiResponse<IUser>, { name: string; address?: string }>({
       query: (payload) => ({
         url: "/users/profile",
         method: "PATCH",
         data: payload,
       }),
-      invalidatesTags: ["USER"],
+       invalidatesTags: ["RIDER"],
     }),
   }),
 });

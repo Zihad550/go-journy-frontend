@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useUserInfoQuery } from "@/redux/features/user/user.api";
 import { getSidebarItems } from "@/utils/getSidebarItems";
+import { Role } from "@/constants";
 import * as React from "react";
 import { Link } from "react-router";
 
@@ -20,7 +21,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userData } = useUserInfoQuery(undefined);
 
   const data = {
-    navMain: getSidebarItems(userData?.data?.role || "rider"),
+    navMain: getSidebarItems(userData?.data?.role || Role.RIDER),
   };
 
   return (

@@ -1,41 +1,41 @@
-import { baseApi } from '@/redux/baseApi';
+import { baseApi } from "@/redux/baseApi";
 import type {
   IApiResponse,
   IRide,
   IRideRequest,
   IRideStatusUpdate,
-} from '@/types';
+} from "@/types";
 
 export const rideApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRides: builder.query<IApiResponse<IRide[]>, undefined>({
       query: () => ({
-        url: '/rides',
-        method: 'GET',
+        url: "/rides",
+        method: "GET",
       }),
-      providesTags: ['RIDE'],
+      providesTags: ["RIDE"],
     }),
     getRideById: builder.query<IApiResponse<IRide>, string>({
       query: (id) => ({
         url: `/rides/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['RIDE'],
+      providesTags: ["RIDE"],
     }),
     requestRide: builder.mutation<IApiResponse<IRide>, IRideRequest>({
       query: (payload) => ({
-        url: '/rides/request',
-        method: 'POST',
+        url: "/rides/request",
+        method: "POST",
         data: payload,
       }),
-      invalidatesTags: ['RIDE'],
+      invalidatesTags: ["RIDE"],
     }),
     acceptRide: builder.mutation<IApiResponse<IRide>, string>({
       query: (id) => ({
         url: `/rides/accept/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
       }),
-      invalidatesTags: ['RIDE'],
+      invalidatesTags: ["RIDE"],
     }),
     updateRideStatus: builder.mutation<
       IApiResponse<IRide>,
@@ -43,17 +43,35 @@ export const rideApi = baseApi.injectEndpoints({
     >({
       query: ({ id, status }) => ({
         url: `/rides/${id}/status`,
-        method: 'PATCH',
+        method: "PATCH",
         data: status,
       }),
-      invalidatesTags: ['RIDE'],
+      invalidatesTags: ["RIDE"],
     }),
     cancelRide: builder.mutation<IApiResponse<IRide>, string>({
       query: (id) => ({
         url: `/rides/cancel/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
       }),
-      invalidatesTags: ['RIDE'],
+      invalidatesTags: ["RIDE"],
+    }),
+    showInterest: builder.mutation<IApiResponse<IRide>, string>({
+      query: (id) => ({
+        url: `/rides/interested/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["RIDE"],
+    }),
+    acceptDriver: builder.mutation<
+      IApiResponse<IRide>,
+      { rideId: string; driverId: string }
+    >({
+      query: ({ rideId, driverId }) => ({
+        url: `/rides/accept/${rideId}`,
+        method: "PATCH",
+        data: { driverId },
+      }),
+      invalidatesTags: ["RIDE"],
     }),
   }),
 });
@@ -65,4 +83,6 @@ export const {
   useAcceptRideMutation,
   useUpdateRideStatusMutation,
   useCancelRideMutation,
+  useShowInterestMutation,
+  useAcceptDriverMutation,
 } = rideApi;

@@ -1,6 +1,6 @@
-import type { DriverAvailability, DriverStatus } from "@/constants";
-import type { ObjectValues } from ".";
-import type { IUser } from "./user.type";
+import type { DriverAvailability, DriverStatus } from '@/constants';
+import type { ObjectValues } from '.';
+import type { IUser } from './user.type';
 
 export interface IDriver {
   _id: string;
@@ -16,5 +16,8 @@ export interface IDriver {
 export interface IVehicle {
   name: string;
   model: string;
-  seatCount: number;
+}
+export interface IDriverEarnings {
+  _id: string | null;
+  earnings: number;
 }

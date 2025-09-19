@@ -1,3 +1,4 @@
+import Analytics from "@/pages/Rider/Analytics";
 import type { ISidebarItem } from "@/types";
 import { lazy } from "react";
 
@@ -7,6 +8,11 @@ export const riderSidebarItems: ISidebarItem[] = [
   {
     title: "Dashboard",
     items: [
+      {
+        title: "Analytics",
+        url: "/rider/analytics",
+        component: Analytics,
+      },
       {
         title: "Ride History",
         url: "/rider/ride-history",

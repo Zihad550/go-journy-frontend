@@ -1,5 +1,5 @@
 import { baseApi } from '@/redux/baseApi';
-import type { IApiResponse, IDriver } from '@/types';
+import type { IApiResponse, IDriver, IDriverEarnings } from '@/types';
 
 export interface IDriverRegistration {
   vehicle: {
@@ -55,7 +55,7 @@ export const driverApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['DRIVER'],
     }),
-    getDriverEarnings: builder.query<IApiResponse<unknown>, undefined>({
+    getDriverEarnings: builder.query<IApiResponse<IDriverEarnings[]>, undefined>({
       query: () => ({
         url: '/drivers/earnings',
         method: 'GET',

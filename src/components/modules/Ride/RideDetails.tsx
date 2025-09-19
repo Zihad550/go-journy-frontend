@@ -2,22 +2,27 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import { RideMap } from "@/components/ui/ride-map";
+import { MapboxMap } from "@/components/ui/mapbox-map";
 import { RideStatusCard } from "@/components/ui/ride-status-card";
+import { RideStatus, Role } from "@/constants";
 import { cn } from "@/lib/utils";
-import { useCancelRideMutation } from "@/redux/features/ride/ride.api";
-import type { IRide } from "@/types";
+import { useInitPaymentMutation } from "@/redux/features/payment/payment.api";
+import {
+  useCancelRideMutation,
+  useUpdateRideStatusMutation,
+} from "@/redux/features/ride/ride.api";
+import { useUserInfoQuery } from "@/redux/features/user/user.api";
+import type { IDriver, IRide } from "@/types";
 import {
   AlertCircle,
   Car,
   CheckCircle,
   Clock,
+  CreditCard,
   DollarSign,
   Loader2,
   MapPin,
-  MessageCircle,
   Navigation,
-  Phone,
   Route,
   User,
   X,
@@ -28,6 +33,7 @@ interface RideDetailsProps {
   ride: IRide;
   className?: string;
   onRideCancelled: () => void;
+  onRideCompleted?: (ride: IRide, driver: IDriver) => void;
 }
 
 // Helper function to validate coordinates
@@ -54,8 +60,14 @@ export function RideDetails({
   ride,
   className,
   onRideCancelled,
+  onRideCompleted,
 }: RideDetailsProps) {
   const [cancelRide, { isLoading: isCancelling }] = useCancelRideMutation();
+  const [updateRideStatus, { isLoading: isCompleting }] =
+    useUpdateRideStatusMutation();
+  const [initPayment, { isLoading: isInitiatingPayment }] =
+    useInitPaymentMutation();
+  const { data: userInfo } = useUserInfoQuery(undefined);
 
   // Validate ride coordinates
   const hasValidCoordinates =
@@ -69,9 +81,39 @@ export function RideDetails({
       await cancelRide(ride._id).unwrap();
       toast.success("🚫 Ride cancelled successfully");
       onRideCancelled();
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("❌ Failed to cancel ride. Please try again.");
+    }
+  };
+
+  const handleCompleteRide = async () => {
+    try {
+      await updateRideStatus({
+        id: ride._id,
+        status: { status: RideStatus.COMPLETED },
+      }).unwrap();
+      toast.success("✅ Ride completed successfully!");
+
+      // Call callback to show review modal if provided
+      if (onRideCompleted && ride.driver && typeof ride.driver !== "string") {
+        onRideCompleted(ride, ride.driver);
+      }
+    } catch {
+      toast.error("❌ Failed to complete ride. Please try again.");
+    }
+  };
+
+  const handleInitiatePayment = async () => {
+    try {
+      const response = await initPayment(ride._id).unwrap();
+      if (response.data?.paymentUrl) {
+        // Redirect to SSLCommerz payment gateway
+        window.location.href = response.data.paymentUrl;
+      } else {
+        toast.error("❌ Failed to initiate payment. Please try again.");
+      }
+    } catch {
+      toast.error("❌ Failed to initiate payment. Please try again.");
     }
   };
 
@@ -91,7 +133,7 @@ export function RideDetails({
           icon: <CheckCircle className="h-4 w-4" />,
           pulse: false,
         };
-      case "in-progress":
+      case "in_transit":
         return {
           color:
             "bg-chart-2 text-primary-foreground shadow-lg shadow-chart-2/25",
@@ -123,6 +165,17 @@ export function RideDetails({
 
   const statusConfig = getStatusConfig(ride.status);
 
+  // Determine if the current user can complete the ride
+  const canCompleteRide =
+    userInfo?.data?.role === Role.RIDER &&
+    ride.status === RideStatus.IN_TRANSIT;
+
+  // Determine if payment can be initiated
+  const canInitiatePayment =
+    userInfo?.data?.role === Role.RIDER &&
+    ride.status === RideStatus.COMPLETED &&
+    (!ride.payment || ride.payment.status === "unpaid");
+
   const getDriverName = () => {
     if (!ride.driver) return "Not assigned";
     if (typeof ride.driver === "string") return ride.driver;
@@ -130,28 +183,32 @@ export function RideDetails({
     return ride.driver.user?.name || "Driver";
   };
 
+
+
   return (
     <GradientBackground className={cn("rounded-3xl", className)}>
       <Card className="relative overflow-hidden border shadow-2xl bg-card/95 backdrop-blur-sm rounded-3xl">
-        <CardHeader className="border-b relative overflow-hidden">
+        <CardHeader className="border-b relative overflow-hidden p-4 sm:p-6 lg:p-8">
           <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
-          <div className="relative flex items-center justify-between">
-            <CardTitle className="flex items-center gap-4 text-2xl font-bold">
-              <div className="relative p-3 bg-card rounded-2xl shadow-lg border">
-                <Navigation className="h-7 w-7 text-primary" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <CardTitle className="flex items-center gap-3 sm:gap-4 text-xl sm:text-2xl font-bold">
+              <div className="relative p-2 sm:p-3 bg-card rounded-2xl shadow-lg border">
+                <Navigation className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                 <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-sm" />
               </div>
               <div>
-                <div className="text-2xl font-bold">Your Journey</div>
-                <div className="text-sm font-normal text-muted-foreground mt-1">
+                <div className="text-xl sm:text-2xl font-bold">
+                  Your Journey
+                </div>
+                <div className="text-xs sm:text-sm font-normal text-muted-foreground mt-1">
                   Track your ride in real-time
                 </div>
               </div>
             </CardTitle>
             <Badge
               className={cn(
-                "px-4 py-2 text-sm font-semibold rounded-xl border-0",
+                "px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl border-0 self-start sm:self-auto",
                 statusConfig.color,
                 statusConfig.pulse && "animate-pulse",
               )}
@@ -164,10 +221,10 @@ export function RideDetails({
           </div>
         </CardHeader>
 
-        <CardContent className="p-8 space-y-8 relative">
+        <CardContent className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 relative">
           {/* Interactive Map - only show if coordinates are valid */}
           {hasValidCoordinates ? (
-            <RideMap
+            <MapboxMap
               pickupLocation={{
                 lat: parseFloat(ride.pickupLocation.lat),
                 lng: parseFloat(ride.pickupLocation.lng),
@@ -176,6 +233,8 @@ export function RideDetails({
                 lat: parseFloat(ride.destination.lat),
                 lng: parseFloat(ride.destination.lng),
               }}
+              showControls={true}
+              interactive={true}
             />
           ) : (
             <Card className="overflow-hidden">
@@ -206,18 +265,18 @@ export function RideDetails({
           )}
 
           {/* Journey Route Details */}
-          <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-8 border backdrop-blur-sm">
+          <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-4 sm:p-6 lg:p-8 border backdrop-blur-sm">
             <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
             <div className="relative">
-              <h3 className="flex items-center gap-3 text-xl font-bold mb-6">
+              <h3 className="flex items-center gap-3 text-lg sm:text-xl font-bold mb-4 sm:mb-6">
                 <div className="p-2 bg-primary/10 rounded-xl">
-                  <Route className="h-6 w-6 text-primary" />
+                  <Route className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
                 Location Details
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 {/* Pickup Location */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -227,7 +286,7 @@ export function RideDetails({
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-5 w-5 text-chart-2" />
-                      <span className="font-bold text-chart-2 text-lg">
+                      <span className="font-bold text-chart-2 text-base sm:text-lg">
                         Pickup Location
                       </span>
                     </div>
@@ -263,7 +322,7 @@ export function RideDetails({
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-5 w-5 text-destructive" />
-                      <span className="font-bold text-destructive text-lg">
+                      <span className="font-bold text-destructive text-base sm:text-lg">
                         Destination
                       </span>
                     </div>
@@ -294,22 +353,24 @@ export function RideDetails({
           </div>
 
           {/* Price & Driver Info */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {/* Price */}
-            <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-8 border backdrop-blur-sm">
+            <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-4 sm:p-6 lg:p-8 border backdrop-blur-sm">
               <div className="relative">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 bg-chart-1 rounded-2xl shadow-lg">
                     <DollarSign className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <span className="font-bold text-lg">Ride Price</span>
+                    <span className="font-bold text-base sm:text-lg">
+                      Ride Price
+                    </span>
                     <div className="text-sm text-muted-foreground">
                       Total fare amount
                     </div>
                   </div>
                 </div>
-                <div className="text-4xl font-bold text-chart-1 mb-2">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-chart-1 mb-2">
                   ${ride.price}
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -319,14 +380,16 @@ export function RideDetails({
             </div>
 
             {/* Driver Info */}
-            <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-8 border backdrop-blur-sm">
+            <div className="relative overflow-hidden bg-muted/50 rounded-2xl p-4 sm:p-6 lg:p-8 border backdrop-blur-sm">
               <div className="relative">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 bg-primary rounded-2xl shadow-lg">
                     <User className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <span className="font-bold text-lg">Your Driver</span>
+                    <span className="font-bold text-base sm:text-lg">
+                      Your Driver
+                    </span>
                     <div className="text-sm text-muted-foreground">
                       {ride.driver
                         ? "Assigned driver"
@@ -334,9 +397,11 @@ export function RideDetails({
                     </div>
                   </div>
                 </div>
-                <div className="text-2xl font-bold mb-4">{getDriverName()}</div>
-                {ride.driver && ride.status !== "requested" && (
-                  <div className="flex gap-3">
+                <div className="text-xl sm:text-2xl font-bold mb-4">
+                  {getDriverName()}
+                </div>
+                {/*{ride.driver && ride.status !== 'requested' && (
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Button variant="outline" size="sm" className="flex-1">
                       <Phone className="h-4 w-4 mr-2" />
                       Call
@@ -346,7 +411,7 @@ export function RideDetails({
                       Message
                     </Button>
                   </div>
-                )}
+                )}*/}
                 {!ride.driver && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -364,27 +429,97 @@ export function RideDetails({
           {(ride.status === "requested" || ride.status === "accepted") && (
             <div className="relative">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              <div className="pt-8">
+              <div className="pt-6 sm:pt-8">
                 <Button
                   variant="destructive"
                   onClick={handleCancelRide}
                   disabled={isCancelling}
-                  className="w-full h-14 text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   {isCancelling ? (
                     <>
-                      <Loader2 className="h-6 w-6 animate-spin mr-3" />
-                      Cancelling Ride...
+                      <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin mr-2 sm:mr-3" />
+                      <span className="hidden sm:inline">
+                        Cancelling Ride...
+                      </span>
+                      <span className="sm:hidden">Cancelling...</span>
                     </>
                   ) : (
                     <>
-                      <X className="h-6 w-6 mr-3" />
+                      <X className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                       Cancel Ride
                     </>
                   )}
                 </Button>
-                <p className="text-center text-muted-foreground text-sm mt-3">
+                <p className="text-center text-muted-foreground text-xs sm:text-sm mt-3">
                   You can cancel your ride anytime before pickup
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Complete Ride Action - only for riders when ride is in transit */}
+          {canCompleteRide && (
+            <div className="relative">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+              <div className="pt-6 sm:pt-8">
+                <Button
+                  variant="default"
+                  onClick={handleCompleteRide}
+                  disabled={isCompleting}
+                  className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-chart-1 hover:bg-chart-1/90 text-primary-foreground"
+                >
+                  {isCompleting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin mr-2 sm:mr-3" />
+                      <span className="hidden sm:inline">
+                        Completing Ride...
+                      </span>
+                      <span className="sm:hidden">Completing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+                      Complete Ride
+                    </>
+                  )}
+                </Button>
+                <p className="text-center text-muted-foreground text-xs sm:text-sm mt-3">
+                  Mark this ride as completed once you have arrived at your
+                  destination
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Payment Initiation Action - only for riders when ride is completed */}
+          {canInitiatePayment && (
+            <div className="relative">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+              <div className="pt-6 sm:pt-8">
+                <Button
+                  variant="default"
+                  onClick={handleInitiatePayment}
+                  disabled={isInitiatingPayment}
+                  className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  {isInitiatingPayment ? (
+                    <>
+                      <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin mr-2 sm:mr-3" />
+                      <span className="hidden sm:inline">
+                        Initiating Payment...
+                      </span>
+                      <span className="sm:hidden">Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+                      Pay Now
+                    </>
+                  )}
+                </Button>
+                <p className="text-center text-muted-foreground text-xs sm:text-sm mt-3">
+                  Complete your payment to finalize this ride
                 </p>
               </div>
             </div>

@@ -115,8 +115,7 @@ export function LocationPicker({
 
           setIsGettingLocation(false);
         },
-        (error) => {
-          console.error('Error getting location:', error);
+        () => {
           setIsGettingLocation(false);
         },
         {

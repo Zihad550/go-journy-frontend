@@ -117,66 +117,6 @@ function usePerformanceMonitor(
   };
 }
 
-// Debug utilities for development
-const TabsDebugger = {
-  logStateChange: (componentName: string, oldState: any, newState: any) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.group(`[TabsDebugger] ${componentName} State Change`);
-      console.log('Previous State:', oldState);
-      console.log('New State:', newState);
-      console.log(
-        'Changes:',
-        Object.keys(newState).filter(
-          (key) =>
-            JSON.stringify(oldState[key]) !== JSON.stringify(newState[key])
-        )
-      );
-      console.groupEnd();
-    }
-  },
-
-  logRenderReason: (
-    componentName: string,
-    props: Record<string, any>,
-    prevProps?: Record<string, unknown>
-  ) => {
-    if (process.env.NODE_ENV === 'development' && prevProps) {
-      const changedProps = Object.keys(props).filter(
-        (key) => props[key] !== prevProps[key]
-      );
-
-      if (changedProps.length > 0) {
-        console.log(
-          `[TabsDebugger] ${componentName} re-rendered due to:`,
-          changedProps
-        );
-      }
-    }
-  },
-
-  measureComponentRender: (
-    componentName: string,
-    renderFn: () => React.ReactNode
-  ) => {
-    if (process.env.NODE_ENV === 'development') {
-      const start = performance.now();
-      const result = renderFn();
-      const end = performance.now();
-
-      if (end - start > 16) {
-        // Warn if render takes longer than one frame (16ms)
-        console.warn(
-          `[TabsDebugger] ${componentName} slow render: ${(end - start).toFixed(
-            2
-          )}ms`
-        );
-      }
-
-      return result;
-    }
-    return renderFn();
-  },
-};
 
 // Animation configuration types
 interface TransitionConfig {
@@ -1105,30 +1045,25 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       animationState.animationPhase === 'exit';
     const isEntering = isSelected && animationState.animationPhase === 'enter';
 
-    // Handle preloading if enabled
+    // Handle preloading if enabled - must be before any early returns
     React.useEffect(() => {
       if (preload && enableLazyLoading && !isTabLoaded(value)) {
         preloadTab(value);
       }
     }, [preload, enableLazyLoading, value, isTabLoaded, preloadTab]);
 
-    // Don't render if not selected and not in transition
-    if (!isSelected && !isExiting) {
-      return null;
-    }
-
-    // Handle lazy loading states
+    // Handle lazy loading states - must be before any early returns
     const shouldUseLazyLoading = enableLazyLoading && lazy;
     const tabLoaded = isTabLoaded(value);
     const tabLoading = isTabLoading(value);
     const tabError = isTabError(value);
 
-    // Create retry function for error state
+    // Create retry function for error state - must be before any early returns
     const handleRetry = React.useCallback(() => {
       retryLoadTab(value);
     }, [retryLoadTab, value]);
 
-    // Generate animation styles based on transition type and phase
+    // Generate animation styles based on transition type and phase - must be before any early returns
     const animationStyles = React.useMemo((): React.CSSProperties => {
       if (!enableAnimations || animationConfig.duration === 0) {
         return {};
@@ -1183,7 +1118,7 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       isSelected,
     ]);
 
-    // Staggered animation for children
+    // Staggered animation for children - must be before any early returns
     const getStaggeredChildren = React.useMemo(() => {
       if (
         !staggerChildren ||
@@ -1246,7 +1181,7 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       transitionType,
     ]);
 
-    // Render content based on lazy loading state
+    // Render content based on lazy loading state - must be before any early returns
     const renderedContent = React.useMemo(() => {
       if (!shouldUseLazyLoading || tabLoaded) {
         // Content is loaded or lazy loading is disabled
@@ -1264,26 +1199,32 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       }
 
       if (tabLoading) {
-        // Loading state - show loading component or skeleton
-        if (LoadingComponent) {
-          return <LoadingComponent />;
-        }
-        return <TabsSkeleton rows={skeletonRows} />;
+        // Loading state - show loading component
+        return LoadingComponent ? (
+          <LoadingComponent />
+        ) : (
+          <TabsSkeleton rows={skeletonRows} />
+        );
       }
 
-      // Default loading state (shouldn't normally reach here)
-      return <TabsSkeleton rows={skeletonRows} />;
+      // Should not reach here, but fallback
+      return null;
     }, [
       shouldUseLazyLoading,
       tabLoaded,
-      getStaggeredChildren,
       tabError,
       tabLoading,
-      ErrorComponent,
+      getStaggeredChildren,
       handleRetry,
       LoadingComponent,
+      ErrorComponent,
       skeletonRows,
     ]);
+
+    // Don't render if not selected and not in transition - this must be after all hooks
+    if (!isSelected && !isExiting) {
+      return null;
+    }
 
     return (
       <TabsErrorBoundary

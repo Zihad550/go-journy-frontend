@@ -29,17 +29,20 @@ import { useUserInfoQuery } from '@/redux/features/user/user.api';
 import { useGetDriverProfileQuery } from '@/redux/features/driver/driver.api';
 import { useAppDispatch } from '@/redux/hooks';
 import { User } from 'lucide-react';
-import React from 'react';
+
 import { Link } from 'react-router';
 import { ModeToggle } from './ModeToggle';
 
 // Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-  { href: '/', label: 'Home', role: 'PUBLIC' },
-  { href: '/about', label: 'About', role: 'PUBLIC' },
-  { href: '/features', label: 'Features', role: 'PUBLIC' },
-  { href: '/contact', label: 'Contact', role: 'PUBLIC' },
-  { href: '/faq', label: 'FAQ', role: 'PUBLIC' },
+const publicNavigationLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/features', label: 'Features' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/faq', label: 'FAQ' },
+];
+
+const dashboardLinks = [
   { href: '/admin', label: 'Dashboard', role: Role.ADMIN },
   { href: '/admin', label: 'Dashboard', role: Role.SUPER_ADMIN },
   { href: '/rider', label: 'Dashboard', role: Role.RIDER },
@@ -116,52 +119,121 @@ export default function Navbar() {
                 </svg>
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-36 p-1 md:hidden">
+            <PopoverContent align="start" className="w-48 p-2 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                  {navigationLinks.map((link, index) => (
+                <NavigationMenuList className="flex-col items-start gap-1">
+                  {/* Public Navigation Links */}
+                  {publicNavigationLinks.map((link, index) => (
                     <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink asChild className="py-1.5">
-                        <Link to={link.href}>{link.label} </Link>
+                      <NavigationMenuLink
+                        asChild
+                        className="py-2 px-3 rounded-md hover:bg-accent"
+                      >
+                        <Link to={link.href} className="text-sm font-medium">
+                          {link.label}
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
+
+                  {/* Dashboard Link for Authenticated Users */}
+                  {data?.data?.role && (
+                    <>
+                      <div className="w-full h-px bg-border my-2" />
+                      {dashboardLinks
+                        .filter((link) => link.role === data?.data?.role)
+                        .map((link, index) => (
+                          <NavigationMenuItem
+                            key={`dashboard-${index}`}
+                            className="w-full"
+                          >
+                            <NavigationMenuLink
+                              asChild
+                              className="py-2 px-3 rounded-md hover:bg-accent"
+                            >
+                              <Link
+                                to={link.href}
+                                className="text-sm font-medium"
+                              >
+                                {link.label}
+                              </Link>
+                            </NavigationMenuLink>
+                          </NavigationMenuItem>
+                        ))}
+                    </>
+                  )}
+
+                  {/* Authentication Links */}
+                  {!data?.data?.email && (
+                    <>
+                      <div className="w-full h-px bg-border my-2" />
+                      <NavigationMenuItem className="w-full">
+                        <NavigationMenuLink
+                          asChild
+                          className="py-2 px-3 rounded-md hover:bg-accent"
+                        >
+                          <Link to="/login" className="text-sm font-medium">
+                            Login
+                          </Link>
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem className="w-full">
+                        <NavigationMenuLink
+                          asChild
+                          className="py-2 px-3 rounded-md hover:bg-accent"
+                        >
+                          <Link to="/register" className="text-sm font-medium">
+                            Sign Up
+                          </Link>
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    </>
+                  )}
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <a href="#" className="text-primary hover:text-primary/90">
+            <Link
+              to="/"
+              className="text-primary hover:text-primary/90 transition-colors"
+            >
               <Logo />
-            </a>
+            </Link>
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
-              <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
-                  <React.Fragment key={index}>
-                    {link.role === 'PUBLIC' && (
-                      <NavigationMenuItem>
-                        <NavigationMenuLink
-                          asChild
-                          className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                        >
-                          <Link to={link.href}>{link.label}</Link>
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    )}
-                    {link.role === data?.data?.role && (
-                      <NavigationMenuItem>
-                        <NavigationMenuLink
-                          asChild
-                          className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                        >
-                          <Link to={link.href}>{link.label}</Link>
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    )}
-                  </React.Fragment>
+              <NavigationMenuList className="gap-1">
+                {/* Public Navigation Links */}
+                {publicNavigationLinks.map((link, index) => (
+                  <NavigationMenuItem key={index}>
+                    <NavigationMenuLink
+                      asChild
+                      className="text-muted-foreground hover:text-primary py-2 px-3 font-medium rounded-md transition-colors"
+                    >
+                      <Link to={link.href}>{link.label}</Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
                 ))}
+
+                {/* Dashboard Link for Authenticated Users */}
+                {data?.data?.role && (
+                  <>
+                    <div className="w-px h-6 bg-border mx-2" />
+                    {dashboardLinks
+                      .filter((link) => link.role === data?.data?.role)
+                      .map((link, index) => (
+                        <NavigationMenuItem key={`dashboard-${index}`}>
+                          <NavigationMenuLink
+                            asChild
+                            className="text-muted-foreground hover:text-primary py-2 px-3 font-medium rounded-md transition-colors"
+                          >
+                            <Link to={link.href}>{link.label}</Link>
+                          </NavigationMenuLink>
+                        </NavigationMenuItem>
+                      ))}
+                  </>
+                )}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -282,9 +354,18 @@ export default function Navbar() {
             </>
           )}
           {!data?.data?.email && (
-            <Button asChild className="text-sm">
-              <Link to="/login">Login</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                asChild
+                className="text-sm hidden sm:inline-flex"
+              >
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild className="text-sm">
+                <Link to="/register">Sign Up</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>

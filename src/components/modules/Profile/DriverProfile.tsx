@@ -186,14 +186,6 @@ export function DriverProfile() {
               </label>
               <p className="text-sm">{driver.vehicle?.model || "N/A"}</p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Seat Count
-              </label>
-              <p className="text-sm">
-                {driver.vehicle?.seatCount || "N/A"} passengers
-              </p>
-            </div>
           </div>
         </div>
       </div>

@@ -7,7 +7,14 @@ export interface IUser {
   name: string;
   email: string;
   role: ObjectValues<typeof Role>;
-  accountStatus: ObjectValues<typeof UserAccountStatus>;
+  isActive: ObjectValues<typeof UserAccountStatus>;
+  isDeleted: boolean;
+  isVerified: boolean;
+  auths: string[];
+  picture?: string;
+  address: string;
+  bookings: string[];
+  guides: string[];
   driver?: string | IDriver;
   phone: string;
   createdAt?: Date;

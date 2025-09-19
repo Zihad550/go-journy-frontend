@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,15 +14,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { LocationPicker } from '@/components/ui/location-picker';
-import { Separator } from '@/components/ui/separator';
-import { ButtonSpinner } from '@/components/ui/spinner';
-import { cn } from '@/lib/utils';
-import { useRequestRideMutation } from '@/redux/features/ride/ride.api';
-import type { IRide } from '@/types';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { MapboxLocationPicker } from "@/components/ui/mapbox-location-picker";
+import { Separator } from "@/components/ui/separator";
+import { ButtonSpinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { useRequestRideMutation } from "@/redux/features/ride/ride.api";
+import type { IRide } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight,
   Car,
@@ -32,22 +32,22 @@ import {
   Map,
   MapPin,
   Route,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const requestRideSchema = z.object({
-  pickupLat: z.string().min(1, 'Pickup latitude is required'),
-  pickupLng: z.string().min(1, 'Pickup longitude is required'),
-  destinationLat: z.string().min(1, 'Destination latitude is required'),
-  destinationLng: z.string().min(1, 'Destination longitude is required'),
+  pickupLat: z.string().min(1, "Pickup latitude is required"),
+  pickupLng: z.string().min(1, "Pickup longitude is required"),
+  destinationLat: z.string().min(1, "Destination latitude is required"),
+  destinationLng: z.string().min(1, "Destination longitude is required"),
   price: z
     .string()
-    .min(1, 'Price is required')
+    .min(1, "Price is required")
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: 'Price must be a valid positive number',
+      message: "Price must be a valid positive number",
     }),
 });
 
@@ -64,18 +64,18 @@ export function RequestRideForm({
 }: RequestRideFormProps) {
   const [requestRide, { isLoading }] = useRequestRideMutation();
   const [locationLoading, setLocationLoading] = useState<
-    'pickup' | 'destination' | null
+    "pickup" | "destination" | null
   >(null);
-  const [mapOpen, setMapOpen] = useState<'pickup' | 'destination' | null>(null);
+  const [mapOpen, setMapOpen] = useState<"pickup" | "destination" | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(requestRideSchema),
     defaultValues: {
-      pickupLat: '',
-      pickupLng: '',
-      destinationLat: '',
-      destinationLng: '',
-      price: '',
+      pickupLat: "",
+      pickupLng: "",
+      destinationLat: "",
+      destinationLng: "",
+      price: "",
     },
   });
 
@@ -95,74 +95,71 @@ export function RequestRideForm({
     try {
       const response = await requestRide(rideRequest).unwrap();
       if (response.data) {
-        toast.success('🚗 Ride requested successfully!');
+        toast.success("🚗 Ride requested successfully!");
         onRideRequested(response.data);
         form.reset();
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('❌ Failed to request ride. Please try again.');
+    } catch {
+      toast.error("❌ Failed to request ride. Please try again.");
     }
   };
 
-  const getCurrentLocation = (field: 'pickup' | 'destination') => {
+  const getCurrentLocation = (field: "pickup" | "destination") => {
     if (navigator.geolocation) {
       setLocationLoading(field);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          if (field === 'pickup') {
-            form.setValue('pickupLat', latitude.toString());
-            form.setValue('pickupLng', longitude.toString());
+          if (field === "pickup") {
+            form.setValue("pickupLat", latitude.toString());
+            form.setValue("pickupLng", longitude.toString());
           } else {
-            form.setValue('destinationLat', latitude.toString());
-            form.setValue('destinationLng', longitude.toString());
+            form.setValue("destinationLat", latitude.toString());
+            form.setValue("destinationLng", longitude.toString());
           }
           toast.success(
-            `📍 ${field === 'pickup' ? 'Pickup' : 'Destination'} location set!`
+            `📍 ${field === "pickup" ? "Pickup" : "Destination"} location set!`,
           );
           setLocationLoading(null);
         },
-        (error) => {
-          console.error(error);
-          toast.error('❌ Unable to get your location. Please enter manually.');
+        () => {
+          toast.error("❌ Unable to get your location. Please enter manually.");
           setLocationLoading(null);
-        }
+        },
       );
     } else {
-      toast.error('❌ Geolocation is not supported by this browser.');
+      toast.error("❌ Geolocation is not supported by this browser.");
     }
   };
 
   const handleLocationSelect = (
-    field: 'pickup' | 'destination',
-    lat: number,
-    lng: number
+    field: "pickup" | "destination",
+    location: { lat: number; lng: number },
   ) => {
-    if (field === 'pickup') {
-      form.setValue('pickupLat', lat.toString());
-      form.setValue('pickupLng', lng.toString());
+    if (field === "pickup") {
+      form.setValue("pickupLat", location.lat.toString());
+      form.setValue("pickupLng", location.lng.toString());
     } else {
-      form.setValue('destinationLat', lat.toString());
-      form.setValue('destinationLng', lng.toString());
+      form.setValue("destinationLat", location.lat.toString());
+      form.setValue("destinationLng", location.lng.toString());
     }
     toast.success(
       `📍 ${
-        field === 'pickup' ? 'Pickup' : 'Destination'
-      } location selected from map!`
+        field === "pickup" ? "Pickup" : "Destination"
+      } location selected from map!`,
     );
   };
 
-  const getLocationFromForm = (field: 'pickup' | 'destination') => {
-    if (field === 'pickup') {
-      const lat = form.getValues('pickupLat');
-      const lng = form.getValues('pickupLng');
+  const getLocationFromForm = (field: "pickup" | "destination") => {
+    if (field === "pickup") {
+      const lat = form.getValues("pickupLat");
+      const lng = form.getValues("pickupLng");
       return lat && lng
         ? { lat: parseFloat(lat), lng: parseFloat(lng) }
         : undefined;
     } else {
-      const lat = form.getValues('destinationLat');
-      const lng = form.getValues('destinationLng');
+      const lat = form.getValues("destinationLat");
+      const lng = form.getValues("destinationLng");
       return lat && lng
         ? { lat: parseFloat(lat), lng: parseFloat(lng) }
         : undefined;
@@ -171,34 +168,34 @@ export function RequestRideForm({
 
   // Check if pickup location is selected
   const isPickupSelected = () => {
-    const pickupLat = form.getValues('pickupLat');
-    const pickupLng = form.getValues('pickupLng');
+    const pickupLat = form.getValues("pickupLat");
+    const pickupLng = form.getValues("pickupLng");
     return pickupLat && pickupLng;
   };
 
   // Watch pickup fields and clear destination if pickup is cleared
-  const watchPickupLat = form.watch('pickupLat');
-  const watchPickupLng = form.watch('pickupLng');
+  const watchPickupLat = form.watch("pickupLat");
+  const watchPickupLng = form.watch("pickupLng");
 
   useEffect(() => {
     // If pickup is cleared, also clear destination
     if (!watchPickupLat || !watchPickupLng) {
-      form.setValue('destinationLat', '');
-      form.setValue('destinationLng', '');
+      form.setValue("destinationLat", "");
+      form.setValue("destinationLng", "");
     }
   }, [watchPickupLat, watchPickupLng, form]);
 
   return (
-    <div className={cn('w-full max-w-4xl mx-auto', className)}>
+    <div className={cn("w-full max-w-4xl mx-auto", className)}>
       <Card className="overflow-hidden shadow-lg">
-        <CardHeader className="text-center bg-primary text-primary-foreground">
+        <CardHeader className="text-center text-foreground">
           <CardTitle className="flex items-center justify-center gap-3 text-2xl font-bold">
             <div className="p-2 bg-primary-foreground/20 rounded-full">
               <Car className="h-6 w-6" />
             </div>
             Request Your Ride
           </CardTitle>
-          <CardDescription className="text-primary-foreground/80 text-base mt-2">
+          <CardDescription className="text-muted-foreground text-base mt-2">
             Enter your journey details and we'll find the perfect ride for you
           </CardDescription>
         </CardHeader>
@@ -238,7 +235,7 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setMapOpen('pickup')}
+                        onClick={() => setMapOpen("pickup")}
                         className="flex-1 sm:flex-none"
                       >
                         <Map className="h-4 w-4" />
@@ -248,18 +245,18 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => getCurrentLocation('pickup')}
-                        disabled={locationLoading === 'pickup'}
+                        onClick={() => getCurrentLocation("pickup")}
+                        disabled={locationLoading === "pickup"}
                         className="flex-1 sm:flex-none"
                       >
-                        {locationLoading === 'pickup' ? (
+                        {locationLoading === "pickup" ? (
                           <ButtonSpinner size="xs" />
                         ) : (
                           <Locate className="h-4 w-4" />
                         )}
-                        {locationLoading === 'pickup'
-                          ? 'Getting...'
-                          : 'Current'}
+                        {locationLoading === "pickup"
+                          ? "Getting..."
+                          : "Current"}
                       </Button>
                     </div>
                   </div>
@@ -306,8 +303,8 @@ export function RequestRideForm({
               <div className="relative">
                 <div
                   className={cn(
-                    'bg-card border rounded-lg p-4 space-y-4 transition-opacity',
-                    !isPickupSelected() && 'opacity-50'
+                    "bg-card border rounded-lg p-4 space-y-4 transition-opacity",
+                    !isPickupSelected() && "opacity-50",
                   )}
                 >
                   {!isPickupSelected() && (
@@ -331,7 +328,7 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setMapOpen('destination')}
+                        onClick={() => setMapOpen("destination")}
                         disabled={!isPickupSelected()}
                         className="flex-1 sm:flex-none"
                       >
@@ -342,21 +339,21 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => getCurrentLocation('destination')}
+                        onClick={() => getCurrentLocation("destination")}
                         disabled={
-                          locationLoading === 'destination' ||
+                          locationLoading === "destination" ||
                           !isPickupSelected()
                         }
                         className="flex-1 sm:flex-none"
                       >
-                        {locationLoading === 'destination' ? (
+                        {locationLoading === "destination" ? (
                           <ButtonSpinner size="xs" />
                         ) : (
                           <Locate className="h-4 w-4" />
                         )}
-                        {locationLoading === 'destination'
-                          ? 'Getting...'
-                          : 'Current'}
+                        {locationLoading === "destination"
+                          ? "Getting..."
+                          : "Current"}
                       </Button>
                     </div>
                   </div>
@@ -486,27 +483,27 @@ export function RequestRideForm({
       </Card>
 
       {/* Location Picker Modals */}
-      <LocationPicker
-        isOpen={mapOpen === 'pickup'}
+      <MapboxLocationPicker
+        isOpen={mapOpen === "pickup"}
         onClose={() => setMapOpen(null)}
-        onLocationSelect={(lat, lng) =>
-          handleLocationSelect('pickup', lat, lng)
+        onLocationSelect={(location) =>
+          handleLocationSelect("pickup", location)
         }
         title="Select Pickup Location"
         type="pickup"
-        initialPosition={getLocationFromForm('pickup')}
+        initialLocation={getLocationFromForm("pickup")}
       />
 
-      <LocationPicker
-        isOpen={mapOpen === 'destination'}
+      <MapboxLocationPicker
+        isOpen={mapOpen === "destination"}
         onClose={() => setMapOpen(null)}
-        onLocationSelect={(lat, lng) =>
-          handleLocationSelect('destination', lat, lng)
+        onLocationSelect={(location) =>
+          handleLocationSelect("destination", location)
         }
         title="Select Destination"
         type="destination"
-        initialPosition={getLocationFromForm('destination')}
-        pickupLocation={getLocationFromForm('pickup')}
+        initialLocation={getLocationFromForm("destination")}
+        pickupLocation={getLocationFromForm("pickup")}
       />
     </div>
   );

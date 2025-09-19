@@ -209,10 +209,7 @@ export function RegisterForm({
 
         <Button
           onClick={() => {
-            const redirectUrl = encodeURIComponent(
-              window.location.origin + "/dashboard",
-            );
-            window.location.href = `${config.baseUrl}/auth/google?redirect=${redirectUrl}`;
+            window.location.href = `${config.baseUrl}/auth/google`;
           }}
           type="button"
           variant="outline"

@@ -1,7 +1,8 @@
-import { RideStatus } from "@/constants";
-import type { ObjectValues } from ".";
-import type { IDriver } from "./driver.type";
-import type { IUser } from "./user.type";
+import { RideStatus } from '@/constants';
+import type { ObjectValues } from '.';
+import type { IDriver } from './driver.type';
+import type { IPayment } from './payment.type';
+import type { IUser } from './user.type';
 
 export interface ILocation {
   lat: string;
@@ -10,12 +11,16 @@ export interface ILocation {
 
 export interface IRide {
   _id: string;
-  user: string | IUser;
+  rider: string | IUser;
   driver?: string | IDriver;
+  interestedDrivers?: (string | IDriver)[];
   pickupLocation: ILocation;
   destination: ILocation;
   price: number;
   status: ObjectValues<typeof RideStatus>;
+  payment?: IPayment;
+  pickupTime?: Date;
+  dropoffTime?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

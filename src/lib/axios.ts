@@ -70,9 +70,11 @@ axiosInstance.interceptors.response.use(
           processQueue(null);
           return axiosInstance(originalRequest);
         } else {
-          // Refresh failed, redirect to login
+          // Refresh failed, redirect to login (unless already on login page)
           processQueue(error);
-          window.location.href = '/login';
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
           return Promise.reject(error);
         }
       } catch (refreshError) {
@@ -80,7 +82,10 @@ axiosInstance.interceptors.response.use(
         // Clear any stored auth state
         localStorage.clear();
         sessionStorage.clear();
-        window.location.href = '/login';
+        // Redirect to login unless already on login page
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
