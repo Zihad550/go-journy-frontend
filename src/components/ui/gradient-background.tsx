@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import type { ReactNode, HTMLAttributes } from "react";
 
-interface GradientBackgroundProps {
+interface GradientBackgroundProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   className?: string;
 }
@@ -9,6 +9,7 @@ interface GradientBackgroundProps {
 export function GradientBackground({
   children,
   className,
+  ...props
 }: GradientBackgroundProps) {
   const baseClasses = "relative overflow-hidden";
 
@@ -19,6 +20,7 @@ export function GradientBackground({
         "bg-gradient-to-br from-primary/5 via-background to-primary/10",
         className,
       )}
+      {...props}
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
