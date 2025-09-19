@@ -1,9 +1,13 @@
 import Logo from "@/assets/icons/Logo";
 import TravelLogin from "@/assets/images/travel-login.png";
 import { LoginForm } from "@/components/modules/Authentication/LoginForm";
-import { Link } from "react-router";
+import { ErrorCard } from "@/components/ui/error-card";
+import { Link, useSearchParams } from "react-router";
 
 function Login() {
+  const [searchParams] = useSearchParams();
+  const error = searchParams.get('error');
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -14,6 +18,11 @@ function Login() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
+            {error && (
+              <div className="mb-4">
+                <ErrorCard message={decodeURIComponent(error)} />
+              </div>
+            )}
             <LoginForm />
           </div>
         </div>
