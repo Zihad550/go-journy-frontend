@@ -61,7 +61,7 @@ export default function DriverRegistration() {
     isLoading: isLoadingProfile,
     refetch,
   } = useGetDriverProfileQuery(undefined);
-  console.log(driverProfile);
+
   const [registerDriver, { isLoading }] = useRegisterDriverMutation();
 
   const form = useForm<DriverRegistrationFormData>({

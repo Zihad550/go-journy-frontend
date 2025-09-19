@@ -1,52 +1,100 @@
-import {
-  HeroSection,
-  RiderHeroContent,
-  FeaturesSection,
-  CTASection,
-} from '@/components/modules/Home';
-import { useUserInfoQuery } from '@/redux/features/user/user.api';
-import { Role } from '@/constants';
-import type { IRide } from '@/types';
+import { HeroOverlayManager, SectionRenderer } from "@/components/modules/Home";
+import { HOME_LAYOUT_CONFIG } from "@/config/homeLayout.config";
+import { Role } from "@/constants";
+import { useSectionTransition } from "@/hooks/useScrollAnimation";
+import { useUserInfoQuery } from "@/redux/features/user/user.api";
+import { useMemo } from "react";
 
 function Home() {
   const { data: userData } = useUserInfoQuery(undefined);
 
-  const isAuthenticated = !!userData?.data;
-  const isRider = userData?.data?.role === Role.RIDER;
+  // Memoize user state to prevent unnecessary re-renders
+  const userState = useMemo(
+    () => ({
+      isAuthenticated: !!userData?.data,
+      isRider: userData?.data?.role === Role.RIDER,
+      isDriver: userData?.data?.role === Role.DRIVER,
+    }),
+    [userData],
+  );
 
-  const handleRideRequested = (ride: IRide) => {
-    // Handle any additional logic when a ride is requested
-    console.log('Ride requested:', ride);
-  };
+  // Create section refs statically to avoid calling hooks inside loops
+  const heroRef = useSectionTransition() as React.RefObject<HTMLDivElement>;
+  const howItWorksRef =
+    useSectionTransition() as React.RefObject<HTMLDivElement>;
+  const serviceHighlightsRef =
+    useSectionTransition() as React.RefObject<HTMLDivElement>;
+  const testimonialsRef =
+    useSectionTransition() as React.RefObject<HTMLDivElement>;
+  const ctaRef = useSectionTransition() as React.RefObject<HTMLDivElement>;
 
-  const handleRideCancelled = () => {
-    // Handle any additional logic when a ride is cancelled
-    console.log('Ride cancelled');
-  };
+  // Map section IDs to their refs
+  const sectionRefs = useMemo(
+    () => ({
+      hero: heroRef,
+      "how-it-works": howItWorksRef,
+      "service-highlights": serviceHighlightsRef,
+      testimonials: testimonialsRef,
+      cta: ctaRef,
+    }),
+    [heroRef, howItWorksRef, serviceHighlightsRef, testimonialsRef, ctaRef],
+  );
+
+  // const handleRideRequested = () => {
+  //   // Handle any additional logic when a ride is requested
+  // };
+
+  // const handleRideCancelled = () => {
+  //   // Handle any additional logic when a ride is cancelled
+  // };
+
+  // const handleRideAccepted = () => {
+  //   // Handle any additional logic when a driver accepts a ride
+  // };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative">
-        <HeroSection isAuthenticated={isAuthenticated} />
+    <main className="min-h-screen bg-background">
+      {HOME_LAYOUT_CONFIG.sections.map((section) => {
+        // Special handling for hero section with overlay
+        if (section.id === "hero" && section.hasOverlay) {
+          return (
+            <div key={section.id}>
+              <SectionRenderer
+                sectionId={section.id}
+                sectionRef={sectionRefs[section.id]}
+                props={{ isAuthenticated: userState.isAuthenticated }}
+              />
+              <HeroOverlayManager
+                isRider={userState.isRider}
+                isDriver={userState.isDriver}
+                // onRideRequested={handleRideRequested}
+                // onRideCancelled={handleRideCancelled}
+                // onRideAccepted={handleRideAccepted}
+              />
+            </div>
+          );
+        }
 
-        {/* Rider-specific content overlay */}
-        {isRider && (
-          <div className="relative -mt-16 px-4 z-20">
-            <RiderHeroContent
-              onRideRequested={handleRideRequested}
-              onRideCancelled={handleRideCancelled}
-            />
-          </div>
-        )}
-      </div>
+        // Standard section rendering
+        const sectionProps: Record<string, any> = {
+          isAuthenticated: userState.isAuthenticated,
+        };
 
-      {/* Features Section */}
-      <FeaturesSection />
+        // Add specific props based on section
+        if (section.id === "cta") {
+          sectionProps.isRider = userState.isRider;
+        }
 
-      {/* CTA Section */}
-      <CTASection isRider={isRider} />
-    </div>
+        return (
+          <SectionRenderer
+            key={section.id}
+            sectionId={section.id}
+            sectionRef={sectionRefs[section.id]}
+            props={sectionProps}
+          />
+        );
+      })}
+    </main>
   );
 }
 
