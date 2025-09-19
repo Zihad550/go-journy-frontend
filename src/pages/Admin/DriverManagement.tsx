@@ -361,10 +361,8 @@ function DriverCard({
               <p className="font-medium">{driver.vehicle?.model || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Seat Count</p>
-              <p className="font-medium">
-                {driver.vehicle?.seatCount || 'N/A'}
-              </p>
+              <p className="text-sm text-muted-foreground">Model</p>
+              <p className="font-medium">{driver.vehicle?.model || 'N/A'}</p>
             </div>
           </div>
         </div>
