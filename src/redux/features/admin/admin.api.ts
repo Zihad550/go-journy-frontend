@@ -231,10 +231,11 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: [QueryTagType.USER],
     }),
 
-    blockUser: builder.mutation<IApiResponse<IUser>, { id: string }>({
-      query: ({ id }) => ({
+    blockUser: builder.mutation<IApiResponse<IUser>, { id: string; status?: string }>({
+      query: ({ id, status }) => ({
         url: `/users/block/${id}`,
         method: "PATCH",
+        params: status ? { status } : undefined,
       }),
       invalidatesTags: [QueryTagType.USER],
     }),
