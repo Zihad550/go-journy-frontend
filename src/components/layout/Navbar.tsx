@@ -1,6 +1,6 @@
-import Logo from '@/assets/icons/Logo';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import Logo from "@/assets/icons/Logo";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,68 +8,66 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
+import { MobileAvailabilityControl } from "@/components/ui/mobile-availability-control";
+import { NavbarAvailabilityControl } from "@/components/ui/navbar-availability-control";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from '@/components/ui/navigation-menu';
+} from "@/components/ui/navigation-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { NavbarAvailabilityControl } from '@/components/ui/navbar-availability-control';
-import { MobileAvailabilityControl } from '@/components/ui/mobile-availability-control';
-import { Role } from '@/constants';
-import { DriverStatus } from '@/constants/driver.constant';
-import { authApi, useLogoutMutation } from '@/redux/features/auth/auth.api';
-import { useUserInfoQuery } from '@/redux/features/user/user.api';
-import { useGetDriverProfileQuery } from '@/redux/features/driver/driver.api';
-import { useAppDispatch } from '@/redux/hooks';
-import { User } from 'lucide-react';
+} from "@/components/ui/popover";
+import { Role } from "@/constants";
+import { DriverStatus } from "@/constants/driver.constant";
+import { authApi, useLogoutMutation } from "@/redux/features/auth/auth.api";
+import { useGetDriverProfileQuery } from "@/redux/features/driver/driver.api";
+import { useUserInfoQuery } from "@/redux/features/user/user.api";
+import { useAppDispatch } from "@/redux/hooks";
+import { User } from "lucide-react";
 
-import { Link } from 'react-router';
-import { ModeToggle } from './ModeToggle';
+import { Link } from "react-router";
+import { ModeToggle } from "./ModeToggle";
 
 // Navigation links array to be used in both desktop and mobile menus
 const publicNavigationLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/features', label: 'Features' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/faq', label: 'FAQ' },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/features", label: "Features" },
+  { href: "/contact", label: "Contact" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 const dashboardLinks = [
-  { href: '/admin', label: 'Dashboard', role: Role.ADMIN },
-  { href: '/admin', label: 'Dashboard', role: Role.SUPER_ADMIN },
-  { href: '/rider', label: 'Dashboard', role: Role.RIDER },
-  { href: '/driver', label: 'Dashboard', role: Role.DRIVER },
+  { href: "/admin", label: "Dashboard", role: Role.ADMIN },
+  { href: "/admin", label: "Dashboard", role: Role.SUPER_ADMIN },
+  { href: "/rider", label: "Dashboard", role: Role.RIDER },
+  { href: "/driver", label: "Dashboard", role: Role.DRIVER },
 ];
 
 // Helper function to get role display text
 const getRoleDisplayText = (role: string) => {
   switch (role) {
     case Role.RIDER:
-      return 'Rider';
+      return "Rider";
     case Role.DRIVER:
-      return 'Driver';
+      return "Driver";
     case Role.ADMIN:
     case Role.SUPER_ADMIN:
-      return 'Management';
+      return "Management";
     default:
-      return '';
+      return "";
   }
 };
 
 export default function Navbar() {
   const { data } = useUserInfoQuery(undefined);
   const { data: driverProfile } = useGetDriverProfileQuery(undefined, {
-    skip:
-      !data?.data?.email ||
-      (data?.data?.role !== Role.RIDER && data?.data?.role !== Role.DRIVER),
+    skip: data?.data?.role !== Role.DRIVER,
   });
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
@@ -271,7 +269,7 @@ export default function Navbar() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {data?.data?.name || 'User'}
+                        {data?.data?.name || "User"}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {data?.data?.email}
@@ -329,12 +327,12 @@ export default function Navbar() {
                       <Link
                         to={
                           data.data.role === Role.ADMIN
-                            ? '/admin'
+                            ? "/admin"
                             : data.data.role === Role.SUPER_ADMIN
-                            ? '/admin'
-                            : data.data.role === Role.RIDER
-                            ? '/rider'
-                            : '/driver'
+                              ? "/admin"
+                              : data.data.role === Role.RIDER
+                                ? "/rider"
+                                : "/driver"
                         }
                         className="cursor-pointer"
                       >
