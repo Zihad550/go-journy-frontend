@@ -24,21 +24,6 @@ export default function Phone({ ...field }) {
         onChange={(newValue) => setValue(newValue ?? "")}
         {...field}
       />
-      <p
-        className="text-muted-foreground mt-2 text-xs"
-        role="region"
-        aria-live="polite"
-      >
-        Built with{" "}
-        <a
-          className="hover:text-foreground underline"
-          href="https://gitlab.com/catamphetamine/react-phone-number-input"
-          target="_blank"
-          rel="noopener nofollow"
-        >
-          react-phone-number-input
-        </a>
-      </p>
     </div>
   );
 }
