@@ -20,3 +20,8 @@ export interface IRegister {
   phone: string;
   address: string;
 }
+
+export interface IRegisterResponse {
+  accessToken: string;
+  isVerified: boolean;
+}

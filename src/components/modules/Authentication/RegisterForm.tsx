@@ -70,13 +70,23 @@ export function RegisterForm({
     };
 
     try {
-      await register(userInfo).unwrap();
+      const result = await register(userInfo).unwrap();
       toast.success("User created successfully");
-      navigate("/verify-otp", {
-        state: data.email,
-      });
-    } catch {
-      // Handle registration error
+      if (result?.data?.isVerified) navigate("/");
+      else
+        navigate("/verify-otp", {
+          state: data.email,
+        });
+    } catch (err: any) {
+      if (err?.data?.message === "Password does not match") {
+        toast.error("Invalid credentials");
+      } else if (err?.data?.message) {
+        toast.error(err.data.message);
+      } else {
+        toast.error(
+          `Register failed. ${err?.data?.message || "Please try again"}`,
+        );
+      }
     }
   };
 
@@ -99,7 +109,11 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input
+                      placeholder="John Doe"
+                      autoComplete="name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription className="sr-only">
                     This is your public display name.
@@ -118,6 +132,7 @@ export function RegisterForm({
                     <Input
                       placeholder="john.doe@company.com"
                       type="email"
+                      autoComplete="email"
                       {...field}
                     />
                   </FormControl>
@@ -135,11 +150,9 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
-                    <Phone {...field} />
+                    <Phone autoComplete="phone" {...field} />
                   </FormControl>
-                  <FormDescription className="sr-only">
-                    Phone number.
-                  </FormDescription>
+                  <FormDescription className="sr-only">Phone.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -153,6 +166,7 @@ export function RegisterForm({
                   <FormControl>
                     <Input
                       placeholder="123 Main St, City, Country"
+                      autoComplete="address-line1"
                       {...field}
                     />
                   </FormControl>
@@ -170,7 +184,7 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Password
@@ -186,7 +200,7 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormDescription className="sr-only">
                     Confirm password
