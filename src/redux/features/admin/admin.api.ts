@@ -240,7 +240,7 @@ export const adminApi = baseApi.injectEndpoints({
       invalidatesTags: [QueryTagType.USER],
     }),
 
-    updateUser: builder.mutation<
+    updateAdminUser: builder.mutation<
       IApiResponse<IUser>,
       { id: string; name?: string; isActive?: string; role?: string }
     >({
@@ -283,6 +283,6 @@ export const {
   // User management hooks
   useGetAllUsersQuery,
   useBlockUserMutation,
-  useUpdateUserMutation,
+  useUpdateAdminUserMutation,
   useDeleteUserMutation,
 } = adminApi;
