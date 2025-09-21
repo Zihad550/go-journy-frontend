@@ -48,10 +48,7 @@ axiosInstance.interceptors.response.use(
       _retry: boolean;
     };
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -64,7 +61,11 @@ axiosInstance.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        const refreshResponse = await axiosInstance.post("/auth/refresh-token", {}, { withCredentials: true });
+        const refreshResponse = await axiosInstance.post(
+          "/auth/refresh-token",
+          {},
+          { withCredentials: true },
+        );
 
         if (refreshResponse.status === 200) {
           processQueue(null);
@@ -72,8 +73,8 @@ axiosInstance.interceptors.response.use(
         } else {
           // Refresh failed, redirect to login (unless already on login page)
           processQueue(error);
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login";
           }
           return Promise.reject(error);
         }
@@ -83,8 +84,8 @@ axiosInstance.interceptors.response.use(
         localStorage.clear();
         sessionStorage.clear();
         // Redirect to login unless already on login page
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       } finally {
