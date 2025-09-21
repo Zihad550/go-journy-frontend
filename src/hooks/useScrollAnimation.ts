@@ -157,26 +157,7 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
   };
 };
 
-/**
- * Hook for staggered animations on multiple elements
- */
-export const useStaggeredScrollAnimation = (
-  count: number,
-  options: ScrollAnimationOptions = {},
-): ScrollAnimationReturn[] => {
-  const { staggerDelay = 100, ...restOptions } = options;
 
-  // Create hooks statically to avoid calling them inside array methods
-  const hooks: ScrollAnimationReturn[] = [];
-  for (let i = 0; i < count; i++) {
-    hooks.push(useScrollAnimation({
-      ...restOptions,
-      staggerDelay: staggerDelay * i,
-    }));
-  }
-
-  return hooks;
-};
 
 /**
  * Get initial styles for different animation types

@@ -50,9 +50,9 @@ const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfi
       toast.success('Ride permanently deleted');
       onSuccess?.();
       handleClose();
-    } catch (error) {
-      toast.error('Failed to delete ride');
-    }
+     } catch {
+       toast.error('Failed to delete ride');
+     }
   };
 
   const handleClose = () => {

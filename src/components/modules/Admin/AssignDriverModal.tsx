@@ -60,9 +60,9 @@ const AssignDriverModal = ({
       toast.success('Driver assigned successfully');
       onSuccess?.();
       handleClose();
-    } catch (error) {
-      toast.error('Failed to assign driver');
-    }
+     } catch {
+       toast.error('Failed to assign driver');
+     }
   };
 
   const handleClose = () => {

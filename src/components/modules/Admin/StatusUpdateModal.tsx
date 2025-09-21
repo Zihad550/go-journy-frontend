@@ -79,9 +79,9 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
       toast.success('Ride status updated successfully');
       onSuccess?.();
       handleClose();
-    } catch (error) {
-      toast.error('Failed to update ride status');
-    }
+     } catch {
+       toast.error('Failed to update ride status');
+     }
   };
 
   const handleClose = () => {

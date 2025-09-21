@@ -43,9 +43,9 @@ const AddNoteModal = ({ open, onOpenChange, ride, onSuccess }: AddNoteModalProps
       toast.success('Admin note added successfully');
       onSuccess?.();
       handleClose();
-    } catch (error) {
-      toast.error('Failed to add admin note');
-    }
+     } catch {
+       toast.error('Failed to add admin note');
+     }
   };
 
   const handleClose = () => {
