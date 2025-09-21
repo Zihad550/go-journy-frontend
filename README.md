@@ -2,6 +2,10 @@
 
 A modern, full-featured ride-sharing platform built with React, TypeScript, and cutting-edge web technologies. Go Journy connects riders with drivers through an intuitive interface featuring real-time ride matching, driver selection, and comprehensive trip management.
 
+## 🚀 Live Demo
+
+Check out the live application at [https://go-journy.vercel.app](https://go-journy.vercel.app)
+
 ## 🌟 Features
 
 ### Core Functionality
@@ -32,20 +36,19 @@ A modern, full-featured ride-sharing platform built with React, TypeScript, and 
 
 ### Frontend Framework
 
-- **
-  React 19** - Latest React with concurrent features
-- **TypeScript 5.8** - Full type safety and enhanced developer experience
-- **Vite 7** - Lightning-fast build tool and development server
+- **React 19.1.1** - Latest React with concurrent features
+- **TypeScript 5.9.2** - Full type safety and enhanced developer experience
+- **Vite 7.1.6** - Lightning-fast build tool and development server
 
 ### State Management & Data
 
 - **Redux Toolkit** - Predictable state management with RTK Query
-- **React Router v7** - Declarative routing with data loading
+- **React Router v7.9.1** - Declarative routing with data loading
 - **Axios** - HTTP client with interceptors for API communication
 
 ### UI/UX
 
-- **Tailwind CSS v4** - Utility-first CSS framework
+- **Tailwind CSS v4.1.13** - Utility-first CSS framework
 - **Radix UI** - Accessible, unstyled component primitives
 - **Shadcn/ui** - Beautiful, customizable components
 - **Lucide React** - Consistent icon library
@@ -86,9 +89,12 @@ pnpm build
 Create a `.env` file in the root directory:
 
 ```env
-VITE_API_URL=http://localhost:5000/api
-VITE_MAP_TILE_URL=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
-VITE_MAP_ATTRIBUTION=© OpenStreetMap contributors
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_APP_EMAILJS_KEY=
+VITE_APP_EMAILJS_SERVICE_ID=
+VITE_APP_EMAILJS_TEMPLATE_ID=
+VITE_APP_RIDE_REFETCH=
+VITE_MAPBOX_ACCESS_TOKEN=
 ```
 
 ## 🏗️ Project Structure
@@ -215,8 +221,8 @@ This project is licensed under the MIT License.
 ## 🆘 Support
 
 - **API Documentation**: Check our [API Documentation](./API_DOCUMENTATION.md)
-- **Issues**: Report bugs via [GitHub Issues](https://github.com/your-org/go-journy-frontend/issues)
-- **Discussions**: Join community discussions in [GitHub Discussions](https://github.com/your-org/go-journy-frontend/discussions)
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/Zihad550/go-journy-frontend/issues)
+- **Discussions**: Join community discussions in [GitHub Discussions](https://github.com/Zihad550/go-journy-frontend/discussions)
 - **Contact**: Email us at jehadhossain008@gmail.com
 
 ## 🙏 Acknowledgments
