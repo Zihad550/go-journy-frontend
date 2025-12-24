@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
-const contactSchema = z.object({
+const contact_schema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   email: z.email("Please enter a valid email address"),
   subject: z
@@ -32,15 +32,15 @@ const contactSchema = z.object({
     .max(2000, "Message is too long"),
 });
 
-type ContactFormValues = z.infer<typeof contactSchema>;
+type Contact_Form_Values = z.infer<typeof contact_schema>;
 
 interface ContactFormProps {
   className?: string;
 }
 
 const ContactForm = ({ className }: ContactFormProps) => {
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema),
+  const form = useForm<Contact_Form_Values>({
+    resolver: zodResolver(contact_schema),
     defaultValues: {
       name: "",
       email: "",
@@ -49,7 +49,7 @@ const ContactForm = ({ className }: ContactFormProps) => {
     },
   });
 
-  const onSubmit = async (data: ContactFormValues) => {
+  const on_submit = async (data: Contact_Form_Values) => {
     try {
       await emailjs.send(
         import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
@@ -82,7 +82,7 @@ const ContactForm = ({ className }: ContactFormProps) => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"

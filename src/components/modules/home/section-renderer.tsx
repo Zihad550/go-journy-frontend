@@ -11,7 +11,7 @@ import { ServiceHighlightsSection } from "./components/sections/service-highligh
 import { TestimonialsSection } from "./components/sections/testimonials-section";
 
 // Component map for dynamic rendering
-const componentMap = {
+const component_map = {
   HeroSection,
   HowItWorksSection,
   NewsletterSection,
@@ -33,15 +33,15 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
 }) => {
   const { data, isLoading } = useUserInfoQuery(undefined);
 
-  const currentUser = data?.data;
-  if (isLoading) return <PageSpinner message="Loading user..." />;
+   const current_user = data?.data;
+   if (isLoading) return <PageSpinner message="Loading user..." />;
 
-  const section = HOME_LAYOUT_CONFIG.sections.find((s) => s.id === sectionId);
-  if (!section) return null;
+   const section = HOME_LAYOUT_CONFIG.sections.find((s) => s.id === sectionId);
+   if (!section) return null;
 
-  if (section.component === "CTASection" && currentUser) return;
-  const Component = componentMap[
-    section.component as keyof typeof componentMap
+   if (section.component === "CTASection" && current_user) return;
+  const Component = component_map[
+    section.component as keyof typeof component_map
   ] as React.ComponentType<any>;
 
   return (

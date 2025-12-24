@@ -16,7 +16,7 @@ interface StatsGridProps {
 }
 
 export function StatsGrid({ className = "" }: StatsGridProps) {
-  const statsAnimation = useScrollAnimation<HTMLUListElement>({
+  const stats_animation = useScrollAnimation<HTMLUListElement>({
     animationType: "slideUp",
     duration: 700,
     threshold: 0.2,
@@ -63,9 +63,9 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
 
   return (
     <ul
-      ref={statsAnimation.ref}
+      ref={stats_animation.ref}
       className={`grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8 md:mb-10 lg:mb-12 max-w-4xl mx-auto px-2 sm:px-0 transition-all duration-700 ${
-        statsAnimation.isVisible
+        stats_animation.isVisible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8"
       } ${className}`}

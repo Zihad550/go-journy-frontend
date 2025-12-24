@@ -17,7 +17,7 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
-const forgotPasswordSchema = z.object({
+const forgot_password_schema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
@@ -25,28 +25,28 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [is_submitted, set_is_submitted] = useState(false);
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation(undefined);
 
-  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const form = useForm<z.infer<typeof forgot_password_schema>>({
+    resolver: zodResolver(forgot_password_schema),
     defaultValues: {
       email: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof forgotPasswordSchema>) => {
+  const on_submit = async (data: z.infer<typeof forgot_password_schema>) => {
     try {
       await forgotPassword(data).unwrap();
 
-      setIsSubmitted(true);
+      set_is_submitted(true);
       toast.success("Password reset instructions sent to your email");
     } catch {
       toast.error("Failed to send reset instructions. Please try again.");
     }
   };
 
-  if (isSubmitted) {
+  if (is_submitted) {
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
@@ -58,7 +58,7 @@ export function ForgotPasswordForm({
         </div>
         <div className="grid gap-4">
           <Button
-            onClick={() => setIsSubmitted(false)}
+            onClick={() => set_is_submitted(false)}
             variant="outline"
             className="w-full"
           >
@@ -86,7 +86,7 @@ export function ForgotPasswordForm({
       </div>
       <div className="grid gap-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"

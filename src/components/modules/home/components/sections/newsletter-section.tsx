@@ -41,7 +41,7 @@ const NewsletterSection: React.FC<NewsletterSectionProps> = ({
     },
   });
 
-  const onSubmit = async (data: NewsletterFormValues) => {
+  const on_submit = async (data: NewsletterFormValues) => {
     try {
       await emailjs.send(
         import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
@@ -105,10 +105,10 @@ const NewsletterSection: React.FC<NewsletterSectionProps> = ({
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6">
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
-                >
+                 <form
+                   onSubmit={form.handleSubmit(on_submit)}
+                   className="space-y-4"
+                 >
                   <FormField
                     control={form.control}
                     name="email"

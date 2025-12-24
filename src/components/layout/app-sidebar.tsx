@@ -20,7 +20,7 @@ import { Link } from "react-router";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: userData } = useUserInfoQuery(undefined);
 
-  const data = {
+  const nav_data = {
     navMain: getSidebarItems(userData?.data?.role || Role.RIDER),
   };
 
@@ -33,7 +33,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
+        {nav_data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
             <SidebarGroupContent>

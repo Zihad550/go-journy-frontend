@@ -28,7 +28,7 @@ const BarChart = ({
   showValues = true,
   className = "",
 }: IBarChartProps) => {
-  const chartData = useMemo(() => {
+  const chart_data = useMemo(() => {
     if (data.length === 0) return [];
 
     // Fallback colors that match the CSS variables (converted from oklch to hex)
@@ -76,7 +76,6 @@ const BarChart = ({
 
   // Debug logging
   console.log("BarChart data:", data);
-  console.log("BarChart chartData:", chartData);
 
   if (data.length === 0 || data.every((item) => item.value === 0)) {
     return (
@@ -153,7 +152,7 @@ const BarChart = ({
         })}
 
         {/* Bars */}
-        {chartData.map((item, index) => (
+        {chart_data.map((item, index) => (
           <g key={`${item.label}-${index}`}>
             {/* Bar */}
             <rect

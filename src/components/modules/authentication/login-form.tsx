@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import config from "@/config";
 import z from "zod";
 
-const loginSchema = z.object({
+const login_schema = z.object({
   email: z.email(),
   password: z.string().min(8, { error: "Password is too short" }),
 });
@@ -29,15 +29,15 @@ export function LoginForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof login_schema>>({
+    resolver: zodResolver(login_schema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
   const [login, { isLoading }] = useLoginMutation();
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+  const on_submit = async (data: z.infer<typeof login_schema>) => {
     try {
       const res = await login(data).unwrap();
       console.log(res);
@@ -73,7 +73,7 @@ export function LoginForm({
       </div>
       <div className="grid gap-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"

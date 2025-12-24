@@ -18,31 +18,31 @@ interface HowItWorksProps {
 
 export function HowItWorksSection({ className }: HowItWorksProps) {
   const { data, isLoading } = useUserInfoQuery(undefined);
-  const [activeTab, setActiveTab] = useState("rider");
+  const [active_tab, set_active_tab] = useState("rider");
 
   // Custom hooks for animations and accessibility
   const { createTabChangeHandler } = useTabAccessibility();
-  const { headerAnimation, tabsAnimation } = useSectionAnimations();
+  const { headerAnimation: header_animation, tabsAnimation: tabs_animation } = useSectionAnimations();
 
   // Create tab change handler with setActiveTab
-  const handleTabChange = createTabChangeHandler(setActiveTab);
+  const handle_tab_change = createTabChangeHandler(set_active_tab);
 
   // Memoize dynamic content based on active tab
-  const dynamicContent = useMemo(
+  const dynamic_content = useMemo(
     () => ({
       header:
-        activeTab === "rider"
+        active_tab === "rider"
           ? "Ready to Experience Premium Rides?"
           : "Ready to Start Your Earning Journey?",
       description:
-        activeTab === "rider"
+        active_tab === "rider"
           ? "Join millions of satisfied riders who choose Go Journy for their daily commute and special trips."
           : "Join our community of successful drivers and start earning with flexible schedules and great support.",
     }),
-    [activeTab],
+    [active_tab],
   );
 
-  const currentUser = data?.data;
+  const current_user = data?.data;
   if (isLoading) return <PageSpinner message="Loading user..." />;
 
   return (
@@ -64,10 +64,10 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div
-          ref={headerAnimation.ref}
+          ref={header_animation.ref}
           className={cn(
             "text-center mb-8 sm:mb-12 md:mb-16 transition-all duration-800",
-            headerAnimation.isVisible
+            header_animation.isVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6",
           )}
@@ -95,17 +95,17 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
 
         {/* Tabbed Interface */}
         <div
-          ref={tabsAnimation.ref}
+          ref={tabs_animation.ref}
           className={cn(
             "w-full transition-all duration-600",
-            tabsAnimation.isVisible
+            tabs_animation.isVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4",
           )}
         >
           <Tabs
-            value={activeTab}
-            onValueChange={handleTabChange}
+            value={active_tab}
+            onValueChange={handle_tab_change}
             className="w-full"
           >
             {/* Enhanced Tab Navigation with Modern Design */}
@@ -209,7 +209,7 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
                 {/* Floating Tab Statistics */}
                 <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4">
                   <div className="bg-gradient-to-r from-primary to-chart-1 text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce">
-                    {activeTab === "rider" ? "3 Steps" : "3 Steps"}
+                    {active_tab === "rider" ? "3 Steps" : "3 Steps"}
                   </div>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
         </div>
 
         {/* Enhanced Call-to-Action Section */}
-        {!currentUser && (
+        {!current_user && (
           <div className="text-center mt-12 sm:mt-16 md:mt-20 px-4 sm:px-0">
             <div className="relative">
               {/* Background Effects */}
@@ -237,16 +237,16 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
                 {/* Dynamic Header */}
                 <div className="mb-8">
                   <h4 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
-                    {dynamicContent.header}
+                    {dynamic_content.header}
                   </h4>
                   <p className="text-muted-foreground max-w-2xl mx-auto">
-                    {dynamicContent.description}
+                    {dynamic_content.description}
                   </p>
                 </div>
 
                 {/* Enhanced CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
-                  {activeTab === "rider" ? (
+                  {active_tab === "rider" ? (
                     <>
                       <CTAButton
                         type="rider"

@@ -38,7 +38,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const requestRideSchema = z.object({
+const request_ride_schema = z.object({
   pickupLat: z.string().min(1, "Pickup latitude is required"),
   pickupLng: z.string().min(1, "Pickup longitude is required"),
   destinationLat: z.string().min(1, "Destination latitude is required"),
@@ -51,7 +51,7 @@ const requestRideSchema = z.object({
     }),
 });
 
-type FormData = z.infer<typeof requestRideSchema>;
+type Form_Data = z.infer<typeof request_ride_schema>;
 
 interface RequestRideFormProps {
   className?: string;
@@ -63,13 +63,13 @@ export function RequestRideForm({
   onRideRequested,
 }: RequestRideFormProps) {
   const [requestRide, { isLoading }] = useRequestRideMutation();
-  const [locationLoading, setLocationLoading] = useState<
+  const [location_loading, set_location_loading] = useState<
     "pickup" | "destination" | null
   >(null);
-  const [mapOpen, setMapOpen] = useState<"pickup" | "destination" | null>(null);
+  const [map_open, set_map_open] = useState<"pickup" | "destination" | null>(null);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(requestRideSchema),
+  const form = useForm<Form_Data>({
+    resolver: zodResolver(request_ride_schema),
     defaultValues: {
       pickupLat: "",
       pickupLng: "",
@@ -79,7 +79,7 @@ export function RequestRideForm({
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const on_submit = async (data: Form_Data) => {
     const rideRequest = {
       pickupLocation: {
         lat: data.pickupLat,
@@ -106,7 +106,7 @@ export function RequestRideForm({
 
   const getCurrentLocation = (field: "pickup" | "destination") => {
     if (navigator.geolocation) {
-      setLocationLoading(field);
+      set_location_loading(field);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -120,11 +120,11 @@ export function RequestRideForm({
           toast.success(
             `📍 ${field === "pickup" ? "Pickup" : "Destination"} location set!`,
           );
-          setLocationLoading(null);
+          set_location_loading(null);
         },
         () => {
           toast.error("❌ Unable to get your location. Please enter manually.");
-          setLocationLoading(null);
+          set_location_loading(null);
         },
       );
     } else {
@@ -202,7 +202,7 @@ export function RequestRideForm({
 
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
               {/* Journey Overview */}
               <div className="flex items-center justify-center mb-6">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground bg-muted/30 px-4 py-2 rounded-full">
@@ -235,7 +235,7 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setMapOpen("pickup")}
+                        onClick={() => set_map_open("pickup")}
                         className="flex-1 sm:flex-none"
                       >
                         <Map className="h-4 w-4" />
@@ -246,15 +246,15 @@ export function RequestRideForm({
                         variant="outline"
                         size="sm"
                         onClick={() => getCurrentLocation("pickup")}
-                        disabled={locationLoading === "pickup"}
+                        disabled={location_loading === "pickup"}
                         className="flex-1 sm:flex-none"
                       >
-                        {locationLoading === "pickup" ? (
+                        {location_loading === "pickup" ? (
                           <ButtonSpinner size="xs" />
                         ) : (
                           <Locate className="h-4 w-4" />
                         )}
-                        {locationLoading === "pickup"
+                        {location_loading === "pickup"
                           ? "Getting..."
                           : "Current"}
                       </Button>
@@ -328,7 +328,7 @@ export function RequestRideForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setMapOpen("destination")}
+                        onClick={() => set_map_open("destination")}
                         disabled={!isPickupSelected()}
                         className="flex-1 sm:flex-none"
                       >
@@ -341,17 +341,17 @@ export function RequestRideForm({
                         size="sm"
                         onClick={() => getCurrentLocation("destination")}
                         disabled={
-                          locationLoading === "destination" ||
+                          location_loading === "destination" ||
                           !isPickupSelected()
                         }
                         className="flex-1 sm:flex-none"
                       >
-                        {locationLoading === "destination" ? (
+                        {location_loading === "destination" ? (
                           <ButtonSpinner size="xs" />
                         ) : (
                           <Locate className="h-4 w-4" />
                         )}
-                        {locationLoading === "destination"
+                        {location_loading === "destination"
                           ? "Getting..."
                           : "Current"}
                       </Button>
@@ -484,8 +484,8 @@ export function RequestRideForm({
 
       {/* Location Picker Modals */}
       <MapboxLocationPicker
-        isOpen={mapOpen === "pickup"}
-        onClose={() => setMapOpen(null)}
+        isOpen={map_open === "pickup"}
+        onClose={() => set_map_open(null)}
         onLocationSelect={(location) =>
           handleLocationSelect("pickup", location)
         }
@@ -495,8 +495,8 @@ export function RequestRideForm({
       />
 
       <MapboxLocationPicker
-        isOpen={mapOpen === "destination"}
-        onClose={() => setMapOpen(null)}
+        isOpen={map_open === "destination"}
+        onClose={() => set_map_open(null)}
         onLocationSelect={(location) =>
           handleLocationSelect("destination", location)
         }

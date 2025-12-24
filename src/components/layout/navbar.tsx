@@ -34,14 +34,14 @@ import { Link } from "react-router";
 import { ModeToggle } from "./mode-toggle";
 
 // Navigation links array to be used in both desktop and mobile menus
-const publicNavigationLinks = [
+const public_navigation_links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 // Helper function to get role display text
-const getRoleDisplayText = (role: string) => {
+const get_role_display_text = (role: string) => {
   switch (role) {
     case Role.RIDER:
       return "Rider";
@@ -63,7 +63,7 @@ export default function Navbar() {
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
-  const handleLogout = async () => {
+  const handle_logout = async () => {
     await logout(undefined);
     dispatch(authApi.util.resetApiState());
   };
@@ -112,8 +112,8 @@ export default function Navbar() {
             <PopoverContent align="start" className="w-48 p-2 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-1">
-                  {/* Public Navigation Links */}
-                  {publicNavigationLinks.map((link, index) => (
+                   {/* Public Navigation Links */}
+                   {public_navigation_links.map((link, index) => (
                     <NavigationMenuItem key={index} className="w-full">
                       <NavigationMenuLink
                         asChild
@@ -168,7 +168,7 @@ export default function Navbar() {
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-1">
                 {/* Public Navigation Links */}
-                {publicNavigationLinks.map((link, index) => (
+                {public_navigation_links.map((link, index) => (
                   <NavigationMenuItem key={index}>
                     <NavigationMenuLink
                       asChild
@@ -198,7 +198,7 @@ export default function Navbar() {
           {/* Role Chip */}
           {data?.data?.role && (
             <Badge variant="secondary" className="hidden sm:inline-flex">
-              {getRoleDisplayText(data.data.role)}
+              {get_role_display_text(data.data.role)}
             </Badge>
           )}
           <ModeToggle />
@@ -288,7 +288,7 @@ export default function Navbar() {
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={handleLogout}
+                    onClick={handle_logout}
                     className="cursor-pointer"
                   >
                     Logout

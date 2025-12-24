@@ -16,7 +16,7 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
-const resetPasswordSchema = z
+const reset_password_schema = z
   .object({
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z
@@ -38,15 +38,15 @@ export function ResetPasswordForm({
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
-  const form = useForm<z.infer<typeof resetPasswordSchema>>({
-    resolver: zodResolver(resetPasswordSchema),
+  const form = useForm<z.infer<typeof reset_password_schema>>({
+    resolver: zodResolver(reset_password_schema),
     defaultValues: {
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
+  const on_submit = async (data: z.infer<typeof reset_password_schema>) => {
     if (!token) {
       toast.error("Invalid or missing reset token");
       return;
@@ -127,7 +127,7 @@ export function ResetPasswordForm({
       </div>
       <div className="grid gap-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
             <FormField
               control={form.control}
               name="password"

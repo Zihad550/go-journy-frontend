@@ -20,7 +20,7 @@ const PieChart = ({
   showLabels = true,
   className = "",
 }: IPieChartProps) => {
-  const chartData = useMemo(() => {
+  const chart_data = useMemo(() => {
     // Fallback colors that match the CSS variables (converted from oklch to hex)
     const fallbackColors = [
       "#3b82f6", // blue-500 (chart-1 equivalent)
@@ -84,7 +84,6 @@ const PieChart = ({
 
   // Debug logging
   console.log("PieChart data:", data);
-  console.log("PieChart chartData:", chartData);
 
   if (data.length === 0 || data.every((item) => item.value === 0)) {
     return (
@@ -103,7 +102,7 @@ const PieChart = ({
     <div className={`flex flex-col items-center ${className}`}>
       <svg width={size} height={size} className="drop-shadow-sm">
         <g>
-          {chartData.map((item, index) => (
+          {chart_data.map((item, index) => (
             <path
               key={`${item.label}-${index}`}
               d={item.pathData}
@@ -119,7 +118,7 @@ const PieChart = ({
 
       {showLabels && (
         <div className="mt-4 space-y-2 w-full">
-          {chartData.map((item, index) => (
+          {chart_data.map((item, index) => (
             <div
               key={`label-${item.label}-${index}`}
               className="flex items-center justify-between text-sm"

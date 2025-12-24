@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import config from "@/config";
 import { z } from "zod";
 
-const registerSchema = z
+const register_schema = z
   .object({
     name: z
       .string()
@@ -48,8 +48,8 @@ export function RegisterForm({
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<z.infer<typeof register_schema>>({
+    resolver: zodResolver(register_schema),
     defaultValues: {
       name: "",
       email: "",
@@ -60,17 +60,17 @@ export function RegisterForm({
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    const userInfo = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      password: data.password,
-    };
+   const on_submit = async (data: z.infer<typeof register_schema>) => {
+     const user_info = {
+       name: data.name,
+       email: data.email,
+       phone: data.phone,
+       address: data.address,
+       password: data.password,
+     };
 
-    try {
-      const result = await register(userInfo).unwrap();
+     try {
+       const result = await register(user_info).unwrap();
       toast.success("User created successfully");
       if (result?.data?.isVerified) navigate("/");
       else
@@ -101,7 +101,7 @@ export function RegisterForm({
 
       <div className="grid gap-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(on_submit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"

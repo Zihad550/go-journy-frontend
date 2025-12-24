@@ -24,24 +24,24 @@ function ProcessStepCardComponent({
   const Icon = step.icon;
 
   // Animation for each step card
-  const stepAnimation = useScrollAnimation<HTMLDivElement>({
+  const step_animation = useScrollAnimation<HTMLDivElement>({
     animationType: "slideUp",
     duration: ANIMATION_CONFIG.stepCard.duration,
     threshold: ANIMATION_CONFIG.stepCard.threshold,
     staggerDelay: index * ANIMATION_CONFIG.stepCard.staggerDelay,
   });
 
-  const cardHover = useHoverAnimation<HTMLDivElement>({
+  const card_hover = useHoverAnimation<HTMLDivElement>({
     scale: ANIMATION_CONFIG.hover.scale,
     duration: ANIMATION_CONFIG.hover.duration,
   });
 
   return (
     <div
-      ref={stepAnimation.ref}
+      ref={step_animation.ref}
       className={cn(
         "relative flex flex-col items-center transition-all duration-600",
-        stepAnimation.isVisible
+        step_animation.isVisible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8",
       )}
@@ -85,7 +85,7 @@ function ProcessStepCardComponent({
 
       {/* Content Card - Enhanced Mobile */}
       <Card
-        ref={cardHover}
+        ref={card_hover}
         className={cn(
           "w-full max-w-xs sm:max-w-sm bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-lg transition-all duration-300",
           animationClasses.hoverLift,

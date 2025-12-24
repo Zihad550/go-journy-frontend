@@ -21,53 +21,53 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   value,
   duration = 2000,
 }) => {
-  const [displayValue, setDisplayValue] = useState("0");
-  const [isVisible, setIsVisible] = useState(false);
-  const elementRef = useRef<HTMLSpanElement>(null);
+  const [display_value, set_display_value] = useState("0");
+  const [is_visible, set_is_visible] = useState(false);
+  const element_ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
+        if (entry.isIntersecting && !is_visible) {
+          set_is_visible(true);
         }
       },
       { threshold: 0.1 },
     );
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
+    if (element_ref.current) {
+      observer.observe(element_ref.current);
     }
 
     return () => observer.disconnect();
-  }, [isVisible]);
+  }, [is_visible]);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!is_visible) return;
 
     // Extract numeric value from string
-    const numericMatch = value.match(/\d+/);
-    if (!numericMatch) {
-      setDisplayValue(value);
+    const numeric_match = value.match(/\d+/);
+    if (!numeric_match) {
+      set_display_value(value);
       return;
     }
 
-    const targetNumber = parseInt(numericMatch[0]);
-    const prefix = value.substring(0, value.indexOf(numericMatch[0]));
+    const target_number = parseInt(numeric_match[0]);
+    const prefix = value.substring(0, value.indexOf(numeric_match[0]));
     const suffix = value.substring(
-      value.indexOf(numericMatch[0]) + numericMatch[0].length,
+      value.indexOf(numeric_match[0]) + numeric_match[0].length,
     );
 
-    let startTime: number;
+    let start_time: number;
     const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
+      if (!start_time) start_time = currentTime;
+      const progress = Math.min((currentTime - start_time) / duration, 1);
 
       // Easing function for smooth animation
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const currentNumber = Math.floor(targetNumber * easeOutQuart);
+      const ease_out_quart = 1 - Math.pow(1 - progress, 4);
+      const current_number = Math.floor(target_number * ease_out_quart);
 
-      setDisplayValue(`${prefix}${currentNumber}${suffix}`);
+      set_display_value(`${prefix}${current_number}${suffix}`);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -75,9 +75,9 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     };
 
     requestAnimationFrame(animate);
-  }, [isVisible, value, duration]);
+  }, [is_visible, value, duration]);
 
-  return <span ref={elementRef}>{displayValue}</span>;
+  return <span ref={element_ref}>{display_value}</span>;
 };
 
 interface HighlightCardProps {
@@ -89,7 +89,7 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
   const { icon: Icon, title, description, metric, color } = highlight;
 
   // Animation hook for each card
-  const cardAnimation = useScrollAnimation<HTMLDivElement>({
+  const card_animation = useScrollAnimation<HTMLDivElement>({
     animationType: "slideUp",
     duration: 600,
     threshold: 0.2,
@@ -98,14 +98,14 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
 
   return (
     <Card
-      ref={cardAnimation.ref}
+      ref={card_animation.ref}
       className={cn(
         "group relative overflow-hidden transition-all duration-300 ease-out",
         "hover:scale-105 hover:shadow-2xl hover:-translate-y-2",
         "bg-card/50 backdrop-blur-sm border-border/50",
         "transform-gpu",
         animationClasses.hoverLift,
-        cardAnimation.isVisible
+        card_animation.isVisible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8",
       )}
@@ -174,13 +174,13 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
   // Animation refs are handled by useScrollAnimation
 
   // Animation hooks for section elements
-  const headerAnimation = useScrollAnimation<HTMLDivElement>({
+  const header_animation = useScrollAnimation<HTMLDivElement>({
     animationType: "fade",
     duration: 800,
     threshold: 0.1,
   });
 
-  const ctaAnimation = useScrollAnimation<HTMLDivElement>({
+  const cta_animation = useScrollAnimation<HTMLDivElement>({
     animationType: "slideUp",
     duration: 600,
     threshold: 0.3,
@@ -202,10 +202,10 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
       <div className="container relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header - Enhanced Mobile */}
         <div
-          ref={headerAnimation.ref}
+          ref={header_animation.ref}
           className={cn(
             "text-center mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0 transition-all duration-800",
-            headerAnimation.isVisible
+            header_animation.isVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6",
           )}
@@ -245,10 +245,10 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
 
         {/* Bottom CTA section - Enhanced Mobile */}
         <div
-          ref={ctaAnimation.ref}
+          ref={cta_animation.ref}
           className={cn(
             "text-center mt-8 sm:mt-12 md:mt-16 px-4 sm:px-0 transition-all duration-600",
-            ctaAnimation.isVisible
+            cta_animation.isVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4",
           )}
