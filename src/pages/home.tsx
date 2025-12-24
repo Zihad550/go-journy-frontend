@@ -26,7 +26,8 @@ function Home() {
     useSectionTransition() as React.RefObject<HTMLDivElement>;
   const testimonialsRef =
     useSectionTransition() as React.RefObject<HTMLDivElement>;
-  const newsletterRef = useSectionTransition() as React.RefObject<HTMLDivElement>;
+  const newsletterRef =
+    useSectionTransition() as React.RefObject<HTMLDivElement>;
   const ctaRef = useSectionTransition() as React.RefObject<HTMLDivElement>;
 
   // Map section IDs to their refs
@@ -39,20 +40,15 @@ function Home() {
       newsletter: newsletterRef,
       cta: ctaRef,
     }),
-    [heroRef, howItWorksRef, serviceHighlightsRef, testimonialsRef, newsletterRef, ctaRef],
+    [
+      heroRef,
+      howItWorksRef,
+      serviceHighlightsRef,
+      testimonialsRef,
+      newsletterRef,
+      ctaRef,
+    ],
   );
-
-  // const handleRideRequested = () => {
-  //   // Handle any additional logic when a ride is requested
-  // };
-
-  // const handleRideCancelled = () => {
-  //   // Handle any additional logic when a ride is cancelled
-  // };
-
-  // const handleRideAccepted = () => {
-  //   // Handle any additional logic when a driver accepts a ride
-  // };
 
   return (
     <main className="min-h-screen bg-background">
@@ -69,9 +65,6 @@ function Home() {
               <HeroOverlayManager
                 isRider={userState.isRider}
                 isDriver={userState.isDriver}
-                // onRideRequested={handleRideRequested}
-                // onRideCancelled={handleRideCancelled}
-                // onRideAccepted={handleRideAccepted}
               />
             </div>
           );
