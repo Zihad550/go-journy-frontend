@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Clock, AlertTriangle } from 'lucide-react';
 import { RideStatus } from '@/constants';
-import { useUpdateAdminRideStatusMutation } from '@/redux/features/admin/admin.api';
+import { useUpdateAdminRideStatusMutation } from '@/redux/features/admin/admin-api';
 import type { IAdminRide } from '@/types';
 import { toast } from 'sonner';
 

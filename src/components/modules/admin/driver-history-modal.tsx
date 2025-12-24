@@ -21,7 +21,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { RideStatus } from '@/constants';
-import { useGetDriverHistoryQuery } from '@/redux/features/admin/admin.api';
+import { useGetDriverHistoryQuery } from '@/redux/features/admin/admin-api';
 import type { IDriver } from '@/types';
 import Pagination from './pagination';
 

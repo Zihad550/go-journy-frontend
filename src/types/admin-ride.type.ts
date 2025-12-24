@@ -1,4 +1,4 @@
-import type { IRide } from './ride.type';
+import type { IRide } from './ride-type';
 
 // Admin note interface
 export interface IAdminNote {

@@ -6,7 +6,7 @@ import {
   useGeocodeQuery,
   useReverseGeocodeQuery,
   type IGeocodeResult,
-} from "@/redux/features/location/location.api";
+} from "@/redux/features/location/location-api";
 import { Loader2, MapPin, Navigation, X } from "lucide-react";
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";

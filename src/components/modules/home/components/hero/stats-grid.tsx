@@ -1,7 +1,7 @@
 import { Users, Car, MapPin, Star } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
-import { STATISTICS } from "@/constants/content.constant";
+import { STATISTICS } from "@/constants/content-constant";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -16,7 +16,7 @@ interface StatsGridProps {
 }
 
 export function StatsGrid({ className = "" }: StatsGridProps) {
-  const statsAnimation = useScrollAnimation({
+  const statsAnimation = useScrollAnimation<HTMLUListElement>({
     animationType: "slideUp",
     duration: 700,
     threshold: 0.2,
@@ -63,7 +63,7 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
 
   return (
     <ul
-      ref={statsAnimation.ref as React.RefObject<HTMLDivElement>}
+      ref={statsAnimation.ref}
       className={`grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8 md:mb-10 lg:mb-12 max-w-4xl mx-auto px-2 sm:px-0 transition-all duration-700 ${
         statsAnimation.isVisible
           ? "opacity-100 translate-y-0"

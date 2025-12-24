@@ -4,7 +4,7 @@ import { UpdateProfileForm } from "@/components/modules/profile/update-profile-f
 import { NotFound } from "@/components/ui/not-found";
 import { PageSpinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Role } from "@/constants/role.constant";
+import { Role } from "@/constants/role-constant";
 import { useUserInfoQuery } from "@/redux/features/user/user-api";
 import { Link, useNavigate } from "react-router";
 import { Logo } from "@/components/logo";

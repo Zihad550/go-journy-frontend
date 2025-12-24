@@ -3,7 +3,7 @@ import { Users, Car } from 'lucide-react';
 import { ProcessFlow } from './process-flow';
 import { StatisticsDisplay } from './statistics-display';
 import { TAB_STATISTICS, TAB_CONTENT } from '../../constants/how-it-works-section-constants';
-import type { ProcessStep } from '@/constants/howItWorks.constant';
+import type { ProcessStep } from '@/constants/how-it-works.constant';
 
 interface TabContentProps {
   type: 'rider' | 'driver';

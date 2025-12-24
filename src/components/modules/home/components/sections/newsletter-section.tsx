@@ -17,7 +17,7 @@ import { Mail, CheckCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
-import { newsletterContent } from '@/constants/newsletter.constant';
+import { newsletterContent } from '@/constants/newsletter-constant';
 import { animationClasses } from '@/lib/animations';
 
 const newsletterSchema = z.object({

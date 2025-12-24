@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { STATISTICS } from "@/constants/content.constant";
+import { STATISTICS } from "@/constants/content-constant";
 import { useHomeAnimations } from '../../hooks/use-home-animations';
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CardLoader } from "@/components/ui/card-loader";
 import { DriverAvailabilityControl } from "@/components/ui/driver-availability-control";
 import { NotFound } from "@/components/ui/not-found";
-import { DriverStatus } from "@/constants/driver.constant";
+import { DriverStatus } from "@/constants/driver-constant";
 import { useGetDriverProfileQuery } from "@/redux/features/driver/driver-api";
 import { Calendar, Car, CheckCircle, Clock, User, XCircle } from "lucide-react";
 import { Link } from "react-router";

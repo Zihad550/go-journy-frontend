@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   serviceHighlights,
   type ServiceHighlight,
-} from "@/constants/serviceHighlights.constant";
+} from "@/constants/service-highlights.constant";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
 import { cn } from "@/lib/utils";

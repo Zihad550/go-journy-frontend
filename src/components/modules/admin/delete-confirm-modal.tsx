@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Trash2, AlertTriangle, Shield } from 'lucide-react';
-import { useForceDeleteRideMutation } from '@/redux/features/admin/admin.api';
+import { useForceDeleteRideMutation } from '@/redux/features/admin/admin-api';
 import type { IAdminRide } from '@/types';
 import { toast } from 'sonner';
 

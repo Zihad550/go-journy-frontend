@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useCalculateETAMutation } from '@/redux/features/location/location.api';
+import { useCalculateETAMutation } from '@/redux/features/location/location-api';
 import { useWebSocket } from '@/lib/websocket';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

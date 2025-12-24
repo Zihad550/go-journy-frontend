@@ -1,5 +1,5 @@
 import type { IReview } from "@/types";
-import type { IReviewForComponent } from "@/types/review.type";
+import type { IReviewForComponent } from "@/types/review-type";
 
 /**
  * Get initials from a name for avatar fallback

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useCalculateRouteMutation, useGetRouteQuery } from '@/redux/features/location/location.api';
-import { MAPBOX_CONFIG, ROUTE_CONFIG } from '@/config/mapbox.config';
+import { useCalculateRouteMutation, useGetRouteQuery } from '@/redux/features/location/location-api';
+import { MAPBOX_CONFIG, ROUTE_CONFIG } from '@/config/mapbox-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

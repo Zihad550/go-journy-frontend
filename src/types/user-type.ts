@@ -1,6 +1,6 @@
 import type { Role, UserAccountStatus } from "@/constants";
 import type { ObjectValues } from ".";
-import type { IDriver } from "./driver.type";
+import type { IDriver } from "./driver-type";
 
 export interface IUser {
   _id: string;

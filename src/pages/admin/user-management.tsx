@@ -40,7 +40,7 @@ import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateAdminUserMutation,
-} from "@/redux/features/admin/admin.api";
+} from "@/redux/features/admin/admin-api";
 import { useUserInfoQuery } from "@/redux/features/user/user-api";
 import type { IUser } from "@/types";
 import {

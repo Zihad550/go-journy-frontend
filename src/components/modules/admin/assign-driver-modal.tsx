@@ -20,7 +20,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { UserPlus, AlertTriangle, Car } from 'lucide-react';
-import { useAssignDriverToRideMutation } from '@/redux/features/admin/admin.api';
+import { useAssignDriverToRideMutation } from '@/redux/features/admin/admin-api';
 import type { IAdminRide, IDriver } from '@/types';
 import { toast } from 'sonner';
 

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { PageSpinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HOW_IT_WORKS_DATA } from "@/constants/howItWorks.constant";
+import { HOW_IT_WORKS_DATA } from "@/constants/how-it-works.constant";
 import { useSectionAnimations } from "@/hooks/use-section-animations";
 import { useTabAccessibility } from "@/hooks/use-tab-accessibility";
 import { cn } from "@/lib/utils";

@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import {
   testimonialsData,
   type Testimonial,
-} from "@/constants/testimonials.constant";
+} from "@/constants/testimonials-constant";
 import { useGetFeaturedReviewsQuery } from "@/redux/features/review/review-api";
 import { transformReviewsForComponent } from "@/utils/review-utils";
-import type { IReviewForComponent } from "@/types/review.type";
+import type { IReviewForComponent } from "@/types/review-type";
 
 interface TestimonialsProps {
   className?: string;

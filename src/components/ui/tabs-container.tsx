@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { useTabsURL } from '@/hooks/useTabsURL';
+import { useTabsURL } from '@/hooks/use-tabs-u-r-l';
 import { Skeleton } from '@/components/ui/skeleton';
 import './tabs-animations.css';
 

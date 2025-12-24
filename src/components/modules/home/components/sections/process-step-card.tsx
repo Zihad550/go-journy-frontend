@@ -8,7 +8,7 @@ import {
 } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
 import { ANIMATION_CONFIG } from "../../constants/how-it-works-section-constants";
-import type { ProcessStep } from "@/constants/howItWorks.constant";
+import type { ProcessStep } from "@/constants/how-it-works.constant";
 
 interface ProcessStepCardProps {
   step: ProcessStep;

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ButtonSpinner } from '@/components/ui/spinner';
-import { DriverStatus } from '@/constants/driver.constant';
+import { DriverStatus } from '@/constants/driver-constant';
 import {
   useGetDriverProfileQuery,
   useRegisterDriverMutation,

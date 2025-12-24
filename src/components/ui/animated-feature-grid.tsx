@@ -1,6 +1,6 @@
 
 import { cn } from '@/lib/utils';
-import { useStaggeredAnimation } from '@/hooks/useStaggeredAnimation';
+import { useStaggeredAnimation } from '@/hooks/use-staggered-animation';
 import { FeatureCard } from './feature-card';
 import type { LucideIcon } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 import type { DriverAvailability, DriverStatus } from '@/constants';
 import type { ObjectValues } from '.';
-import type { IUser } from './user.type';
+import type { IUser } from './user-type';
 
 export interface IDriver {
   _id: string;

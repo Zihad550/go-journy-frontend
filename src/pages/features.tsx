@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserInfoQuery } from "@/redux/features/user/user-api";
-import { getFeaturesByCategory } from "@/constants/features.constant";
+import { getFeaturesByCategory } from "@/constants/features-constant";
 import {
   ArrowRight,
   Car,

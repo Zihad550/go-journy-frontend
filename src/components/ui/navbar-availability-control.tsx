@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { DriverAvailability } from "@/constants/driver.constant";
+import { DriverAvailability } from "@/constants/driver-constant";
 import { useUpdateDriverAvailabilityMutation } from "@/redux/features/driver/driver-api";
 import { useState } from "react";
 import { toast } from "sonner";

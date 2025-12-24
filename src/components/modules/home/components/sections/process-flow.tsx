@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { ProcessStepCard } from './process-step-card';
-import type { ProcessStep } from '@/constants/howItWorks.constant';
+import type { ProcessStep } from '@/constants/how-it-works.constant';
 
 interface ProcessFlowProps {
   steps: ProcessStep[];

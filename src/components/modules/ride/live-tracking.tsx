@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useWebSocket } from '@/lib/websocket';
-import { useGetDriverLocationQuery, useGetLocationHistoryQuery } from '@/redux/features/location/location.api';
-import { MAPBOX_CONFIG, MARKER_CONFIG } from '@/config/mapbox.config';
+import { useGetDriverLocationQuery, useGetLocationHistoryQuery } from '@/redux/features/location/location-api';
+import { MAPBOX_CONFIG, MARKER_CONFIG } from '@/config/mapbox-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

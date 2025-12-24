@@ -4,7 +4,7 @@ import {
   useGetActiveRidesQuery,
   useGetRideIssuesQuery,
   useGetAdminRideAnalyticsQuery,
-} from "@/redux/features/admin/admin.api";
+} from "@/redux/features/admin/admin-api";
 import {
   Card,
   CardContent,

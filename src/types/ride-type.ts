@@ -1,8 +1,8 @@
 import { RideStatus } from '@/constants';
 import type { ObjectValues } from '.';
-import type { IDriver } from './driver.type';
-import type { IPayment } from './payment.type';
-import type { IUser } from './user.type';
+import type { IDriver } from './driver-type';
+import type { IPayment } from './payment-type';
+import type { IUser } from './user-type';
 
 export interface ILocation {
   lat: string;

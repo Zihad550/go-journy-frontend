@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { STATISTICS } from "@/constants/content.constant";
+import { STATISTICS } from "@/constants/content-constant";
 import { animationClasses } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import {

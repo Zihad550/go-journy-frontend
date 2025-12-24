@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import { HERO_MESSAGES, STATISTICS } from "@/constants/content.constant";
+import { HERO_MESSAGES, STATISTICS } from "@/constants/content-constant";
 import { useHomeAnimations } from "../../hooks/use-home-animations";
 import { CTAButtons } from "./c-t-a-buttons";
 import { FloatingElements } from "./floating-elements";

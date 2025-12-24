@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { FileText, Info } from 'lucide-react';
-import { useAddAdminNoteMutation } from '@/redux/features/admin/admin.api';
+import { useAddAdminNoteMutation } from '@/redux/features/admin/admin-api';
 import type { IAdminRide } from '@/types';
 import { toast } from 'sonner';
 

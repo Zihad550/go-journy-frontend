@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Role } from "@/constants";
-import { DriverStatus } from "@/constants/driver.constant";
+import { DriverStatus } from "@/constants/driver-constant";
 import { authApi, useLogoutMutation } from "@/redux/features/auth/auth-api";
 import { useGetDriverProfileQuery } from "@/redux/features/driver/driver-api";
 import { useUserInfoQuery } from "@/redux/features/user/user-api";
