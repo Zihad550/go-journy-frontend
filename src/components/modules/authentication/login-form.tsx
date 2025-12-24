@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
-import config from "@/config";
+import { useState } from "react";
+import config, { demoCredentials } from "@/config";
 import z from "zod";
 
 const login_schema = z.object({
@@ -29,6 +30,11 @@ export function LoginForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [state] = useState(location.state);
+
+  console.log("state on login -", state);
+  const [searchParams] = useSearchParams();
   const form = useForm<z.infer<typeof login_schema>>({
     resolver: zodResolver(login_schema),
     defaultValues: {
@@ -37,6 +43,7 @@ export function LoginForm({
     },
   });
   const [login, { isLoading }] = useLoginMutation();
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
   const on_submit = async (data: z.infer<typeof login_schema>) => {
     try {
       const res = await login(data).unwrap();
@@ -44,7 +51,8 @@ export function LoginForm({
 
       if (res.success) {
         toast.success("Logged in successfully");
-        navigate("/");
+        const redirect = searchParams.get("redirect") || "/";
+        navigate(redirect, { state });
       }
     } catch (err: any) {
       console.log(err);
@@ -60,6 +68,33 @@ export function LoginForm({
         toast.error("Your account is not verified");
         navigate("/verify-otp", { state: data.email });
       }
+    }
+  };
+
+  const handleDemoLogin = async (role: "driver" | "rider" | "admin") => {
+    setDemoLoading(role);
+    try {
+      const res = await login(demoCredentials[role]).unwrap();
+      if (res.success) {
+        toast.success(`Logged in as demo ${role}`);
+        const redirect = searchParams.get("redirect") || "/";
+        navigate(redirect, { state });
+      }
+    } catch (err: any) {
+      if (err?.data?.message === "Password does not match") {
+        toast.error("Invalid demo credentials");
+      } else if (err?.data?.message) {
+        toast.error(err.data.message);
+      } else {
+        toast.error("Demo login failed. Please try again.");
+      }
+
+      if (err?.data?.message === "User is not verified") {
+        toast.error("Demo account is not verified");
+        navigate("/verify-otp", { state: demoCredentials[role].email });
+      }
+    } finally {
+      setDemoLoading(null);
     }
   };
 
@@ -135,6 +170,39 @@ export function LoginForm({
         >
           Login with Google
         </Button>
+
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 bg-background px-2 text-muted-foreground">
+            Or continue with a demo account
+          </span>
+        </div>
+
+        <div className="grid gap-2">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => handleDemoLogin("driver")}
+            disabled={demoLoading !== null}
+          >
+            {demoLoading === "driver" ? "Loading..." : "Demo Driver"}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => handleDemoLogin("rider")}
+            disabled={demoLoading !== null}
+          >
+            {demoLoading === "rider" ? "Loading..." : "Demo Rider"}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => handleDemoLogin("admin")}
+            disabled={demoLoading !== null}
+          >
+            {demoLoading === "admin" ? "Loading..." : "Demo Admin"}
+          </Button>
+        </div>
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}

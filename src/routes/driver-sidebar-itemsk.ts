@@ -4,11 +4,17 @@ import Analytics from "@/pages/driver/analytics";
 
 const RideHistory = lazy(() => import("@/pages/driver/ride-history"));
 const Earnings = lazy(() => import("@/pages/driver/earnings"));
+const FindRides = lazy(() => import("@/pages/driver/find-rides"));
 
 export const driverSidebarItems: ISidebarItem[] = [
   {
     title: "Dashboard",
     items: [
+      {
+        title: "Find Rides",
+        url: "/driver/find-rides",
+        component: FindRides,
+      },
       {
         title: "Analytics",
         url: "/driver/analytics",

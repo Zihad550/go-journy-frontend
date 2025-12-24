@@ -10,6 +10,7 @@ import {
 import { FAQItem } from "@/components/ui/faq-item";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
+import { SectionWrapper } from "@/components/layout/section-wrapper";
 import {
   CONTACT_INFO,
   FAQ_CATEGORIES_DATA,
@@ -38,7 +39,7 @@ const categories = [
   })),
 ];
 
-function FAQ() {
+function Help() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
@@ -77,8 +78,8 @@ function FAQ() {
     <div className="min-h-screen">
       <GradientBackground>
         {/* Hero Section */}
-        <div className="relative py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionWrapper spacing="normal">
+          <div className="relative">
             <div className="text-center">
               <Badge
                 variant="secondary"
@@ -103,16 +104,16 @@ function FAQ() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-3 text-base sm:text-lg bg-background/50 backdrop-blur-sm border-2 focus:border-primary min-h-[48px]"
                 />
-              </div>
+               </div>
             </div>
           </div>
-        </div>
+        </SectionWrapper>
       </GradientBackground>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
+      <SectionWrapper spacing="compact">
         {/* Category Navigation - Mobile-responsive grid */}
-        <div className="mb-8 sm:mb-10 md:mb-12">
+        <div className="mb-6 sm:mb-8 md:mb-10">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
             Browse by Category
           </h2>
@@ -162,7 +163,7 @@ function FAQ() {
 
         {/* Popular Questions (shown when no search term and all categories)  */}
         {!searchTerm && selectedCategory === "all" && (
-          <div className="mb-8 sm:mb-10 md:mb-12">
+          <div className="mb-6 sm:mb-8 md:mb-10">
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 flex items-center">
               <span className="mr-2">🔥</span>
               Popular Questions
@@ -181,7 +182,7 @@ function FAQ() {
         )}
 
         {/* FAQ Results */}
-        <div className="mb-8 sm:mb-10 md:mb-12">
+        <div className="mb-6 sm:mb-8 md:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
             <h2 className="text-xl sm:text-2xl font-semibold">
               {searchTerm
@@ -236,7 +237,7 @@ function FAQ() {
         </div>
 
         {/* Contact Support Section */}
-        <Card className="bg-gradient-to-r from-primary/5 to-chart-1/5 border-primary/20">
+        <Card className="bg-gradient-to-r from-primary/5 to-chart-1/5 border-primary/20 mb-6 sm:mb-8 md:mb-10">
           <CardContent className="py-6 sm:py-8">
             <div className="text-center">
               <MessageCircle className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
@@ -262,9 +263,9 @@ function FAQ() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </SectionWrapper>
     </div>
   );
 }
 
-export default FAQ;
+export default Help;

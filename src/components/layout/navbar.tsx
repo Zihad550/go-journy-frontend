@@ -37,7 +37,10 @@ import { ModeToggle } from "./mode-toggle";
 const public_navigation_links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/help", label: "Help" },
+  { href: "/book-ride", label: "Book Ride" },
   { href: "/contact", label: "Contact" },
+  { href: "/privacy", label: "Privacy" },
 ];
 
 // Helper function to get role display text
@@ -126,6 +129,20 @@ export default function Navbar() {
                     </NavigationMenuItem>
                   ))}
 
+
+                  {data?.data?.role === Role.DRIVER && (
+                    <NavigationMenuItem className="w-full">
+                      <NavigationMenuLink
+                        asChild
+                        className="py-2 px-3 rounded-md hover:bg-accent"
+                      >
+                        <Link to="/driver/find-rides" className="text-sm font-medium">
+                          Find Rides
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  )}
+
                   {/* Authentication Links */}
                   {!data?.data?.email && (
                     <>
@@ -178,6 +195,17 @@ export default function Navbar() {
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
+
+                {data?.data?.role === Role.DRIVER && (
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      asChild
+                      className="text-muted-foreground hover:text-primary py-2 px-3 font-medium rounded-md transition-colors"
+                    >
+                      <Link to="/driver/find-rides">Find Rides</Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                )}
               </NavigationMenuList>
             </NavigationMenu>
           </div>

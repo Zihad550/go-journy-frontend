@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { ButtonSpinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { useRequestRideMutation } from "@/redux/features/ride/ride-api";
+import { useUserInfoQuery } from "@/redux/features/user/user-api";
 import type { IRide } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -35,6 +36,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -56,30 +58,56 @@ type Form_Data = z.infer<typeof request_ride_schema>;
 interface RequestRideFormProps {
   className?: string;
   onRideRequested: (ride: IRide) => void;
+  defaultValues?: Partial<Form_Data>;
 }
 
 export function RequestRideForm({
   className,
   onRideRequested,
+  defaultValues,
 }: RequestRideFormProps) {
+  const { data: userData } = useUserInfoQuery(undefined);
+  const navigate = useNavigate();
   const [requestRide, { isLoading }] = useRequestRideMutation();
   const [location_loading, set_location_loading] = useState<
     "pickup" | "destination" | null
   >(null);
-  const [map_open, set_map_open] = useState<"pickup" | "destination" | null>(null);
+  const [map_open, set_map_open] = useState<"pickup" | "destination" | null>(
+    null,
+  );
 
   const form = useForm<Form_Data>({
     resolver: zodResolver(request_ride_schema),
     defaultValues: {
-      pickupLat: "",
-      pickupLng: "",
-      destinationLat: "",
-      destinationLng: "",
-      price: "",
+      pickupLat: defaultValues?.pickupLat || "",
+      pickupLng: defaultValues?.pickupLng || "",
+      destinationLat: defaultValues?.destinationLat || "",
+      destinationLng: defaultValues?.destinationLng || "",
+      price: defaultValues?.price || "",
     },
   });
 
   const on_submit = async (data: Form_Data) => {
+    const isAuthenticated = !!userData?.data?.email;
+
+    if (!isAuthenticated) {
+      // Serialize form data into query params
+      const queryParams = new URLSearchParams({
+        redirect: "/book-ride",
+      });
+      toast.info("Please log in to book your ride.");
+      navigate(`/login?${queryParams.toString()}`, {
+        state: {
+          pickupLat: data.pickupLat,
+          pickupLng: data.pickupLng,
+          destinationLat: data.destinationLat,
+          destinationLng: data.destinationLng,
+          price: data.price,
+        },
+      });
+      return;
+    }
+
     const rideRequest = {
       pickupLocation: {
         lat: data.pickupLat,

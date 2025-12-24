@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Role } from "@/constants/role-constant";
 import { useUserInfoQuery } from "@/redux/features/user/user-api";
 import { Link, useNavigate } from "react-router";
-import { Logo } from "@/components/logo";
+import Logo from "@/assets/icons/logo";
 
 function Profile() {
   const { data, isLoading } = useUserInfoQuery(undefined);

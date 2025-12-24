@@ -4,6 +4,7 @@ import QuickActionsSection from "@/components/contact/quick-actions-section";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { SectionWrapper } from "@/components/layout/section-wrapper";
 import { contactQuickActions } from "@/constants";
 import { Clock, Headphones, Mail, MapPin, Phone, Search } from "lucide-react";
 import { useMemo } from "react";
@@ -70,7 +71,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen relative">
       <GradientBackground>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <SectionWrapper spacing="normal">
           {/* Hero Section */}
           <div className="text-center mb-12 lg:mb-16">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
@@ -202,7 +203,7 @@ const Contact = () => {
               <QuickActionsSection quickActions={contactQuickActions} />
             </div>
           </div>
-        </div>
+        </SectionWrapper>
       </GradientBackground>
     </div>
   );

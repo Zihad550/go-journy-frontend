@@ -22,11 +22,12 @@ const companyLinks: FooterLink[] = [
   { label: "About Us", to: "/about" },
   { label: "Features", to: "/features" },
   { label: "Contact", to: "/contact" },
+  { label: "Privacy", to: "/privacy" },
 ];
 
 // This will be moved inside the component to handle authentication
 
-const supportLinks: FooterLink[] = [{ label: "FAQs", to: "/faq" }];
+const supportLinks: FooterLink[] = [{ label: "Help", to: "/help" }];
 
 // Social media links with proper accessibility labels
 const socialMediaLinks: SocialLink[] = [

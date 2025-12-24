@@ -12,12 +12,21 @@ import { useEffect, useState } from "react";
 interface RiderHeroContentProps {
   onRideRequested?: (ride: IRide) => void;
   onRideCancelled?: () => void;
+  defaultFormValues?: {
+    pickupLat?: string;
+    pickupLng?: string;
+    destinationLat?: string;
+    destinationLng?: string;
+    price?: string;
+  };
 }
 
 export function RiderHeroContent({
   onRideRequested,
   onRideCancelled,
+  defaultFormValues,
 }: RiderHeroContentProps) {
+  console.log("default form values -", defaultFormValues);
   const [currentRide, setCurrentRide] = useState<IRide | null>(null);
   const [reviewData, setReviewData] = useState<{
     ride: IRide;
@@ -72,7 +81,8 @@ export function RiderHeroContent({
     );
   }
 
-  if (error) {
+  if (error && error?.status !== 404) {
+    console.log("error -", error);
     return (
       <div className="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <GradientBackground className="rounded-2xl">
@@ -115,7 +125,10 @@ export function RiderHeroContent({
 
               {/* Form Section */}
               <div className="max-w-3xl mx-auto">
-                <RequestRideForm onRideRequested={handleRideRequested} />
+                <RequestRideForm
+                  onRideRequested={handleRideRequested}
+                  defaultValues={defaultFormValues}
+                />
               </div>
             </div>
           ) : (

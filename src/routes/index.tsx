@@ -3,16 +3,18 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Role } from "@/constants";
 import { withAuth } from "@/lib/with-auth";
 import About from "@/pages/about";
+import BookRide from "@/pages/rider/book-ride";
 import Contact from "@/pages/contact";
 import DriverRegistration from "@/pages/driver-registration";
-import FAQ from "@/pages/f-a-q";
 import Features from "@/pages/features";
+import Help from "@/pages/help";
 import ForgotPassword from "@/pages/forgot-password";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
 import PaymentCancel from "@/pages/payment-cancel";
 import PaymentFail from "@/pages/payment-fail";
 import PaymentSuccess from "@/pages/payment-success";
+import Privacy from "@/pages/privacy";
 import Profile from "@/pages/profile";
 import Register from "@/pages/register";
 import ResetPassword from "@/pages/reset-password";
@@ -45,8 +47,16 @@ export const router = createBrowserRouter([
         path: "contact",
       },
       {
-        Component: FAQ,
-        path: "faq",
+        Component: Privacy,
+        path: "privacy",
+      },
+      {
+        Component: Help,
+        path: "help",
+      },
+      {
+        Component: BookRide,
+        path: "book-ride",
       },
     ],
   },

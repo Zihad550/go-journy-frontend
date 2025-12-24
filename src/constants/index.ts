@@ -8,5 +8,6 @@ export * from './contact-constant';
 export * from './content-constant';
 export * from './how-it-works.constant';
 export * from './newsletter-constant';
+export * from './privacy-constant';
 export * from './service-highlights.constant';
 export * from './testimonials-constant';
