@@ -1,16 +1,16 @@
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { DriverAvailability } from '@/constants/driver.constant';
-import { useUpdateDriverAvailabilityMutation } from '@/redux/features/driver/driver.api';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Wifi, WifiOff, Loader2 } from 'lucide-react';
+} from "@/components/ui/tooltip";
+import { DriverAvailability } from "@/constants/driver.constant";
+import { useUpdateDriverAvailabilityMutation } from "@/redux/features/driver/driver-api";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Wifi, WifiOff, Loader2 } from "lucide-react";
 
 interface NavbarAvailabilityControlProps {
   currentAvailability: string;
@@ -41,12 +41,12 @@ export function NavbarAvailabilityControl({
       }).unwrap();
 
       toast.success(
-        `You are now ${checked ? 'online' : 'offline'} and ${
-          checked ? 'available' : 'unavailable'
+        `You are now ${checked ? "online" : "offline"} and ${
+          checked ? "available" : "unavailable"
         } for ride requests`,
         {
-          icon: checked ? '🟢' : '🔴',
-        }
+          icon: checked ? "🟢" : "🔴",
+        },
       );
     } catch (error) {
       // Revert optimistic update on error
@@ -54,13 +54,13 @@ export function NavbarAvailabilityControl({
 
       const errorMessage =
         error &&
-        typeof error === 'object' &&
-        'data' in error &&
+        typeof error === "object" &&
+        "data" in error &&
         error.data &&
-        typeof error.data === 'object' &&
-        'message' in error.data
+        typeof error.data === "object" &&
+        "message" in error.data
           ? String(error.data.message)
-          : 'Failed to update availability status';
+          : "Failed to update availability status";
 
       toast.error(errorMessage);
     }
@@ -76,7 +76,7 @@ export function NavbarAvailabilityControl({
               onCheckedChange={handleAvailabilityChange}
               disabled={isLoading}
               aria-label={`Driver availability: ${
-                isOnline ? 'online' : 'offline'
+                isOnline ? "online" : "offline"
               }`}
               className="scale-90 data-[state=checked]:bg-chart-1"
             />
@@ -98,14 +98,14 @@ export function NavbarAvailabilityControl({
               )}
 
               <Badge
-                variant={isOnline ? 'default' : 'secondary'}
+                variant={isOnline ? "default" : "secondary"}
                 className={`text-xs font-medium px-2 py-0.5 transition-all duration-200 ${
                   isOnline
-                    ? 'bg-chart-1/10 text-chart-1 border-chart-1/20 hover:bg-chart-1/20'
-                    : 'bg-muted/50 text-muted-foreground border-muted/30'
+                    ? "bg-chart-1/10 text-chart-1 border-chart-1/20 hover:bg-chart-1/20"
+                    : "bg-muted/50 text-muted-foreground border-muted/30"
                 }`}
               >
-                {isLoading ? 'Updating...' : isOnline ? 'Online' : 'Offline'}
+                {isLoading ? "Updating..." : isOnline ? "Online" : "Offline"}
               </Badge>
             </div>
           </div>
@@ -113,11 +113,11 @@ export function NavbarAvailabilityControl({
         <TooltipContent side="bottom" className="max-w-xs">
           <div className="text-center">
             <p className="font-medium">
-              {isOnline ? 'You are online' : 'You are offline'}
+              {isOnline ? "You are online" : "You are offline"}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {isOnline
-                ? 'Riders can see and request rides from you'
+                ? "Riders can see and request rides from you"
                 : "You won't receive new ride requests"}
             </p>
           </div>

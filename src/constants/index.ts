@@ -7,5 +7,6 @@ export * from './features.constant';
 export * from './contact.constant';
 export * from './content.constant';
 export * from './howItWorks.constant';
+export * from './newsletter.constant';
 export * from './serviceHighlights.constant';
 export * from './testimonials.constant';

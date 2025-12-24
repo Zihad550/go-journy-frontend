@@ -1,8 +1,8 @@
-import { Switch } from '@/components/ui/switch';
-import { DriverAvailability } from '@/constants/driver.constant';
-import { useUpdateDriverAvailabilityMutation } from '@/redux/features/driver/driver.api';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Switch } from "@/components/ui/switch";
+import { DriverAvailability } from "@/constants/driver.constant";
+import { useUpdateDriverAvailabilityMutation } from "@/redux/features/driver/driver-api";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface DriverAvailabilityControlProps {
   currentAvailability: string;
@@ -33,9 +33,9 @@ export function DriverAvailabilityControl({
       }).unwrap();
 
       toast.success(
-        `You are now ${checked ? 'online' : 'offline'} and ${
-          checked ? 'available' : 'unavailable'
-        } for ride requests`
+        `You are now ${checked ? "online" : "offline"} and ${
+          checked ? "available" : "unavailable"
+        } for ride requests`,
       );
     } catch (error) {
       // Revert optimistic update on error
@@ -43,13 +43,13 @@ export function DriverAvailabilityControl({
 
       const errorMessage =
         error &&
-        typeof error === 'object' &&
-        'data' in error &&
+        typeof error === "object" &&
+        "data" in error &&
         error.data &&
-        typeof error.data === 'object' &&
-        'message' in error.data
+        typeof error.data === "object" &&
+        "message" in error.data
           ? String(error.data.message)
-          : 'Failed to update availability status';
+          : "Failed to update availability status";
 
       toast.error(errorMessage);
     }
@@ -61,15 +61,15 @@ export function DriverAvailabilityControl({
         checked={isOnline}
         onCheckedChange={handleAvailabilityChange}
         disabled={isLoading}
-        aria-label={`Driver availability: ${isOnline ? 'online' : 'offline'}`}
+        aria-label={`Driver availability: ${isOnline ? "online" : "offline"}`}
       />
       <div className="flex flex-col">
         <span
           className={`text-sm font-medium ${
-            isOnline ? 'text-chart-1' : 'text-muted-foreground'
+            isOnline ? "text-chart-1" : "text-muted-foreground"
           }`}
         >
-          {isOnline ? 'Online' : 'Offline'}
+          {isOnline ? "Online" : "Offline"}
         </span>
         {isLoading && (
           <span className="text-xs text-muted-foreground">(updating...)</span>

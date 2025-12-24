@@ -1,9 +1,9 @@
-import { Switch } from '@/components/ui/switch';
-import { DriverAvailability } from '@/constants/driver.constant';
-import { useUpdateDriverAvailabilityMutation } from '@/redux/features/driver/driver.api';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Wifi, WifiOff, Loader2 } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
+import { DriverAvailability } from "@/constants/driver.constant";
+import { useUpdateDriverAvailabilityMutation } from "@/redux/features/driver/driver-api";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Wifi, WifiOff, Loader2 } from "lucide-react";
 
 interface MobileAvailabilityControlProps {
   currentAvailability: string;
@@ -34,12 +34,12 @@ export function MobileAvailabilityControl({
       }).unwrap();
 
       toast.success(
-        `You are now ${checked ? 'online' : 'offline'} and ${
-          checked ? 'available' : 'unavailable'
+        `You are now ${checked ? "online" : "offline"} and ${
+          checked ? "available" : "unavailable"
         } for ride requests`,
         {
-          icon: checked ? '🟢' : '🔴',
-        }
+          icon: checked ? "🟢" : "🔴",
+        },
       );
     } catch (error) {
       // Revert optimistic update on error
@@ -47,13 +47,13 @@ export function MobileAvailabilityControl({
 
       const errorMessage =
         error &&
-        typeof error === 'object' &&
-        'data' in error &&
+        typeof error === "object" &&
+        "data" in error &&
         error.data &&
-        typeof error.data === 'object' &&
-        'message' in error.data
+        typeof error.data === "object" &&
+        "message" in error.data
           ? String(error.data.message)
-          : 'Failed to update availability status';
+          : "Failed to update availability status";
 
       toast.error(errorMessage);
     }
@@ -83,14 +83,14 @@ export function MobileAvailabilityControl({
           <span className="text-sm font-medium">Driver Status</span>
           <span
             className={`text-xs ${
-              isOnline ? 'text-chart-1' : 'text-muted-foreground'
+              isOnline ? "text-chart-1" : "text-muted-foreground"
             }`}
           >
             {isLoading
-              ? 'Updating...'
+              ? "Updating..."
               : isOnline
-              ? 'Available for rides'
-              : 'Not available'}
+                ? "Available for rides"
+                : "Not available"}
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@ export function MobileAvailabilityControl({
         checked={isOnline}
         onCheckedChange={handleAvailabilityChange}
         disabled={isLoading}
-        aria-label={`Driver availability: ${isOnline ? 'online' : 'offline'}`}
+        aria-label={`Driver availability: ${isOnline ? "online" : "offline"}`}
         className="data-[state=checked]:bg-chart-1"
       />
     </div>

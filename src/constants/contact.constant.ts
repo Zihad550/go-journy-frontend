@@ -1,4 +1,4 @@
-import { type QuickActionCardProps } from "@/components/contact/QuickActionCard";
+import { type QuickActionCardProps } from "@/components/contact/quick-action-card";
 // Contains contact information used across the application
 export const CONTACT_INFO = {
   email: "jehadhossain008@gmail.com",
