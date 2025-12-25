@@ -1,7 +1,16 @@
 import { baseApi } from "@/redux/base-api";
-import type { IFeaturedReviewsResponse, IApiResponse } from "@/types";
+import type { IFeaturedReviewsResponse, IApiResponse, IRiderReview } from "@/types";
 
-// Review creation types
+export interface IGetRiderReviewsParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface IUpdateReviewRequest {
+  rating?: number;
+  comment?: string;
+}
+
 export interface ICreateReviewRequest {
   ride: string;
   rating: number;
@@ -32,6 +41,14 @@ export const reviewApi = baseApi.injectEndpoints({
       }),
       providesTags: ["REVIEW"],
     }),
+    getRiderReviews: builder.query<IApiResponse<IRiderReview[]>, IGetRiderReviewsParams | undefined>({
+      query: (params) => ({
+        url: "/reviews/my-reviews",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["REVIEW"],
+    }),
     createReview: builder.mutation<
       IApiResponse<ICreateReviewResponse>,
       ICreateReviewRequest
@@ -43,8 +60,31 @@ export const reviewApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["REVIEW"],
     }),
+    updateReview: builder.mutation<
+      IApiResponse<IRiderReview>,
+      { id: string; data: IUpdateReviewRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/reviews/${id}`,
+        method: "PATCH",
+        data,
+      }),
+      invalidatesTags: ["REVIEW"],
+    }),
+    deleteReview: builder.mutation<IApiResponse<null>, string>({
+      query: (id) => ({
+        url: `/reviews/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["REVIEW"],
+    }),
   }),
 });
 
-export const { useGetFeaturedReviewsQuery, useCreateReviewMutation } =
-  reviewApi;
+export const {
+  useGetFeaturedReviewsQuery,
+  useGetRiderReviewsQuery,
+  useCreateReviewMutation,
+  useUpdateReviewMutation,
+  useDeleteReviewMutation,
+} = reviewApi;

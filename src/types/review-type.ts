@@ -20,6 +20,32 @@ export interface IReview {
   };
 }
 
+export interface IRiderReview extends IReview {
+  driver: {
+    _id: string;
+    user: {
+      name: string;
+      email: string;
+    };
+    vehicle: {
+      name: string;
+      model: string;
+    };
+  };
+  ride: {
+    _id: string;
+    createdAt: string;
+    pickupLocation: {
+      lat: number;
+      lng: number;
+    };
+    destination: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
 export interface IFeaturedReviewsResponse {
   success: boolean;
   statusCode: number;

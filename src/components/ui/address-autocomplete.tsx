@@ -10,6 +10,7 @@ import {
 import { Loader2, MapPin, Navigation, X } from "lucide-react";
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 // Type definitions
 type Suggestion = IGeocodeResult;
@@ -117,7 +118,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // Handle current location selection
   const handleCurrentLocationSelect = useCallback(async () => {
     if (!navigator.geolocation) {
-      console.error("Geolocation is not supported");
       return;
     }
 
@@ -156,8 +156,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         setInputValue(location.address);
         onSelect(location);
       }
-    } catch (error) {
-      console.error("Error getting current location:", error);
+    } catch {
+      toast.error("Failed to get current location");
     } finally {
       setIsGettingLocation(false);
     }

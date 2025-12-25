@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   serviceHighlights,
   type ServiceHighlight,
@@ -170,11 +171,48 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
   );
 };
 
+const HighlightCardSkeleton: React.FC = () => {
+  return (
+    <Card className="h-full relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50">
+      <CardHeader className="pb-2 sm:pb-3">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl" />
+          <Skeleton className="h-8 w-16 sm:h-10 sm:w-20" />
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6 pt-0">
+        <Skeleton className="h-6 w-3/4 mb-3 sm:mb-4" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const SkeletonCTAStats: React.FC = () => {
+  return (
+    <div
+      className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8"
+      role="list"
+      aria-label="Loading platform statistics"
+    >
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={`skeleton-stat-${index}`} className="flex items-center gap-1.5 sm:gap-2" role="listitem">
+          <Skeleton className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" aria-hidden="true" />
+          <Skeleton className="h-4 w-20 sm:w-24 md:w-32" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
   className,
 }) => {
   // Fetch public stats for dynamic metrics
-  const { stats } = usePublicStats();
+  const { stats, loading } = usePublicStats();
 
   // Create dynamic service highlights with real user count
   const dynamicServiceHighlights: ServiceHighlight[] = serviceHighlights.map(
@@ -271,11 +309,17 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
           role="list"
           aria-label="Platform benefits and service highlights"
         >
-          {dynamicServiceHighlights.map((highlight, index) => (
-            <div className="h-full" key={highlight.title} role="listitem">
-              <HighlightCard highlight={highlight} index={index} />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div className="h-full" key={`skeleton-${index}`} role="listitem">
+                  <HighlightCardSkeleton />
+                </div>
+              ))
+            : dynamicServiceHighlights.map((highlight, index) => (
+                <div className="h-full" key={highlight.title} role="listitem">
+                  <HighlightCard highlight={highlight} index={index} />
+                </div>
+              ))}
         </div>
 
         {/* Bottom CTA section - Enhanced Mobile */}
@@ -292,21 +336,25 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
             Join thousands of satisfied users who trust Go Journy for their
             daily transportation needs
           </p>
-          <div
-            className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground"
-            role="list"
-            aria-label="Platform statistics"
-          >
-            {dynamicStats.map((stat) => (
-              <div key={stat.label} className="flex items-center gap-1.5 sm:gap-2" role="listitem">
-                <div
-                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 ${stat.color} rounded-full`}
-                  aria-hidden="true"
-                />
-                <span>{stat.value} {stat.label}</span>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <SkeletonCTAStats />
+          ) : (
+            <div
+              className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground"
+              role="list"
+              aria-label="Platform statistics"
+            >
+              {dynamicStats.map((stat) => (
+                <div key={stat.label} className="flex items-center gap-1.5 sm:gap-2" role="listitem">
+                  <div
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 ${stat.color} rounded-full`}
+                    aria-hidden="true"
+                  />
+                  <span>{stat.value} {stat.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

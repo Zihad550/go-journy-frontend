@@ -14,7 +14,7 @@ interface TabContentProps {
 function TabContentComponent({ type, steps }: TabContentProps) {
   const is_rider = type === 'rider';
   const content = TAB_CONTENT[type];
-  const { stats } = usePublicStats();
+  const { stats, loading } = usePublicStats();
   const statistics = stats?.[type] || TAB_STATISTICS[type];
   const Icon = is_rider ? Users : Car;
   const gradient_class = is_rider
@@ -52,7 +52,7 @@ function TabContentComponent({ type, steps }: TabContentProps) {
         </p>
 
         {/* Statistics Row */}
-        <StatisticsDisplay statistics={statistics} />
+        <StatisticsDisplay statistics={statistics} loading={loading} />
       </div>
 
       <ProcessFlow

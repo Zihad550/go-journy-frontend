@@ -79,8 +79,7 @@ export default function Verify() {
         setShowOtpInput(true);
         setTimer(120);
       }
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast.error("Failed to send OTP", { id: toastId });
       setOtpError("Failed to send verification code. Please try again.");
     } finally {
@@ -103,8 +102,7 @@ export default function Verify() {
         toast.success("OTP Verified", { id: toastId });
         navigate("/login");
       }
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast.error("Invalid OTP", { id: toastId });
       setOtpError("Invalid verification code. Please check and try again.");
     } finally {
@@ -132,7 +130,6 @@ export default function Verify() {
 
     const timerId = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-      console.log("Tick");
     }, 1000);
 
     return () => clearInterval(timerId);

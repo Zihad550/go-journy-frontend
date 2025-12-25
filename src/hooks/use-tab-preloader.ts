@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // User behavior tracking types
 interface UserBehaviorPattern {
@@ -13,7 +13,7 @@ interface UserBehaviorPattern {
 interface PreloadPriority {
   tabId: string;
   priority: number; // 0-100, higher is more important
-  reason: 'adjacent' | 'frequent' | 'predicted' | 'manual';
+  reason: "adjacent" | "frequent" | "predicted" | "manual";
   confidence: number; // 0-1, confidence in the prediction
 }
 
@@ -68,12 +68,12 @@ export function useTabPreloader({
 
   // Preload cache
   const [preloadCache, setPreloadCache] = useState<Map<string, PreloadCache>>(
-    new Map()
+    new Map(),
   );
 
   // Current preload priorities
   const [preloadPriorities, setPreloadPriorities] = useState<PreloadPriority[]>(
-    []
+    [],
   );
 
   // Intersection observer for background loading
@@ -84,24 +84,24 @@ export function useTabPreloader({
 
   // Initialize intersection observer for background loading
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     intersectionObserverRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const tabId = entry.target.getAttribute('data-tab-id');
+          const tabId = entry.target.getAttribute("data-tab-id");
           if (!tabId || !validTabs.includes(tabId)) return;
 
           if (entry.isIntersecting) {
             // Tab trigger is visible, increase preload priority
-            updatePreloadPriority(tabId, 'adjacent', 20);
+            updatePreloadPriority(tabId, "adjacent", 20);
           }
         });
       },
       {
         threshold: finalConfig.intersectionThreshold,
-        rootMargin: '50px',
-      }
+        rootMargin: "50px",
+      },
     );
 
     return () => {
@@ -144,7 +144,7 @@ export function useTabPreloader({
 
       tabStartTime.current = now;
     },
-    [finalConfig.behaviorTrackingEnabled]
+    [finalConfig.behaviorTrackingEnabled],
   );
 
   // Track tab transitions for prediction
@@ -170,7 +170,7 @@ export function useTabPreloader({
         return newPatterns;
       });
     },
-    [finalConfig.behaviorTrackingEnabled]
+    [finalConfig.behaviorTrackingEnabled],
   );
 
   // Calculate preload priorities based on user behavior
@@ -183,7 +183,7 @@ export function useTabPreloader({
       priorities.push({
         tabId: validTabs[currentIndex - 1],
         priority: 80,
-        reason: 'adjacent',
+        reason: "adjacent",
         confidence: 0.9,
       });
     }
@@ -191,7 +191,7 @@ export function useTabPreloader({
       priorities.push({
         tabId: validTabs[currentIndex + 1],
         priority: 80,
-        reason: 'adjacent',
+        reason: "adjacent",
         confidence: 0.9,
       });
     }
@@ -202,20 +202,20 @@ export function useTabPreloader({
 
       const recencyScore = Math.max(
         0,
-        1 - (Date.now() - pattern.lastVisited) / (24 * 60 * 60 * 1000)
+        1 - (Date.now() - pattern.lastVisited) / (24 * 60 * 60 * 1000),
       );
       const frequencyScore = Math.min(1, pattern.visitCount / 10);
       const timeScore = Math.min(1, pattern.averageTimeSpent / (5 * 60 * 1000)); // 5 minutes max
 
       const priority = Math.round(
-        recencyScore * 30 + frequencyScore * 40 + timeScore * 30
+        recencyScore * 30 + frequencyScore * 40 + timeScore * 30,
       );
 
       if (priority >= finalConfig.preloadThreshold) {
         priorities.push({
           tabId: pattern.tabId,
           priority,
-          reason: 'frequent',
+          reason: "frequent",
           confidence: (recencyScore + frequencyScore + timeScore) / 3,
         });
       }
@@ -225,7 +225,7 @@ export function useTabPreloader({
     const currentPattern = behaviorPatterns.get(activeTab);
     if (currentPattern) {
       const totalTransitions = Array.from(
-        currentPattern.transitionProbability.values()
+        currentPattern.transitionProbability.values(),
       ).reduce((sum, count) => sum + count, 0);
 
       currentPattern.transitionProbability.forEach((count, tabId) => {
@@ -238,7 +238,7 @@ export function useTabPreloader({
           priorities.push({
             tabId,
             priority,
-            reason: 'predicted',
+            reason: "predicted",
             confidence: probability,
           });
         }
@@ -255,7 +255,7 @@ export function useTabPreloader({
     });
 
     return Array.from(uniquePriorities.values()).sort(
-      (a, b) => b.priority - a.priority
+      (a, b) => b.priority - a.priority,
     );
   }, [validTabs, activeTab, behaviorPatterns, finalConfig.preloadThreshold]);
 
@@ -263,8 +263,8 @@ export function useTabPreloader({
   const updatePreloadPriority = useCallback(
     (
       tabId: string,
-      reason: PreloadPriority['reason'],
-      additionalPriority: number
+      reason: PreloadPriority["reason"],
+      additionalPriority: number,
     ) => {
       setPreloadPriorities((prev) => {
         const newPriorities = [...prev];
@@ -275,7 +275,7 @@ export function useTabPreloader({
             ...newPriorities[existingIndex],
             priority: Math.min(
               100,
-              newPriorities[existingIndex].priority + additionalPriority
+              newPriorities[existingIndex].priority + additionalPriority,
             ),
           };
         } else {
@@ -290,7 +290,7 @@ export function useTabPreloader({
         return newPriorities.sort((a, b) => b.priority - a.priority);
       });
     },
-    []
+    [],
   );
 
   // Cache management
@@ -312,7 +312,7 @@ export function useTabPreloader({
       // Evict expired entries
       toEvict.forEach((tabId) => {
         newCache.delete(tabId);
-        onCacheEvicted?.(tabId, 'expired');
+        onCacheEvicted?.(tabId, "expired");
       });
 
       return newCache;
@@ -346,7 +346,7 @@ export function useTabPreloader({
 
         newCache.delete(tabId);
         currentSize -= entry.size;
-        onCacheEvicted?.(tabId, 'size-limit');
+        onCacheEvicted?.(tabId, "size-limit");
       }
 
       return newCache;
@@ -391,13 +391,12 @@ export function useTabPreloader({
 
         onPreloadComplete?.(tabId, true);
         return true;
-      } catch (error) {
-        console.error(`Failed to preload tab ${tabId}:`, error);
+      } catch {
         onPreloadComplete?.(tabId, false);
         return false;
       }
     },
-    [validTabs, preloadCache, onPreloadComplete]
+    [validTabs, preloadCache, onPreloadComplete],
   );
 
   // Get cached content
@@ -422,7 +421,7 @@ export function useTabPreloader({
 
       return cached.content;
     },
-    [preloadCache]
+    [preloadCache],
   );
 
   // Execute preloading based on priorities
@@ -455,7 +454,7 @@ export function useTabPreloader({
   // Manual preload trigger
   const triggerPreload = useCallback(
     (tabId: string, priority: number = 100) => {
-      updatePreloadPriority(tabId, 'manual', priority);
+      updatePreloadPriority(tabId, "manual", priority);
 
       const timeout = setTimeout(() => {
         preloadTab(tabId);
@@ -463,7 +462,7 @@ export function useTabPreloader({
 
       preloadTimeoutsRef.current.set(tabId, timeout);
     },
-    [updatePreloadPriority, preloadTab, finalConfig.preloadDelay]
+    [updatePreloadPriority, preloadTab, finalConfig.preloadDelay],
   );
 
   // Clear cache for specific tab
@@ -515,14 +514,14 @@ export function useTabPreloader({
     (element: HTMLElement, tabId: string) => {
       if (!intersectionObserverRef.current) return;
 
-      element.setAttribute('data-tab-id', tabId);
+      element.setAttribute("data-tab-id", tabId);
       intersectionObserverRef.current.observe(element);
 
       return () => {
         intersectionObserverRef.current?.unobserve(element);
       };
     },
-    []
+    [],
   );
 
   return {
@@ -545,19 +544,19 @@ export function useTabPreloader({
     getCacheSize: () =>
       Array.from(preloadCache.values()).reduce(
         (sum, entry) => sum + entry.size,
-        0
+        0,
       ),
     getCacheStats: () => ({
       totalEntries: preloadCache.size,
       totalSize: Array.from(preloadCache.values()).reduce(
         (sum, entry) => sum + entry.size,
-        0
+        0,
       ),
       oldestEntry: Math.min(
-        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp)
+        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp),
       ),
       newestEntry: Math.max(
-        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp)
+        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp),
       ),
     }),
   };

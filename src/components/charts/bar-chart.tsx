@@ -74,9 +74,6 @@ const BarChart = ({
     });
   }, [data, width, height, showLabels]);
 
-  // Debug logging
-  console.log("BarChart data:", data);
-
   if (data.length === 0 || data.every((item) => item.value === 0)) {
     return (
       <div

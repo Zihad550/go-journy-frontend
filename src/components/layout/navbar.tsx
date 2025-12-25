@@ -33,16 +33,6 @@ import { User } from "lucide-react";
 import { Link } from "react-router";
 import { ModeToggle } from "./mode-toggle";
 
-// Navigation links array to be used in both desktop and mobile menus
-const public_navigation_links = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/help", label: "Help" },
-  { href: "/book-ride", label: "Book Ride" },
-  { href: "/contact", label: "Contact" },
-  { href: "/privacy", label: "Privacy" },
-];
-
 // Helper function to get role display text
 const get_role_display_text = (role: string) => {
   switch (role) {
@@ -63,6 +53,20 @@ export default function Navbar() {
   const { data: driverProfile } = useGetDriverProfileQuery(undefined, {
     skip: data?.data?.role !== Role.DRIVER,
   });
+
+  // Navigation links array to be used in both desktop and mobile menus
+  const public_navigation_links = [
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+    { href: "/help", label: "Help" },
+    (!data || data?.data?.role === Role.RIDER) && {
+      href: "/book-ride",
+      label: "Book Ride",
+    },
+    { href: "/contact", label: "Contact" },
+    { href: "/privacy", label: "Privacy" },
+  ].filter(Boolean) as { href: string; label: string }[];
+
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
@@ -115,8 +119,8 @@ export default function Navbar() {
             <PopoverContent align="start" className="w-48 p-2 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-1">
-                   {/* Public Navigation Links */}
-                   {public_navigation_links.map((link, index) => (
+                  {/* Public Navigation Links */}
+                  {public_navigation_links.map((link, index) => (
                     <NavigationMenuItem key={index} className="w-full">
                       <NavigationMenuLink
                         asChild
@@ -129,14 +133,16 @@ export default function Navbar() {
                     </NavigationMenuItem>
                   ))}
 
-
                   {data?.data?.role === Role.DRIVER && (
                     <NavigationMenuItem className="w-full">
                       <NavigationMenuLink
                         asChild
                         className="py-2 px-3 rounded-md hover:bg-accent"
                       >
-                        <Link to="/driver/find-rides" className="text-sm font-medium">
+                        <Link
+                          to="/driver/find-rides"
+                          className="text-sm font-medium"
+                        >
                           Find Rides
                         </Link>
                       </NavigationMenuLink>

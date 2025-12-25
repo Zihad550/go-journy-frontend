@@ -124,7 +124,6 @@ export function ReviewModal({
       setRating(0);
       setComment("");
     } catch (error: any) {
-      console.error("Review submission error:", error);
       const errorMessage =
         error?.data?.message || "Failed to submit review. Please try again.";
       toast.error(errorMessage);

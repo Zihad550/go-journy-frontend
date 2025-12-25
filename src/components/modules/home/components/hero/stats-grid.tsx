@@ -3,6 +3,7 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
 import { STATISTICS } from "@/constants/content-constant";
 import { usePublicStats } from "@/hooks/use-public-stats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -23,7 +24,7 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
     threshold: 0.2,
   });
 
-  const { stats: publicStats } = usePublicStats();
+  const { stats: publicStats, loading } = usePublicStats();
 
   const stats: StatItem[] = [
     {
@@ -74,23 +75,36 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
       } ${className}`}
       aria-label="Platform statistics"
     >
-      {stats.map((stat, index) => (
-        <div
-          key={index}
-          className={`group flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2 p-2.5 sm:p-3 md:p-4 bg-card/60 backdrop-blur-md rounded-lg sm:rounded-xl border border-border/60 shadow-lg hover:shadow-xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px] transition-all duration-300 hover:scale-105 hover:bg-card/70 ${stat.delay}`}
-          role="listitem"
-        >
-          {stat.icon}
-          <span
-            className={`text-lg sm:text-xl md:text-2xl font-bold text-foreground group-hover:${stat.color} transition-colors duration-300`}
+      {loading ? (
+        [...Array(4)].map((_, index) => (
+          <div
+            key={index}
+            className="flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2 p-2.5 sm:p-3 md:p-4 bg-card/60 backdrop-blur-md rounded-lg sm:rounded-xl border border-border/60 shadow-lg min-h-[80px] sm:min-h-[100px] md:min-h-[120px]"
           >
-            {stat.value}
-          </span>
-          <span className="text-xs sm:text-sm text-muted-foreground text-center leading-tight">
-            {stat.label}
-          </span>
-        </div>
-      ))}
+            <Skeleton className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 rounded-md" />
+            <Skeleton className="h-5 w-16 sm:h-6 sm:w-20 md:h-7 md:w-24" />
+            <Skeleton className="h-3 w-20 sm:h-3.5 sm:w-24 md:h-4 md:w-28" />
+          </div>
+        ))
+      ) : (
+        stats.map((stat, index) => (
+          <div
+            key={index}
+            className={`group flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2 p-2.5 sm:p-3 md:p-4 bg-card/60 backdrop-blur-md rounded-lg sm:rounded-xl border border-border/60 shadow-lg hover:shadow-xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px] transition-all duration-300 hover:scale-105 hover:bg-card/70 ${stat.delay}`}
+            role="listitem"
+          >
+            {stat.icon}
+            <span
+              className={`text-lg sm:text-xl md:text-2xl font-bold text-foreground group-hover:${stat.color} transition-colors duration-300`}
+            >
+              {stat.value}
+            </span>
+            <span className="text-xs sm:text-sm text-muted-foreground text-center leading-tight">
+              {stat.label}
+            </span>
+          </div>
+        ))
+      )}
     </ul>
   );
 }

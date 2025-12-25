@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CardLoader } from "@/components/ui/card-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetDriverAnalyticsQuery } from "@/redux/features/analytics/analytics-api";
 import {
   Calendar,
@@ -146,8 +146,8 @@ const Analytics = () => {
               <CardContent>
                 {isLoading ? (
                   <div className="space-y-2">
-                    <div className="h-8 bg-muted animate-pulse rounded" />
-                    <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-4 w-32" />
                   </div>
                 ) : error ? (
                   <div className="text-red-500 text-sm">Error loading data</div>
@@ -196,7 +196,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <CardLoader message="Loading earnings data..." />
+              <Skeleton className="h-[250px] w-full rounded-lg" />
             ) : error ? (
               <div className="text-red-500 text-center py-8">
                 Error loading earnings trend
@@ -219,7 +219,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <CardLoader message="Loading ratings..." />
+              <Skeleton className="h-[200px] w-full rounded-lg" />
             ) : error ? (
               <div className="text-red-500 text-center py-8">
                 Error loading ratings
@@ -258,7 +258,24 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <CardLoader message="Loading reviews..." />
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="flex items-start space-x-4 p-4 border rounded-lg"
+                    >
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Skeleton className="h-5 w-24" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="space-y-4">
                   {analyticsData.data.riderRatings.recentReviews
@@ -315,11 +332,35 @@ const Analytics = () => {
         <CardHeader>
           <CardTitle>Recent Rides</CardTitle>
           <CardDescription>Your latest ride history</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <CardLoader message="Loading ride history..." />
-          ) : error ? (
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <Skeleton className="h-6 w-20" />
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Skeleton className="h-4 w-4" />
+                          <Skeleton className="h-4 w-32" />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Skeleton className="h-4 w-4" />
+                          <Skeleton className="h-4 w-40" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Skeleton className="h-5 w-20 ml-auto" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : error ? (
             <div className="text-red-500 text-center py-8">
               Error loading ride history
             </div>

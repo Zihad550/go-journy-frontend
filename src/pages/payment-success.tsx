@@ -37,8 +37,7 @@ function PaymentSuccess() {
 
             setDriverAccepted(true);
             toast.success("Driver accepted successfully! 🚗");
-          } catch (acceptError) {
-            console.error("Driver acceptance error:", acceptError);
+          } catch {
             toast.error(
               "Payment successful, but failed to accept driver. Please contact support.",
             );
@@ -53,8 +52,7 @@ function PaymentSuccess() {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setIsProcessing(false);
         toast.success("Payment processed successfully!");
-      } catch (error) {
-        console.error("Payment processing error:", error);
+      } catch {
         toast.error("There was an issue processing your payment.");
         setIsProcessing(false);
       }

@@ -1,12 +1,27 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useWebSocket } from '@/lib/websocket';
-import { useGetDriverLocationQuery, useGetLocationHistoryQuery } from '@/redux/features/location/location-api';
-import { MAPBOX_CONFIG, MARKER_CONFIG } from '@/config/mapbox-config';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, MapPin, Clock, Navigation, Play, Pause, RotateCcw, SkipBack, SkipForward, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useWebSocket } from "@/lib/websocket";
+import {
+  useGetDriverLocationQuery,
+  useGetLocationHistoryQuery,
+} from "@/redux/features/location/location-api";
+import { MAPBOX_CONFIG, MARKER_CONFIG } from "@/config/mapbox-config";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Loader2,
+  MapPin,
+  Clock,
+  Navigation,
+  Play,
+  Pause,
+  RotateCcw,
+  SkipBack,
+  SkipForward,
+  AlertTriangle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface LiveTrackingProps {
   rideId?: string;
@@ -22,8 +37,6 @@ interface DriverMarker {
   speed?: number;
   timestamp: string;
 }
-
-
 
 interface PlaybackState {
   isPlaying: boolean;
@@ -54,14 +67,14 @@ const Timeline: React.FC<TimelineProps> = ({
   currentIndex,
   onIndexChange,
   startTime,
-  endTime
+  endTime,
 }) => {
   const formatTime = (timestamp?: string) => {
-    if (!timestamp) return '--:--:--';
+    if (!timestamp) return "--:--:--";
     return new Date(timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -73,19 +86,20 @@ const Timeline: React.FC<TimelineProps> = ({
   if (!locations.length) return null;
 
   const currentLocation = locations[currentIndex];
-  const progress = locations.length > 1 ? (currentIndex / (locations.length - 1)) * 100 : 0;
+  const progress =
+    locations.length > 1 ? (currentIndex / (locations.length - 1)) * 100 : 0;
 
   return (
     <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">
-          {startTime ? formatTime(startTime) : 'Start'}
+          {startTime ? formatTime(startTime) : "Start"}
         </span>
         <span className="font-medium">
-          {currentLocation ? formatTime(currentLocation.timestamp) : '--:--:--'}
+          {currentLocation ? formatTime(currentLocation.timestamp) : "--:--:--"}
         </span>
         <span className="text-muted-foreground">
-          {endTime ? formatTime(endTime) : 'End'}
+          {endTime ? formatTime(endTime) : "End"}
         </span>
       </div>
 
@@ -98,17 +112,29 @@ const Timeline: React.FC<TimelineProps> = ({
           onChange={handleSliderChange}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
           style={{
-            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progress}%, #e5e7eb ${progress}%, #e5e7eb 100%)`
+            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progress}%, #e5e7eb ${progress}%, #e5e7eb 100%)`,
           }}
         />
       </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{currentIndex + 1} of {locations.length} locations</span>
+        <span>
+          {currentIndex + 1} of {locations.length} locations
+        </span>
         {currentLocation && (
           <div className="flex items-center gap-2">
-            <span>Speed: {currentLocation.speed ? `${Math.round(currentLocation.speed * 3.6)} km/h` : '--'}</span>
-            <span>Heading: {currentLocation.heading ? `${Math.round(currentLocation.heading)}°` : '--'}</span>
+            <span>
+              Speed:{" "}
+              {currentLocation.speed
+                ? `${Math.round(currentLocation.speed * 3.6)} km/h`
+                : "--"}
+            </span>
+            <span>
+              Heading:{" "}
+              {currentLocation.heading
+                ? `${Math.round(currentLocation.heading)}°`
+                : "--"}
+            </span>
           </div>
         )}
       </div>
@@ -119,7 +145,7 @@ const Timeline: React.FC<TimelineProps> = ({
 const LiveTracking: React.FC<LiveTrackingProps> = ({
   rideId,
   driverId,
-  className
+  className,
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
@@ -131,9 +157,9 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
     isPlaying: false,
     currentIndex: 0,
     speed: 1,
-    startTime: '',
-    endTime: '',
-    isHistoryMode: false
+    startTime: "",
+    endTime: "",
+    isHistoryMode: false,
   });
 
   // WebSocket hooks
@@ -148,31 +174,29 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
     onLocationUpdate,
     onRideStatusUpdate,
     onETAUpdate,
-    onError
+    onError,
   } = useWebSocket();
 
   // Get driver ID from props
-  const currentDriverId = driverId || '';
+  const currentDriverId = driverId || "";
 
   // API hooks
-  const { data: driverLocationData, isLoading: isLoadingDriverLocation } = useGetDriverLocationQuery(
-    currentDriverId || '',
-    {
+  const { data: driverLocationData, isLoading: isLoadingDriverLocation } =
+    useGetDriverLocationQuery(currentDriverId || "", {
       skip: !currentDriverId,
       pollingInterval: 30000, // Poll every 30 seconds as backup
-    }
-  );
+    });
 
   const { data: locationHistoryData } = useGetLocationHistoryQuery(
     {
-      rideId: rideId || '',
+      rideId: rideId || "",
       startTime: playbackState.startTime,
       endTime: playbackState.endTime,
-      limit: 1000
+      limit: 1000,
     },
     {
       skip: !rideId || !playbackState.startTime,
-    }
+    },
   );
 
   // Initialize map
@@ -182,20 +206,20 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
     try {
       // Load Mapbox GL JS dynamically if not loaded
       if (!window.mapboxgl) {
-        const script = document.createElement('script');
-        script.src = 'https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js';
+        const script = document.createElement("script");
+        script.src = "https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js";
         script.onload = () => initializeMapInstance();
         document.head.appendChild(script);
 
-        const link = document.createElement('link');
-        link.href = 'https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css';
-        link.rel = 'stylesheet';
+        const link = document.createElement("link");
+        link.href = "https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css";
+        link.rel = "stylesheet";
         document.head.appendChild(link);
       } else {
         initializeMapInstance();
       }
-    } catch (error) {
-      console.error('Failed to initialize map:', error);
+    } catch {
+      toast.error("Failed to initialize map");
     }
   }, []);
 
@@ -212,13 +236,13 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       zoom: MAPBOX_CONFIG.zoom.default,
     });
 
-    map.on('load', () => {
+    map.on("load", () => {
       setIsMapLoaded(true);
       mapInstanceRef.current = map;
 
       // Add navigation controls
-      map.addControl(new window.mapboxgl.NavigationControl(), 'top-right');
-      map.addControl(new window.mapboxgl.FullscreenControl(), 'top-right');
+      map.addControl(new window.mapboxgl.NavigationControl(), "top-right");
+      map.addControl(new window.mapboxgl.FullscreenControl(), "top-right");
 
       // Fit bounds if we have driver location
       if (driverMarker) {
@@ -227,57 +251,61 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       }
     });
 
-    map.on('error', (e) => {
-      console.error('Map error:', e);
+    map.on("error", () => {
+      toast.error("Failed to initialize map");
     });
   }, [driverMarker]);
 
   // Update driver marker on map
-  const updateDriverMarker = useCallback((location: DriverMarker) => {
-    if (!mapInstanceRef.current || !isMapLoaded) return;
+  const updateDriverMarker = useCallback(
+    (location: DriverMarker) => {
+      if (!mapInstanceRef.current || !isMapLoaded) return;
 
-    const map = mapInstanceRef.current;
+      const map = mapInstanceRef.current;
 
-    // Remove existing driver marker
-    const existingMarker = markersRef.current.get('driver');
-    if (existingMarker) {
-      existingMarker.remove();
-    }
+      // Remove existing driver marker
+      const existingMarker = markersRef.current.get("driver");
+      if (existingMarker) {
+        existingMarker.remove();
+      }
 
-    // Create new driver marker
-    const el = document.createElement('div');
-    el.className = 'driver-marker';
-    el.style.width = `${MARKER_CONFIG.driver.size}px`;
-    el.style.height = `${MARKER_CONFIG.driver.size}px`;
-    el.style.backgroundColor = MARKER_CONFIG.driver.color;
-    el.style.borderRadius = '50%';
-    el.style.border = '3px solid white';
-    el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
-    el.style.display = 'flex';
-    el.style.alignItems = 'center';
-    el.style.justifyContent = 'center';
-    el.style.color = 'white';
-    el.style.fontSize = '12px';
-    el.style.fontWeight = 'bold';
-    el.innerHTML = '🚗';
+      // Create new driver marker
+      const el = document.createElement("div");
+      el.className = "driver-marker";
+      el.style.width = `${MARKER_CONFIG.driver.size}px`;
+      el.style.height = `${MARKER_CONFIG.driver.size}px`;
+      el.style.backgroundColor = MARKER_CONFIG.driver.color;
+      el.style.borderRadius = "50%";
+      el.style.border = "3px solid white";
+      el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
+      el.style.display = "flex";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.style.color = "white";
+      el.style.fontSize = "12px";
+      el.style.fontWeight = "bold";
+      el.innerHTML = "🚗";
 
-    const marker = new window.mapboxgl.Marker(el)
-      .setLngLat([location.lng, location.lat])
-      .addTo(map);
+      const marker = new window.mapboxgl.Marker(el)
+        .setLngLat([location.lng, location.lat])
+        .addTo(map);
 
-    markersRef.current.set('driver', marker);
+      markersRef.current.set("driver", marker);
 
-    // Update map center if driver is moving
-    if (driverMarker && (
-      Math.abs(driverMarker.lat - location.lat) > 0.001 ||
-      Math.abs(driverMarker.lng - location.lng) > 0.001
-    )) {
-      map.easeTo({
-        center: [location.lng, location.lat],
-        duration: 1000,
-      });
-    }
-  }, [driverMarker, isMapLoaded]);
+      // Update map center if driver is moving
+      if (
+        driverMarker &&
+        (Math.abs(driverMarker.lat - location.lat) > 0.001 ||
+          Math.abs(driverMarker.lng - location.lng) > 0.001)
+      ) {
+        map.easeTo({
+          center: [location.lng, location.lat],
+          duration: 1000,
+        });
+      }
+    },
+    [driverMarker, isMapLoaded],
+  );
 
   // WebSocket event handlers
   useEffect(() => {
@@ -301,20 +329,18 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
     const unsubscribeRideStatusUpdate = onRideStatusUpdate((data) => {
       if (data.rideId === rideId) {
-        console.log('Ride status update:', data);
         // Handle ride status changes
       }
     });
 
     const unsubscribeETAUpdate = onETAUpdate((data) => {
       if (data.rideId === rideId) {
-        console.log('ETA update:', data);
         // Handle ETA updates
       }
     });
 
-    const unsubscribeError = onError((error) => {
-      console.error('WebSocket error:', error);
+    const unsubscribeError = onError(() => {
+      toast.error("Failed to unsubscribe websocket");
     });
 
     return () => {
@@ -323,7 +349,16 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       unsubscribeETAUpdate();
       unsubscribeError();
     };
-  }, [isConnected, driverId, rideId, onLocationUpdate, onRideStatusUpdate, onETAUpdate, onError, updateDriverMarker]);
+  }, [
+    isConnected,
+    driverId,
+    rideId,
+    onLocationUpdate,
+    onRideStatusUpdate,
+    onETAUpdate,
+    onError,
+    updateDriverMarker,
+  ]);
 
   // Connect to WebSocket and join rooms
   useEffect(() => {
@@ -342,7 +377,16 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       if (driverId) stopTrackingDriver();
       disconnect();
     };
-  }, [connect, disconnect, joinRide, leaveRide, trackDriver, stopTrackingDriver, rideId, driverId]);
+  }, [
+    connect,
+    disconnect,
+    joinRide,
+    leaveRide,
+    trackDriver,
+    stopTrackingDriver,
+    rideId,
+    driverId,
+  ]);
 
   // Initialize map on mount
   useEffect(() => {
@@ -350,7 +394,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
     return () => {
       // Cleanup markers
-      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current.forEach((marker) => marker.remove());
       markersRef.current.clear();
 
       // Cleanup map
@@ -377,31 +421,40 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
   // Playback animation logic
   useEffect(() => {
-    if (!playbackState.isPlaying || !playbackState.isHistoryMode || !locationHistoryData?.data?.locations) {
+    if (
+      !playbackState.isPlaying ||
+      !playbackState.isHistoryMode ||
+      !locationHistoryData?.data?.locations
+    ) {
       return;
     }
 
     const locations = locationHistoryData.data.locations;
     const interval = setInterval(() => {
-      setPlaybackState(prev => {
+      setPlaybackState((prev) => {
         const nextIndex = prev.currentIndex + 1;
         if (nextIndex >= locations.length) {
           // Loop back to start or stop
           return {
             ...prev,
             currentIndex: 0,
-            isPlaying: false
+            isPlaying: false,
           };
         }
         return {
           ...prev,
-          currentIndex: nextIndex
+          currentIndex: nextIndex,
         };
       });
     }, 1000 / playbackState.speed); // Adjust speed
 
     return () => clearInterval(interval);
-  }, [playbackState.isPlaying, playbackState.isHistoryMode, playbackState.speed, locationHistoryData]);
+  }, [
+    playbackState.isPlaying,
+    playbackState.isHistoryMode,
+    playbackState.speed,
+    locationHistoryData,
+  ]);
 
   // Update map marker during playback
   useEffect(() => {
@@ -414,7 +467,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
     if (currentLocation) {
       const location: DriverMarker = {
-        id: currentDriverId || 'unknown',
+        id: currentDriverId || "unknown",
         lat: currentLocation.lat,
         lng: currentLocation.lng,
         heading: currentLocation.heading,
@@ -425,63 +478,69 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       setDriverMarker(location);
       updateDriverMarker(location);
     }
-  }, [playbackState.currentIndex, playbackState.isHistoryMode, locationHistoryData, driverId, updateDriverMarker]);
+  }, [
+    playbackState.currentIndex,
+    playbackState.isHistoryMode,
+    locationHistoryData,
+    driverId,
+    updateDriverMarker,
+  ]);
 
   // Playback controls for location history
   const togglePlayback = () => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
-      isPlaying: !prev.isPlaying
+      isPlaying: !prev.isPlaying,
     }));
   };
 
   const resetPlayback = () => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
       currentIndex: 0,
-      isPlaying: false
+      isPlaying: false,
     }));
   };
 
   const changePlaybackSpeed = (speed: number) => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
-      speed
+      speed,
     }));
   };
 
   const toggleHistoryMode = () => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
       isHistoryMode: !prev.isHistoryMode,
       isPlaying: false,
-      currentIndex: 0
+      currentIndex: 0,
     }));
   };
 
   const handleTimelineChange = (index: number) => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
       currentIndex: index,
-      isPlaying: false
+      isPlaying: false,
     }));
   };
 
   const skipToStart = () => {
-    setPlaybackState(prev => ({
+    setPlaybackState((prev) => ({
       ...prev,
       currentIndex: 0,
-      isPlaying: false
+      isPlaying: false,
     }));
   };
 
   const skipToEnd = () => {
     const locations = locationHistoryData?.data?.locations;
     if (locations && locations.length > 0) {
-      setPlaybackState(prev => ({
+      setPlaybackState((prev) => ({
         ...prev,
         currentIndex: locations.length - 1,
-        isPlaying: false
+        isPlaying: false,
       }));
     }
   };
@@ -504,7 +563,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   }
 
   // Error state for API failures
-  if (locationHistoryData && 'error' in locationHistoryData) {
+  if (locationHistoryData && "error" in locationHistoryData) {
     return (
       <Card className={cn("w-full", className)}>
         <CardHeader>
@@ -516,9 +575,12 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-4" />
-            <p className="text-destructive font-medium mb-2">Failed to load location history</p>
+            <p className="text-destructive font-medium mb-2">
+              Failed to load location history
+            </p>
             <p className="text-sm text-muted-foreground mb-4">
-              Unable to retrieve historical location data. This might be due to network issues or server problems.
+              Unable to retrieve historical location data. This might be due to
+              network issues or server problems.
             </p>
             <Button
               variant="outline"
@@ -533,8 +595,6 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       </Card>
     );
   }
-
-
 
   return (
     <Card className={cn("w-full", className)}>
@@ -560,7 +620,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         <div
           ref={mapRef}
           className="w-full h-96 bg-muted rounded-lg overflow-hidden"
-          style={{ minHeight: '400px' }}
+          style={{ minHeight: "400px" }}
         />
 
         {/* Status Information */}
@@ -568,13 +628,17 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.speed ? `${Math.round(driverMarker.speed * 3.6)} km/h` : '--'}
+                {driverMarker.speed
+                  ? `${Math.round(driverMarker.speed * 3.6)} km/h`
+                  : "--"}
               </div>
               <div className="text-sm text-muted-foreground">Speed</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.heading ? `${Math.round(driverMarker.heading)}°` : '--'}
+                {driverMarker.heading
+                  ? `${Math.round(driverMarker.heading)}°`
+                  : "--"}
               </div>
               <div className="text-sm text-muted-foreground">Heading</div>
             </div>
@@ -594,98 +658,89 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         )}
 
         {/* Mode Toggle */}
-        {locationHistoryData?.data?.locations && locationHistoryData.data.locations.length > 0 && (
-          <div className="flex items-center justify-center gap-2 p-2">
-            <Button
-              variant={playbackState.isHistoryMode ? "default" : "outline"}
-              size="sm"
-              onClick={toggleHistoryMode}
-            >
-              {playbackState.isHistoryMode ? "History Mode" : "Live Mode"}
-            </Button>
-          </div>
-        )}
+        {locationHistoryData?.data?.locations &&
+          locationHistoryData.data.locations.length > 0 && (
+            <div className="flex items-center justify-center gap-2 p-2">
+              <Button
+                variant={playbackState.isHistoryMode ? "default" : "outline"}
+                size="sm"
+                onClick={toggleHistoryMode}
+              >
+                {playbackState.isHistoryMode ? "History Mode" : "Live Mode"}
+              </Button>
+            </div>
+          )}
 
         {/* Playback Controls */}
-        {locationHistoryData?.data?.locations && locationHistoryData.data.locations.length > 0 && playbackState.isHistoryMode && (
-          <div className="space-y-4">
-            {/* Timeline */}
-            <Timeline
-              locations={locationHistoryData.data.locations.filter(loc => loc.timestamp)}
-              currentIndex={playbackState.currentIndex}
-              onIndexChange={handleTimelineChange}
-              startTime={locationHistoryData.data.timeRange?.start || ''}
-              endTime={locationHistoryData.data.timeRange?.end || ''}
-            />
-
-            {/* Playback Controls */}
-            <div className="flex items-center justify-center gap-2 p-4 bg-muted rounded-lg">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={skipToStart}
-              >
-                <SkipBack className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetPlayback}
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={togglePlayback}
-              >
-                {playbackState.isPlaying ? (
-                  <Pause className="h-4 w-4" />
-                ) : (
-                  <Play className="h-4 w-4" />
+        {locationHistoryData?.data?.locations &&
+          locationHistoryData.data.locations.length > 0 &&
+          playbackState.isHistoryMode && (
+            <div className="space-y-4">
+              {/* Timeline */}
+              <Timeline
+                locations={locationHistoryData.data.locations.filter(
+                  (loc) => loc.timestamp,
                 )}
-              </Button>
+                currentIndex={playbackState.currentIndex}
+                onIndexChange={handleTimelineChange}
+                startTime={locationHistoryData.data.timeRange?.start || ""}
+                endTime={locationHistoryData.data.timeRange?.end || ""}
+              />
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={skipToEnd}
-              >
-                <SkipForward className="h-4 w-4" />
-              </Button>
+              {/* Playback Controls */}
+              <div className="flex items-center justify-center gap-2 p-4 bg-muted rounded-lg">
+                <Button variant="outline" size="sm" onClick={skipToStart}>
+                  <SkipBack className="h-4 w-4" />
+                </Button>
 
-              <div className="flex items-center gap-1 ml-4">
-                <Button
-                  variant={playbackState.speed === 0.5 ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => changePlaybackSpeed(0.5)}
-                >
-                  0.5x
+                <Button variant="outline" size="sm" onClick={resetPlayback}>
+                  <RotateCcw className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant={playbackState.speed === 1 ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => changePlaybackSpeed(1)}
-                >
-                  1x
-                </Button>
-                <Button
-                  variant={playbackState.speed === 2 ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => changePlaybackSpeed(2)}
-                >
-                  2x
-                </Button>
-              </div>
 
-              <div className="text-sm text-muted-foreground ml-4">
-                {locationHistoryData.data.locations.length} locations
+                <Button variant="outline" size="sm" onClick={togglePlayback}>
+                  {playbackState.isPlaying ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={skipToEnd}>
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+
+                <div className="flex items-center gap-1 ml-4">
+                  <Button
+                    variant={
+                      playbackState.speed === 0.5 ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => changePlaybackSpeed(0.5)}
+                  >
+                    0.5x
+                  </Button>
+                  <Button
+                    variant={playbackState.speed === 1 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => changePlaybackSpeed(1)}
+                  >
+                    1x
+                  </Button>
+                  <Button
+                    variant={playbackState.speed === 2 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => changePlaybackSpeed(2)}
+                  >
+                    2x
+                  </Button>
+                </div>
+
+                <div className="text-sm text-muted-foreground ml-4">
+                  {locationHistoryData.data.locations.length} locations
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Connection Status */}
         {!isConnected && (

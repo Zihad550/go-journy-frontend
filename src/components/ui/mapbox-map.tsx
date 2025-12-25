@@ -20,6 +20,7 @@ import Map, {
   Popup,
   Source,
 } from "react-map-gl/mapbox";
+import { toast } from "sonner";
 
 // Types
 interface Location {
@@ -288,8 +289,8 @@ export function MapboxMap({
 
         onRouteCalculated(routeData);
       }
-    } catch (error) {
-      console.error("Error calculating route:", error);
+    } catch {
+      toast.error("Failed to calculate route");
     } finally {
       setIsLoading(false);
     }

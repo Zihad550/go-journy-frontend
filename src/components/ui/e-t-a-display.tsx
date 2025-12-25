@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useCalculateETAMutation } from '@/redux/features/location/location-api';
-import { useWebSocket } from '@/lib/websocket';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Navigation, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from "react";
+import { useCalculateETAMutation } from "@/redux/features/location/location-api";
+import { useWebSocket } from "@/lib/websocket";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Clock, MapPin, Navigation, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ETADisplayProps {
   rideId: string;
@@ -44,7 +45,8 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isStale, setIsStale] = useState(false);
 
-  const [calculateETA, { isLoading: isCalculatingETA, error: etaError }] = useCalculateETAMutation();
+  const [calculateETA, { isLoading: isCalculatingETA, error: etaError }] =
+    useCalculateETAMutation();
   const { onETAUpdate, isConnected } = useWebSocket();
 
   // Calculate ETA
@@ -62,8 +64,8 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
         setLastUpdate(new Date());
         setIsStale(false);
       }
-    } catch (error) {
-      console.error('Failed to calculate ETA:', error);
+    } catch {
+      toast.error("Failed to calculate ETA");
     }
   };
 
@@ -73,10 +75,14 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
       if (data.rideId === rideId) {
         // WebSocket ETA update doesn't have all fields, so we'll keep existing data
         // and just update the ETA time
-        setEtaData(prev => prev ? {
-          ...prev,
-          eta: data.eta,
-        } : null);
+        setEtaData((prev) =>
+          prev
+            ? {
+                ...prev,
+                eta: data.eta,
+              }
+            : null,
+        );
         setLastUpdate(new Date());
         setIsStale(false);
       }
@@ -104,9 +110,11 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
   useEffect(() => {
     const checkStale = () => {
       const now = new Date();
-      const diffInMinutes = (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
+      const diffInMinutes =
+        (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
 
-      if (diffInMinutes > 5) { // Consider stale after 5 minutes
+      if (diffInMinutes > 5) {
+        // Consider stale after 5 minutes
         setIsStale(true);
       }
     };
@@ -136,32 +144,32 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
 
   // Calculate arrival time
   const getArrivalTime = (): string => {
-    if (!etaData) return '--:--';
+    if (!etaData) return "--:--";
 
     const now = new Date();
     const arrivalTime = new Date(now.getTime() + etaData.duration * 1000);
 
     return arrivalTime.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
   // Get traffic status
   const getTrafficStatus = (): { status: string; color: string } => {
     if (!etaData || etaData.trafficDelay === 0) {
-      return { status: 'Clear', color: 'bg-green-500' };
+      return { status: "Clear", color: "bg-green-500" };
     }
 
     const delayMinutes = etaData.trafficDelay / 60;
 
     if (delayMinutes < 5) {
-      return { status: 'Light', color: 'bg-yellow-500' };
+      return { status: "Light", color: "bg-yellow-500" };
     } else if (delayMinutes < 15) {
-      return { status: 'Moderate', color: 'bg-orange-500' };
+      return { status: "Moderate", color: "bg-orange-500" };
     } else {
-      return { status: 'Heavy', color: 'bg-red-500' };
+      return { status: "Heavy", color: "bg-red-500" };
     }
   };
 
@@ -189,7 +197,10 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             Estimated Time of Arrival
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant={isConnected() ? "default" : "destructive"} className="text-xs">
+            <Badge
+              variant={isConnected() ? "default" : "destructive"}
+              className="text-xs"
+            >
               {isConnected() ? "Live" : "Offline"}
             </Badge>
             {isStale && (
@@ -210,9 +221,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
               <div className="text-3xl font-bold text-primary mb-1">
                 {getArrivalTime()}
               </div>
-              <div className="text-sm text-muted-foreground">
-                Arrival Time
-              </div>
+              <div className="text-sm text-muted-foreground">Arrival Time</div>
             </div>
 
             {/* ETA Details */}
@@ -240,8 +249,12 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             {etaData.trafficDelay > 0 && (
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center gap-2">
-                  <div className={cn("w-3 h-3 rounded-full", trafficStatus.color)} />
-                  <span className="text-sm font-medium">Traffic: {trafficStatus.status}</span>
+                  <div
+                    className={cn("w-3 h-3 rounded-full", trafficStatus.color)}
+                  />
+                  <span className="text-sm font-medium">
+                    Traffic: {trafficStatus.status}
+                  </span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   +{formatDuration(etaData.trafficDelay)}
@@ -273,13 +286,15 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             {isCalculatingETA ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span className="text-sm text-muted-foreground">Calculating ETA...</span>
+                <span className="text-sm text-muted-foreground">
+                  Calculating ETA...
+                </span>
               </div>
             ) : (
               <div>
                 <MapPin className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  {etaError ? 'Failed to calculate ETA' : 'ETA not available'}
+                  {etaError ? "Failed to calculate ETA" : "ETA not available"}
                 </p>
                 <button
                   onClick={fetchETA}
@@ -301,7 +316,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
               disabled={isCalculatingETA}
               className="text-xs text-primary hover:underline disabled:opacity-50"
             >
-              {isCalculatingETA ? 'Updating...' : 'Update now'}
+              {isCalculatingETA ? "Updating..." : "Update now"}
             </button>
           </div>
         )}

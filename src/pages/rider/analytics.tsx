@@ -3,7 +3,7 @@ import PieChart from "@/components/charts/pie-chart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CardLoader } from "@/components/ui/card-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import {
   Select,
@@ -169,7 +169,21 @@ export default function Analytics() {
           {/* Overview Stats */}
           <CardContent className="p-8">
             {isLoading ? (
-              <CardLoader message="Loading your analytics..." />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="bg-muted/50 rounded-2xl p-6 border backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <Skeleton className="h-9 w-9 rounded-xl" />
+                      <Skeleton className="h-5 w-24" />
+                    </div>
+                    <Skeleton className="h-10 w-20 mb-1" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                ))}
+              </div>
             ) : analytics ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-muted/50 rounded-2xl p-6 border backdrop-blur-sm">
@@ -238,7 +252,29 @@ export default function Analytics() {
       </GradientBackground>
 
       {/* Charts Section */}
-      {analytics && (
+      {isLoading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Spending Trends */}
+          <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[300px] w-full rounded-lg" />
+            </CardContent>
+          </Card>
+
+          {/* Ride Status Distribution */}
+          <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[250px] w-full rounded-lg" />
+            </CardContent>
+          </Card>
+        </div>
+      ) : analytics ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Spending Trends */}
           <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
@@ -253,7 +289,6 @@ export default function Analytics() {
                 data={spendingChartData}
                 height={300}
                 showLabels={true}
-                // showValues={true}
               />
             </CardContent>
           </Card>
@@ -271,10 +306,66 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
 
       {/* Additional Analytics */}
-      {analytics && (
+      {isLoading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Driver Ratings */}
+          <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[250px] w-full rounded-lg" />
+            </CardContent>
+          </Card>
+
+          {/* Favorite Locations */}
+          <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Skeleton className="h-5 w-40 mb-3" />
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-48" />
+                      </div>
+                      <Skeleton className="h-5 w-16" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Skeleton className="h-5 w-40 mb-3" />
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-48" />
+                      </div>
+                      <Skeleton className="h-5 w-16" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : analytics ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Driver Ratings */}
           <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
@@ -353,11 +444,35 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
 
       {/* Recent Reviews */}
-      {analytics?.driverRatings?.recentReviews &&
-        analytics.driverRatings.recentReviews.length > 0 && (
+      {isLoading ? (
+        <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="p-4 bg-muted/50 rounded-xl border">
+                  <div className="flex items-center justify-between mb-2">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <div className="flex items-center gap-1 mt-2">
+                    <Skeleton className="h-3 w-3" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : analytics?.driverRatings?.recentReviews &&
+        analytics.driverRatings.recentReviews.length > 0 ? (
           <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -393,10 +508,38 @@ export default function Analytics() {
               </div>
             </CardContent>
           </Card>
-        )}
+        ) : null}
 
       {/* Recent Ride History */}
-      {analytics?.rideHistory && analytics.rideHistory.length > 0 && (
+      {isLoading ? (
+        <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border"
+                >
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-4 w-48" />
+                    </div>
+                  </div>
+                  <div className="text-right space-y-2">
+                    <Skeleton className="h-5 w-20 ml-auto" />
+                    <Skeleton className="h-6 w-16 ml-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : analytics?.rideHistory && analytics.rideHistory.length > 0 ? (
         <Card className="bg-card/95 backdrop-blur-sm border shadow-lg rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -445,7 +588,7 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }

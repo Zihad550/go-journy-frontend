@@ -82,9 +82,6 @@ const PieChart = ({
     });
   }, [data, size]);
 
-  // Debug logging
-  console.log("PieChart data:", data);
-
   if (data.length === 0 || data.every((item) => item.value === 0)) {
     return (
       <div

@@ -1,11 +1,23 @@
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ABOUT_CONTENT } from "@/constants/content-constant";
 import { usePublicStats } from "@/hooks/use-public-stats";
 import type { IAchievement } from "@/types";
 
+function AchievementSkeletonCard() {
+  return (
+    <Card className="p-8 text-center">
+      <Skeleton className="h-12 w-12 mx-auto mb-4 rounded-full" />
+      <Skeleton className="h-9 w-20 mx-auto mb-2" />
+      <Skeleton className="h-6 w-32 mx-auto mb-2" />
+      <Skeleton className="h-4 w-full" />
+    </Card>
+  );
+}
+
 function AchievementsSection() {
-  const { stats: publicStats } = usePublicStats();
+  const { stats: publicStats, loading } = usePublicStats();
 
   const achievements: IAchievement[] = ABOUT_CONTENT.achievements.map(
     (item, index) => {
@@ -51,22 +63,28 @@ function AchievementsSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {achievements.map((item: IAchievement, index: number) => {
-            const Icon = item.icon;
-            return (
-              <Card
-                key={index}
-                className="p-8 text-center hover:shadow-lg transition-shadow"
-              >
-                <Icon className={`h-12 w-12 mx-auto mb-4 ${item.colorClass}`} />
-                <div className="text-3xl font-bold mb-2">{item.metric}</div>
-                <h3 className="font-semibold mb-2">{item.label}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {item.description}
-                </p>
-              </Card>
-            );
-          })}
+          {loading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <AchievementSkeletonCard key={index} />
+              ))
+            : achievements.map((item: IAchievement, index: number) => {
+                const Icon = item.icon;
+                return (
+                  <Card
+                    key={index}
+                    className="p-8 text-center hover:shadow-lg transition-shadow"
+                  >
+                    <Icon
+                      className={`h-12 w-12 mx-auto mb-4 ${item.colorClass}`}
+                    />
+                    <div className="text-3xl font-bold mb-2">{item.metric}</div>
+                    <h3 className="font-semibold mb-2">{item.label}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </Card>
+                );
+              })}
         </div>
       </div>
     </GradientBackground>

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CardLoader } from "@/components/ui/card-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useGetAdminDriverAnalyticsQuery,
   useGetOverviewStatsQuery,
@@ -51,7 +51,6 @@ const Analytics = () => {
     isLoading: isRevenueLoading,
     error: revenueError,
   } = useGetRevenueTrendQuery({ period: revenuePeriod, days: 30 });
-  console.log("driver data ->", driverData);
 
   // Overview stats cards data
   const overviewCards = [
@@ -222,8 +221,8 @@ const Analytics = () => {
               <CardContent>
                 {isOverviewLoading ? (
                   <div className="space-y-2">
-                    <div className="h-8 bg-muted animate-pulse rounded" />
-                    <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-4 w-32" />
                   </div>
                 ) : overviewError ? (
                   <div className="text-red-500 text-sm">Error loading data</div>
@@ -252,7 +251,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isDriverLoading ? (
-              <CardLoader message="Loading driver statistics..." />
+              <Skeleton className="h-[250px] w-full rounded-lg" />
             ) : driverError ? (
               <div className="text-red-500 text-center py-8">
                 Error loading driver analytics
@@ -270,7 +269,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isDriverLoading ? (
-              <CardLoader message="Loading availability data..." />
+              <Skeleton className="h-[250px] w-full rounded-lg" />
             ) : driverError ? (
               <div className="text-red-500 text-center py-8">
                 Error loading availability data
@@ -293,7 +292,26 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isDriverLoading ? (
-              <CardLoader message="Loading top drivers..." />
+              <div className="space-y-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Skeleton className="w-8 h-8 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <Skeleton className="h-4 w-20 ml-auto" />
+                      <Skeleton className="h-3 w-16 ml-auto" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="space-y-4">
                 {driverData.data.topDriversByRides
@@ -339,7 +357,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isRideLoading ? (
-              <CardLoader message="Loading ride statistics..." />
+              <Skeleton className="h-[250px] w-full rounded-lg" />
             ) : rideError ? (
               <div className="text-red-500 text-center py-8">
                 Error loading ride analytics
@@ -357,7 +375,7 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             {isRideLoading ? (
-              <CardLoader message="Loading time distribution..." />
+              <Skeleton className="h-[250px] w-full rounded-lg" />
             ) : rideError ? (
               <div className="text-red-500 text-center py-8">
                 Error loading time data
@@ -439,7 +457,7 @@ const Analytics = () => {
         </CardHeader>
         <CardContent>
           {isRevenueLoading ? (
-            <CardLoader message="Loading revenue trend..." />
+            <Skeleton className="h-[300px] w-full rounded-lg" />
           ) : revenueError ? (
             <div className="text-red-500 text-center py-8">
               Error loading revenue data

@@ -54,6 +54,7 @@ import {
   Users,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 interface UserFilters {
   search: string;
@@ -166,18 +167,19 @@ const UserTable: React.FC<UserTableProps & { currentUserRole?: string }> = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                     <DropdownMenuItem onClick={() => onView(user)}>
-                       <Eye className="mr-2 h-4 w-4" />
-                       View Details
-                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onView(user)}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Details
+                    </DropdownMenuItem>
 
-                     <DropdownMenuSeparator />
-                     {(currentUserRole === Role.SUPER_ADMIN || currentUserRole === Role.ADMIN) && (
-                       <DropdownMenuGroup>
-                         <DropdownMenuItem onClick={() => onEdit(user)}>
-                           <UserCheck className="mr-2 h-4 w-4" />
-                           Edit User
-                         </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {(currentUserRole === Role.SUPER_ADMIN ||
+                      currentUserRole === Role.ADMIN) && (
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem onClick={() => onEdit(user)}>
+                          <UserCheck className="mr-2 h-4 w-4" />
+                          Edit User
+                        </DropdownMenuItem>
 
                         {user.isActive === UserAccountStatus.ACTIVE ? (
                           <DropdownMenuItem
@@ -245,7 +247,8 @@ export default function UserManagement() {
     search: filters.search || undefined,
   });
 
-  const { data: currentUserData, error: currentUserError } = useUserInfoQuery(undefined);
+  const { data: currentUserData, error: currentUserError } =
+    useUserInfoQuery(undefined);
 
   const [blockUser] = useBlockUserMutation();
   const [updateAdminUser] = useUpdateAdminUserMutation();
@@ -255,7 +258,9 @@ export default function UserManagement() {
   const totalUsers = usersResponse?.meta?.total || 0;
   const totalPages = usersResponse?.meta?.totalPage || 1;
 
-  const currentUserRole = currentUserError ? undefined : currentUserData?.data?.role;
+  const currentUserRole = currentUserError
+    ? undefined
+    : currentUserData?.data?.role;
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
@@ -282,8 +287,8 @@ export default function UserManagement() {
         user.isActive === UserAccountStatus.ACTIVE ? "blocked" : "active";
       await blockUser({ id: user._id, status }).unwrap();
       // Success notification would be handled by the mutation
-    } catch (error) {
-      console.error("Failed to block/unblock user:", error);
+    } catch {
+      toast.error("Failed to block/unblock user");
     } finally {
       setBlockingUserId(null);
     }
@@ -298,8 +303,8 @@ export default function UserManagement() {
       try {
         await deleteUser({ id: user._id }).unwrap();
         // Success notification would be handled by the mutation
-      } catch (error) {
-        console.error("Failed to delete user:", error);
+      } catch {
+        toast.error("Failed to delete user");
       }
     }
   };
@@ -332,18 +337,11 @@ export default function UserManagement() {
         updatePayload.role = editForm.role;
       }
 
-      console.log("Updating user:", {
-        selectedUserId: editingUser._id,
-        selectedUserName: editingUser.name,
-        selectedUserRole: editingUser.role,
-        updatePayload,
-      });
-
-       await updateAdminUser(updatePayload).unwrap();
+      await updateAdminUser(updatePayload).unwrap();
       setEditingUser(null);
       // Success notification would be handled by the mutation
-    } catch (error) {
-      console.error("Failed to update user:", error);
+    } catch {
+      toast.error("Failed to update user");
     }
   };
 
@@ -492,12 +490,12 @@ export default function UserManagement() {
       {/* Edit User Dialog */}
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
         <DialogContent>
-           <DialogHeader>
-             <DialogTitle>Edit User</DialogTitle>
-             <DialogDescription>
-               Update user information. Role changes are only allowed for riders.
-             </DialogDescription>
-           </DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+            <DialogDescription>
+              Update user information. Role changes are only allowed for riders.
+            </DialogDescription>
+          </DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Name</label>
@@ -509,25 +507,25 @@ export default function UserManagement() {
                 placeholder="Enter user name"
               />
             </div>
-             {editingUser?.role === Role.RIDER && (
-               <div>
-                 <label className="text-sm font-medium">Role</label>
-                 <Select
-                   value={editForm.role}
-                   onValueChange={(value) =>
-                     setEditForm((prev) => ({ ...prev, role: value }))
-                   }
-                 >
-                   <SelectTrigger>
-                     <SelectValue placeholder="Select role" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     <SelectItem value={Role.RIDER}>Rider</SelectItem>
-                     <SelectItem value={Role.ADMIN}>Admin</SelectItem>
-                   </SelectContent>
-                 </Select>
-               </div>
-             )}
+            {editingUser?.role === Role.RIDER && (
+              <div>
+                <label className="text-sm font-medium">Role</label>
+                <Select
+                  value={editForm.role}
+                  onValueChange={(value) =>
+                    setEditForm((prev) => ({ ...prev, role: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={Role.RIDER}>Rider</SelectItem>
+                    <SelectItem value={Role.ADMIN}>Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div>
               <label className="text-sm font-medium">Status</label>
               <Select

@@ -38,15 +38,27 @@ export function PaymentModal({
 }: PaymentModalProps) {
   const [initPayment, { isLoading: isInitiatingPayment }] =
     useInitPaymentMutation();
-  const [paymentStep, setPaymentStep] = useState<"confirm" | "processing" | "success" | "error">("confirm");
+  const [paymentStep, setPaymentStep] = useState<
+    "confirm" | "processing" | "success" | "error"
+  >("confirm");
 
   // Get driver information
-  const driverName = typeof selectedDriver === "string"
-    ? "Driver"
-    : (typeof selectedDriver.user === "string" ? selectedDriver.user : (selectedDriver.user?.name || "Driver"));
-  const vehicleName = typeof selectedDriver === "string" ? "Vehicle" : (selectedDriver.vehicle?.name || "Vehicle");
-  const vehicleModel = typeof selectedDriver === "string" ? "" : (selectedDriver.vehicle?.model || "");
-  const experience = typeof selectedDriver === "string" ? 0 : (selectedDriver.experience || 0);
+  const driverName =
+    typeof selectedDriver === "string"
+      ? "Driver"
+      : typeof selectedDriver.user === "string"
+        ? selectedDriver.user
+        : selectedDriver.user?.name || "Driver";
+  const vehicleName =
+    typeof selectedDriver === "string"
+      ? "Vehicle"
+      : selectedDriver.vehicle?.name || "Vehicle";
+  const vehicleModel =
+    typeof selectedDriver === "string"
+      ? ""
+      : selectedDriver.vehicle?.model || "";
+  const experience =
+    typeof selectedDriver === "string" ? 0 : selectedDriver.experience || 0;
 
   const handlePaymentInitiation = async () => {
     try {
@@ -55,13 +67,19 @@ export function PaymentModal({
       // Store driver information for payment success callback
       const driverInfo = {
         rideId: ride._id,
-        driverId: typeof selectedDriver === "string" ? selectedDriver : selectedDriver._id,
+        driverId:
+          typeof selectedDriver === "string"
+            ? selectedDriver
+            : selectedDriver._id,
         driverName,
         vehicleName,
         vehicleModel,
         experience,
       };
-      sessionStorage.setItem('pendingDriverAcceptance', JSON.stringify(driverInfo));
+      sessionStorage.setItem(
+        "pendingDriverAcceptance",
+        JSON.stringify(driverInfo),
+      );
 
       // First, initiate payment
       const paymentResponse = await initPayment(ride._id).unwrap();
@@ -72,14 +90,11 @@ export function PaymentModal({
       } else {
         throw new Error("Failed to get payment URL");
       }
-    } catch (error) {
-      console.error("Payment initiation error:", error);
+    } catch {
       setPaymentStep("error");
       toast.error("❌ Failed to initiate payment. Please try again.");
     }
   };
-
-
 
   const handleClose = () => {
     if (paymentStep !== "processing") {
@@ -100,8 +115,12 @@ export function PaymentModal({
                   <Route className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Ride Summary</h3>
-                  <p className="text-sm text-muted-foreground">Review your journey details</p>
+                  <h3 className="font-semibold text-foreground">
+                    Ride Summary
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Review your journey details
+                  </p>
                 </div>
               </div>
 
@@ -110,14 +129,16 @@ export function PaymentModal({
                   <MapPin className="h-4 w-4 text-chart-2" />
                   <span className="text-muted-foreground">From:</span>
                   <span className="font-medium">
-                    {ride.pickupLocation?.lat?.toString().slice(0, 7)}, {ride.pickupLocation?.lng?.toString().slice(0, 7)}
+                    {ride.pickupLocation?.lat?.toString().slice(0, 7)},{" "}
+                    {ride.pickupLocation?.lng?.toString().slice(0, 7)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-destructive" />
                   <span className="text-muted-foreground">To:</span>
                   <span className="font-medium">
-                    {ride.destination?.lat?.toString().slice(0, 7)}, {ride.destination?.lng?.toString().slice(0, 7)}
+                    {ride.destination?.lat?.toString().slice(0, 7)},{" "}
+                    {ride.destination?.lng?.toString().slice(0, 7)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -135,8 +156,12 @@ export function PaymentModal({
                   <User className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Selected Driver</h3>
-                  <p className="text-sm text-muted-foreground">Your ride partner</p>
+                  <h3 className="font-semibold text-foreground">
+                    Selected Driver
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Your ride partner
+                  </p>
                 </div>
               </div>
 
@@ -145,10 +170,14 @@ export function PaymentModal({
                   <User className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1 space-y-1">
-                  <h4 className="font-semibold text-foreground">{driverName}</h4>
+                  <h4 className="font-semibold text-foreground">
+                    {driverName}
+                  </h4>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Car className="w-4 h-4" />
-                    <span>{vehicleName} {vehicleModel}</span>
+                    <span>
+                      {vehicleName} {vehicleModel}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="w-4 h-4" />
@@ -169,15 +198,21 @@ export function PaymentModal({
                   <CreditCard className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Payment Required</h3>
-                  <p className="text-sm text-muted-foreground">Secure payment via SSLCommerz</p>
+                  <h3 className="font-semibold text-foreground">
+                    Payment Required
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Secure payment via SSLCommerz
+                  </p>
                 </div>
               </div>
 
               <div className="bg-background/50 rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Amount:</span>
-                  <span className="text-2xl font-bold text-primary">${ride.price}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    ${ride.price}
+                  </span>
                 </div>
               </div>
 
@@ -197,8 +232,12 @@ export function PaymentModal({
               <ButtonSpinner size="sm" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Processing Payment</h3>
-              <p className="text-muted-foreground">Please wait while we process your payment...</p>
+              <h3 className="text-lg font-semibold text-foreground">
+                Processing Payment
+              </h3>
+              <p className="text-muted-foreground">
+                Please wait while we process your payment...
+              </p>
             </div>
           </div>
         );
@@ -210,8 +249,12 @@ export function PaymentModal({
               <div className="w-8 h-8 text-green-600">✓</div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-green-600">Payment Successful!</h3>
-              <p className="text-muted-foreground">Driver has been accepted. Your ride is confirmed!</p>
+              <h3 className="text-lg font-semibold text-green-600">
+                Payment Successful!
+              </h3>
+              <p className="text-muted-foreground">
+                Driver has been accepted. Your ride is confirmed!
+              </p>
             </div>
           </div>
         );
@@ -223,8 +266,12 @@ export function PaymentModal({
               <div className="w-8 h-8 text-red-600">✕</div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-red-600">Payment Failed</h3>
-              <p className="text-muted-foreground">Something went wrong. Please try again.</p>
+              <h3 className="text-lg font-semibold text-red-600">
+                Payment Failed
+              </h3>
+              <p className="text-muted-foreground">
+                Something went wrong. Please try again.
+              </p>
             </div>
           </div>
         );
@@ -246,17 +293,14 @@ export function PaymentModal({
             {paymentStep === "confirm"
               ? "Review your ride details and complete payment to accept this driver"
               : paymentStep === "processing"
-              ? "Processing your payment..."
-              : paymentStep === "success"
-              ? "Payment completed successfully!"
-              : "Payment failed. Please try again."
-            }
+                ? "Processing your payment..."
+                : paymentStep === "success"
+                  ? "Payment completed successfully!"
+                  : "Payment failed. Please try again."}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
-          {renderContent()}
-        </div>
+        <div className="py-4">{renderContent()}</div>
 
         <DialogFooter className="flex gap-2">
           {paymentStep === "confirm" && (

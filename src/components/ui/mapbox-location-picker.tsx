@@ -1,13 +1,24 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import Map, { Marker, Popup, NavigationControl, GeolocateControl } from 'react-map-gl/mapbox';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { MAPBOX_CONFIG, MARKER_CONFIG, validateCoordinates, GEOLOCATION_OPTIONS } from '@/config';
-import { MapPin, Locate, Check, X, Loader2 } from 'lucide-react';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useRef, useState, useCallback } from "react";
+import Map, {
+  Marker,
+  Popup,
+  NavigationControl,
+  GeolocateControl,
+} from "react-map-gl/mapbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  MAPBOX_CONFIG,
+  MARKER_CONFIG,
+  validateCoordinates,
+  GEOLOCATION_OPTIONS,
+} from "@/config";
+import { MapPin, Locate, Check, X, Loader2 } from "lucide-react";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { toast } from "sonner";
 
 // Types
 interface Location {
@@ -25,7 +36,7 @@ interface MapboxLocationPickerProps {
   onClose: () => void;
   onLocationSelect: (location: Location) => void;
   title: string;
-  type: 'pickup' | 'destination';
+  type: "pickup" | "destination";
   initialLocation?: Location;
   pickupLocation?: Location;
   className?: string;
@@ -33,20 +44,17 @@ interface MapboxLocationPickerProps {
 
 interface CustomMarkerProps {
   location: Location;
-  type: 'pickup' | 'destination' | 'selected';
+  type: "pickup" | "destination" | "selected";
   onClick?: () => void;
 }
 
 // Custom Marker Component
 function CustomMarker({ location, type, onClick }: CustomMarkerProps) {
-  const config = MARKER_CONFIG[type as keyof typeof MARKER_CONFIG] || MARKER_CONFIG.pickup;
+  const config =
+    MARKER_CONFIG[type as keyof typeof MARKER_CONFIG] || MARKER_CONFIG.pickup;
 
   return (
-    <Marker
-      latitude={location.lat}
-      longitude={location.lng}
-      onClick={onClick}
-    >
+    <Marker latitude={location.lat} longitude={location.lng} onClick={onClick}>
       <div
         className="relative cursor-pointer transform hover:scale-110 transition-transform"
         style={{
@@ -72,9 +80,9 @@ function CustomMarker({ location, type, onClick }: CustomMarkerProps) {
             style={{
               width: location.accuracy * 2,
               height: location.accuracy * 2,
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
               borderColor: config.color,
             }}
           />
@@ -96,7 +104,9 @@ export function MapboxLocationPicker({
   className,
 }: MapboxLocationPickerProps) {
   const mapRef = useRef<any>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [popupInfo, setPopupInfo] = useState<{
@@ -106,7 +116,10 @@ export function MapboxLocationPicker({
 
   // Initialize selected location from initialLocation
   useEffect(() => {
-    if (initialLocation && validateCoordinates(initialLocation.lat, initialLocation.lng)) {
+    if (
+      initialLocation &&
+      validateCoordinates(initialLocation.lat, initialLocation.lng)
+    ) {
       setSelectedLocation(initialLocation);
     }
   }, [initialLocation]);
@@ -114,7 +127,7 @@ export function MapboxLocationPicker({
   // Get current device location
   const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by this browser');
+      toast.error("Geolocation is not supported by this browser");
       return;
     }
 
@@ -122,7 +135,8 @@ export function MapboxLocationPicker({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude, accuracy, heading, speed } = position.coords;
+        const { latitude, longitude, accuracy, heading, speed } =
+          position.coords;
         const location: Location = {
           lat: latitude,
           lng: longitude,
@@ -146,11 +160,11 @@ export function MapboxLocationPicker({
 
         setIsGettingLocation(false);
       },
-      (error) => {
-        console.error('Error getting location:', error);
+      () => {
+        toast.error("Error getting location:");
         setIsGettingLocation(false);
       },
-      GEOLOCATION_OPTIONS
+      GEOLOCATION_OPTIONS,
     );
   }, []);
 
@@ -188,8 +202,8 @@ export function MapboxLocationPicker({
 
     if (locations.length === 0) return null;
 
-    const lats = locations.map(loc => loc.lat);
-    const lngs = locations.map(loc => loc.lng);
+    const lats = locations.map((loc) => loc.lat);
+    const lngs = locations.map((loc) => loc.lng);
 
     return [
       [Math.min(...lngs), Math.min(...lats)], // Southwest
@@ -214,13 +228,26 @@ export function MapboxLocationPicker({
   if (!isOpen) return null;
 
   // Validate Mapbox token
-  if (!MAPBOX_CONFIG.accessToken || MAPBOX_CONFIG.accessToken === 'your_mapbox_access_token_here') {
+  if (
+    !MAPBOX_CONFIG.accessToken ||
+    MAPBOX_CONFIG.accessToken === "your_mapbox_access_token_here"
+  ) {
     return (
       <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <Card className={cn('w-full max-w-4xl max-h-[90vh] overflow-hidden', className)}>
+        <Card
+          className={cn(
+            "w-full max-w-4xl max-h-[90vh] overflow-hidden",
+            className,
+          )}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="flex items-center gap-2">
-              <MapPin className={cn('h-5 w-5', type === 'pickup' ? 'text-green-500' : 'text-red-500')} />
+              <MapPin
+                className={cn(
+                  "h-5 w-5",
+                  type === "pickup" ? "text-green-500" : "text-red-500",
+                )}
+              />
               {title}
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={onClose}>
@@ -233,9 +260,12 @@ export function MapboxLocationPicker({
                 <MapPin className="h-8 w-8 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Mapbox Token Required</h3>
+                <h3 className="font-semibold text-lg mb-2">
+                  Mapbox Token Required
+                </h3>
                 <p className="text-muted-foreground">
-                  Please add your Mapbox access token to the .env file as VITE_MAPBOX_ACCESS_TOKEN
+                  Please add your Mapbox access token to the .env file as
+                  VITE_MAPBOX_ACCESS_TOKEN
                 </p>
               </div>
             </div>
@@ -247,13 +277,18 @@ export function MapboxLocationPicker({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <Card className={cn('w-full max-w-4xl max-h-[90vh] overflow-hidden', className)}>
+      <Card
+        className={cn(
+          "w-full max-w-4xl max-h-[90vh] overflow-hidden",
+          className,
+        )}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="flex items-center gap-2">
             <MapPin
               className={cn(
-                'h-5 w-5',
-                type === 'pickup' ? 'text-green-500' : 'text-red-500'
+                "h-5 w-5",
+                type === "pickup" ? "text-green-500" : "text-red-500",
               )}
             />
             {title}
@@ -288,7 +323,7 @@ export function MapboxLocationPicker({
                 longitude: initialLocation?.lng || MAPBOX_CONFIG.center.lng,
                 zoom: MAPBOX_CONFIG.zoom.default,
               }}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: "100%", height: "100%" }}
               mapStyle={MAPBOX_CONFIG.style}
               onClick={handleMapClick}
             >
@@ -301,31 +336,47 @@ export function MapboxLocationPicker({
               />
 
               {/* Pickup location marker (when selecting destination) */}
-              {type === 'destination' && pickupLocation && validateCoordinates(pickupLocation.lat, pickupLocation.lng) && (
-                <CustomMarker
-                  location={pickupLocation}
-                  type="pickup"
-                  onClick={() => handleMarkerClick(pickupLocation, 'Pickup Location')}
-                />
-              )}
+              {type === "destination" &&
+                pickupLocation &&
+                validateCoordinates(pickupLocation.lat, pickupLocation.lng) && (
+                  <CustomMarker
+                    location={pickupLocation}
+                    type="pickup"
+                    onClick={() =>
+                      handleMarkerClick(pickupLocation, "Pickup Location")
+                    }
+                  />
+                )}
 
               {/* Selected location marker */}
-              {selectedLocation && validateCoordinates(selectedLocation.lat, selectedLocation.lng) && (
-                <CustomMarker
-                  location={selectedLocation}
-                  type={type}
-                  onClick={() => handleMarkerClick(selectedLocation, 'Selected Location')}
-                />
-              )}
+              {selectedLocation &&
+                validateCoordinates(
+                  selectedLocation.lat,
+                  selectedLocation.lng,
+                ) && (
+                  <CustomMarker
+                    location={selectedLocation}
+                    type={type}
+                    onClick={() =>
+                      handleMarkerClick(selectedLocation, "Selected Location")
+                    }
+                  />
+                )}
 
               {/* Current location marker */}
-              {currentLocation && validateCoordinates(currentLocation.lat, currentLocation.lng) && (
-                <CustomMarker
-                  location={currentLocation}
-                  type="selected"
-                  onClick={() => handleMarkerClick(currentLocation, 'Current Location')}
-                />
-              )}
+              {currentLocation &&
+                validateCoordinates(
+                  currentLocation.lat,
+                  currentLocation.lng,
+                ) && (
+                  <CustomMarker
+                    location={currentLocation}
+                    type="selected"
+                    onClick={() =>
+                      handleMarkerClick(currentLocation, "Current Location")
+                    }
+                  />
+                )}
 
               {/* Popup */}
               {popupInfo && (
@@ -340,7 +391,8 @@ export function MapboxLocationPicker({
                   <div className="p-2">
                     <h3 className="font-semibold text-sm">{popupInfo.type}</h3>
                     <p className="text-xs text-muted-foreground">
-                      {popupInfo.location.lat.toFixed(6)}, {popupInfo.location.lng.toFixed(6)}
+                      {popupInfo.location.lat.toFixed(6)},{" "}
+                      {popupInfo.location.lng.toFixed(6)}
                     </p>
                     {popupInfo.location.accuracy && (
                       <p className="text-xs mt-1">
@@ -356,7 +408,7 @@ export function MapboxLocationPicker({
           {/* Footer */}
           <div className="p-4 border-t bg-muted/30">
             {/* Legend for destination picker */}
-            {type === 'destination' && pickupLocation && (
+            {type === "destination" && pickupLocation && (
               <div className="mb-3 p-2 bg-background/50 rounded-lg border">
                 <div className="text-xs font-medium text-muted-foreground mb-2">
                   Map Legend:
@@ -372,7 +424,9 @@ export function MapboxLocationPicker({
                   <div className="flex items-center gap-1">
                     <div
                       className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: MARKER_CONFIG.destination.color }}
+                      style={{
+                        backgroundColor: MARKER_CONFIG.destination.color,
+                      }}
                     />
                     <span>Destination</span>
                   </div>
@@ -384,7 +438,8 @@ export function MapboxLocationPicker({
               <div className="text-sm text-muted-foreground">
                 {selectedLocation ? (
                   <span>
-                    Selected: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                    Selected: {selectedLocation.lat.toFixed(6)},{" "}
+                    {selectedLocation.lng.toFixed(6)}
                   </span>
                 ) : (
                   <span>Click on the map to select a location</span>

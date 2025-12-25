@@ -3,6 +3,7 @@ import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   testimonialsData,
@@ -158,16 +159,23 @@ export const TestimonialsSection: React.FC<TestimonialsProps> = ({
           className="h-full bg-card/50 backdrop-blur-sm border-border/50"
         >
           <CardContent className="p-6">
-            <div className="animate-pulse">
-              <div className="h-6 w-6 bg-muted rounded mb-4"></div>
-              <div className="h-4 bg-muted rounded mb-2"></div>
-              <div className="h-4 bg-muted rounded mb-2 w-3/4"></div>
-              <div className="h-4 bg-muted rounded mb-6 w-1/2"></div>
+            <div className="space-y-4">
+              <Skeleton className="h-6 w-6 rounded" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Skeleton key={star} className="h-3 w-3 sm:h-4 sm:w-4 rounded" />
+                ))}
+              </div>
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-muted rounded-full"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-muted rounded mb-2 w-24"></div>
-                  <div className="h-3 bg-muted rounded w-16"></div>
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
               </div>
             </div>

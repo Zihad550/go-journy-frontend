@@ -2,7 +2,7 @@ import { InterestedDrivers } from "@/components/modules/ride/interested-drivers"
 import { RequestRideForm } from "@/components/modules/ride/request-ride-form";
 import { ReviewModal } from "@/components/modules/ride/review-modal";
 import { RideDetails } from "@/components/modules/ride/ride-details";
-import { CardLoader } from "@/components/ui/card-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useGetRidesQuery } from "@/redux/features/ride/ride-api";
 import type { IRide, IDriver } from "@/types";
@@ -26,7 +26,6 @@ export function RiderHeroContent({
   onRideCancelled,
   defaultFormValues,
 }: RiderHeroContentProps) {
-  console.log("default form values -", defaultFormValues);
   const [currentRide, setCurrentRide] = useState<IRide | null>(null);
   const [reviewData, setReviewData] = useState<{
     ride: IRide;
@@ -72,17 +71,50 @@ export function RiderHeroContent({
     return (
       <div className="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <GradientBackground className="rounded-2xl">
-          <CardLoader
-            message="Loading your rides..."
-            className="bg-transparent border-0 shadow-none"
-          />
+          <div className="bg-card/50 backdrop-blur-sm border border-border/30 rounded-2xl shadow-xl overflow-hidden">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <Skeleton className="w-16 h-16 mx-auto mb-4 rounded-full" />
+                <Skeleton className="h-8 w-48 mx-auto mb-2" />
+                <Skeleton className="h-5 w-64 mx-auto" />
+              </div>
+              <div className="max-w-3xl mx-auto space-y-6">
+                <Skeleton className="h-4 w-full" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-card border rounded-lg p-4 space-y-4">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="bg-card border rounded-lg p-4 space-y-4">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </div>
+                <Skeleton className="h-6 w-32" />
+                <div className="bg-card border rounded-lg p-4 space-y-4">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-4 w-48" />
+                </div>
+                <Skeleton className="h-12 w-full rounded-lg" />
+                <div className="bg-muted/50 rounded-lg p-4 border">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </GradientBackground>
       </div>
     );
   }
 
-  if (error && error?.status !== 404) {
-    console.log("error -", error);
+  if (error && (error as any)?.status !== 404) {
     return (
       <div className="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <GradientBackground className="rounded-2xl">

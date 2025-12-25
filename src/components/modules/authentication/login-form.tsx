@@ -33,7 +33,6 @@ export function LoginForm({
   const location = useLocation();
   const [state] = useState(location.state);
 
-  console.log("state on login -", state);
   const [searchParams] = useSearchParams();
   const form = useForm<z.infer<typeof login_schema>>({
     resolver: zodResolver(login_schema),
@@ -47,7 +46,6 @@ export function LoginForm({
   const on_submit = async (data: z.infer<typeof login_schema>) => {
     try {
       const res = await login(data).unwrap();
-      console.log(res);
 
       if (res.success) {
         toast.success("Logged in successfully");
@@ -55,7 +53,6 @@ export function LoginForm({
         navigate(redirect, { state });
       }
     } catch (err: any) {
-      console.log(err);
       if (err?.data?.message === "Password does not match") {
         toast.error("Invalid credentials");
       } else if (err?.data?.message) {

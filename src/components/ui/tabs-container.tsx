@@ -1,126 +1,13 @@
-import { cn } from '@/lib/utils';
-import * as React from 'react';
-import { useTabsURL } from '@/hooks/use-tabs-u-r-l';
-import { Skeleton } from '@/components/ui/skeleton';
-import './tabs-animations.css';
-
-// Performance monitoring utilities
-interface PerformanceMetrics {
-  renderCount: number;
-  lastRenderTime: number;
-  averageRenderTime: number;
-  tabSwitchTimes: Map<string, number>;
-  memoryUsage?: number;
-}
-
-interface PerformanceMonitorOptions {
-  enabled: boolean;
-  logToConsole: boolean;
-  trackMemory: boolean;
-  sampleRate: number; // 0-1, percentage of renders to track
-}
-
-// Performance monitoring hook
-function usePerformanceMonitor(
-  componentName: string,
-  options: PerformanceMonitorOptions = {
-    enabled: process.env.NODE_ENV === 'development',
-    logToConsole: false,
-    trackMemory: false,
-    sampleRate: 0.1,
-  }
-) {
-  const metricsRef = React.useRef<PerformanceMetrics>({
-    renderCount: 0,
-    lastRenderTime: 0,
-    averageRenderTime: 0,
-    tabSwitchTimes: new Map(),
-  });
-
-  const startTimeRef = React.useRef<number>(0);
-
-  // Start performance measurement
-  const startMeasurement = React.useCallback(() => {
-    if (!options.enabled || Math.random() > options.sampleRate) return;
-    startTimeRef.current = performance.now();
-  }, [options.enabled, options.sampleRate]);
-
-  // End performance measurement
-  const endMeasurement = React.useCallback(() => {
-    if (!options.enabled || startTimeRef.current === 0) return;
-
-    const endTime = performance.now();
-    const renderTime = endTime - startTimeRef.current;
-    const metrics = metricsRef.current;
-
-    metrics.renderCount++;
-    metrics.lastRenderTime = renderTime;
-    metrics.averageRenderTime =
-      (metrics.averageRenderTime * (metrics.renderCount - 1) + renderTime) /
-      metrics.renderCount;
-
-    // Track memory usage if enabled
-    if (options.trackMemory && 'memory' in performance) {
-      metrics.memoryUsage = (performance as any).memory?.usedJSHeapSize;
-    }
-
-    // Log to console if enabled
-    if (options.logToConsole) {
-      console.log(`[Performance] ${componentName}:`, {
-        renderTime: `${renderTime.toFixed(2)}ms`,
-        averageRenderTime: `${metrics.averageRenderTime.toFixed(2)}ms`,
-        renderCount: metrics.renderCount,
-        memoryUsage: metrics.memoryUsage
-          ? `${(metrics.memoryUsage / 1024 / 1024).toFixed(2)}MB`
-          : 'N/A',
-      });
-    }
-
-    startTimeRef.current = 0;
-  }, [
-    options.enabled,
-    options.logToConsole,
-    options.trackMemory,
-    componentName,
-  ]);
-
-  // Track tab switch performance
-  const trackTabSwitch = React.useCallback(
-    (tabId: string) => {
-      if (!options.enabled) return;
-      metricsRef.current.tabSwitchTimes.set(tabId, performance.now());
-    },
-    [options.enabled]
-  );
-
-  // Get performance metrics
-  const getMetrics = React.useCallback(() => {
-    return { ...metricsRef.current };
-  }, []);
-
-  // Reset metrics
-  const resetMetrics = React.useCallback(() => {
-    metricsRef.current = {
-      renderCount: 0,
-      lastRenderTime: 0,
-      averageRenderTime: 0,
-      tabSwitchTimes: new Map(),
-    };
-  }, []);
-
-  return {
-    startMeasurement,
-    endMeasurement,
-    trackTabSwitch,
-    getMetrics,
-    resetMetrics,
-  };
-}
-
+import { cn } from "@/lib/utils";
+import * as React from "react";
+import { useTabsURL } from "@/hooks/use-tabs-u-r-l";
+import { Skeleton } from "@/components/ui/skeleton";
+import "./tabs-animations.css";
+import { toast } from "sonner";
 
 // Animation configuration types
 interface TransitionConfig {
-  type: 'fade' | 'slide' | 'scale' | 'custom';
+  type: "fade" | "slide" | "scale" | "custom";
   duration: number;
   delay: number;
   easing: string;
@@ -141,7 +28,7 @@ interface AnimationConfig {
 interface AnimationState {
   isTransitioning: boolean;
   previousTab: string | null;
-  animationPhase: 'idle' | 'exit' | 'enter';
+  animationPhase: "idle" | "exit" | "enter";
   staggerIndex: number;
 }
 
@@ -170,7 +57,7 @@ interface TabsContainerProps {
   defaultTab?: string;
   urlSync?: boolean;
   persistPreferences?: boolean;
-  animationPreset?: 'smooth' | 'fast' | 'minimal';
+  animationPreset?: "smooth" | "fast" | "minimal";
   swipeEnabled?: boolean;
   keyboardShortcuts?: boolean;
   validTabs?: string[];
@@ -178,7 +65,7 @@ interface TabsContainerProps {
   replaceHistory?: boolean;
   onTabChange?: (tabId: string, previousTab: string | null) => void;
   enableAnimations?: boolean;
-  transitionType?: 'fade' | 'slide' | 'scale';
+  transitionType?: "fade" | "slide" | "scale";
   staggerChildren?: boolean;
   // Lazy loading configuration
   enableLazyLoading?: boolean;
@@ -198,7 +85,7 @@ interface URLTabsContextValue {
   animationState: AnimationState;
   animationConfig: AnimationConfig;
   enableAnimations: boolean;
-  transitionType: 'fade' | 'slide' | 'scale';
+  transitionType: "fade" | "slide" | "scale";
   staggerChildren: boolean;
   // Lazy loading state and actions
   lazyLoadingState: LazyLoadingState;
@@ -215,73 +102,73 @@ interface URLTabsContextValue {
 }
 
 const URLTabsContext = React.createContext<URLTabsContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 // Hook to use URL-synchronized tabs context
 export function useURLTabs() {
   const context = React.useContext(URLTabsContext);
   if (!context) {
-    throw new Error('useURLTabs must be used within a TabsContainer');
+    throw new Error("useURLTabs must be used within a TabsContainer");
   }
   return context;
 }
 
 // Default animation configurations
 const getAnimationConfig = (
-  preset: 'smooth' | 'fast' | 'minimal'
+  preset: "smooth" | "fast" | "minimal",
 ): AnimationConfig => {
   switch (preset) {
-    case 'fast':
+    case "fast":
       return {
         duration: 150,
-        easing: 'ease-out',
+        easing: "ease-out",
         stagger: 25,
         transitions: {
-          fadeIn: { type: 'fade', duration: 100, delay: 0, easing: 'ease-out' },
+          fadeIn: { type: "fade", duration: 100, delay: 0, easing: "ease-out" },
           slideIn: {
-            type: 'slide',
+            type: "slide",
             duration: 150,
             delay: 0,
-            easing: 'ease-out',
+            easing: "ease-out",
           },
           scaleIn: {
-            type: 'scale',
+            type: "scale",
             duration: 125,
             delay: 0,
-            easing: 'ease-out',
+            easing: "ease-out",
           },
         },
       };
-    case 'minimal':
+    case "minimal":
       return {
         duration: 0,
-        easing: 'linear',
+        easing: "linear",
         stagger: 0,
         transitions: {
-          fadeIn: { type: 'fade', duration: 0, delay: 0, easing: 'linear' },
-          slideIn: { type: 'slide', duration: 0, delay: 0, easing: 'linear' },
-          scaleIn: { type: 'scale', duration: 0, delay: 0, easing: 'linear' },
+          fadeIn: { type: "fade", duration: 0, delay: 0, easing: "linear" },
+          slideIn: { type: "slide", duration: 0, delay: 0, easing: "linear" },
+          scaleIn: { type: "scale", duration: 0, delay: 0, easing: "linear" },
         },
       };
     default: // 'smooth'
       return {
         duration: 300,
-        easing: 'ease-in-out',
+        easing: "ease-in-out",
         stagger: 50,
         transitions: {
-          fadeIn: { type: 'fade', duration: 200, delay: 0, easing: 'ease-out' },
+          fadeIn: { type: "fade", duration: 200, delay: 0, easing: "ease-out" },
           slideIn: {
-            type: 'slide',
+            type: "slide",
             duration: 300,
             delay: 0,
-            easing: 'ease-in-out',
+            easing: "ease-in-out",
           },
           scaleIn: {
-            type: 'scale',
+            type: "scale",
             duration: 250,
             delay: 0,
-            easing: 'ease-out',
+            easing: "ease-out",
           },
         },
       };
@@ -293,14 +180,14 @@ const getAnimationConfig = (
  * Provides shareable tab states through URL parameters with smooth transitions and performance optimization
  */
 export function TabsContainer({
-  defaultTab = '',
+  defaultTab = "",
   urlSync = true,
   validTabs = [],
-  urlParamName = 'tab',
+  urlParamName = "tab",
   replaceHistory = false,
-  animationPreset = 'smooth',
+  animationPreset = "smooth",
   enableAnimations = true,
-  transitionType = 'fade',
+  transitionType = "fade",
   staggerChildren = true,
   enableLazyLoading = true,
   preloadAdjacent = true,
@@ -311,26 +198,18 @@ export function TabsContainer({
   className,
 }: TabsContainerProps) {
   // Performance monitoring
-  const performanceMonitor = usePerformanceMonitor('TabsContainer', {
-    enabled: process.env.NODE_ENV === 'development',
-    logToConsole: false,
-    trackMemory: true,
-    sampleRate: 0.2,
-  });
 
-  // Start performance measurement
-  performanceMonitor.startMeasurement();
   // Animation configuration
   const animationConfig = React.useMemo(
     () => getAnimationConfig(animationPreset),
-    [animationPreset]
+    [animationPreset],
   );
 
   // Animation state management
   const [animationState, setAnimationState] = React.useState<AnimationState>({
     isTransitioning: false,
     previousTab: null,
-    animationPhase: 'idle',
+    animationPhase: "idle",
     staggerIndex: 0,
   });
 
@@ -353,7 +232,7 @@ export function TabsContainer({
 
   // Loading timeout refs for cleanup
   const loadingTimeoutsRef = React.useRef<Map<string, NodeJS.Timeout>>(
-    new Map()
+    new Map(),
   );
 
   // Always call useTabsURL hook to maintain hook order
@@ -408,21 +287,21 @@ export function TabsContainer({
           ...prev,
           loadedTabs: new Set([...prev.loadedTabs, tabId]),
           loadingTabs: new Set(
-            [...prev.loadingTabs].filter((id) => id !== tabId)
+            [...prev.loadingTabs].filter((id) => id !== tabId),
           ),
           preloadedTabs: new Set([...prev.preloadedTabs, tabId]),
         }));
 
         // Clean up timeout reference
         loadingTimeoutsRef.current.delete(tabId);
-      } catch (error) {
-        console.error(`Failed to load tab content for ${tabId}:`, error);
+      } catch {
+        toast.error("Failed to load tab content for " + tabId);
 
         // Mark as error
         setLazyLoadingState((prev) => ({
           ...prev,
           loadingTabs: new Set(
-            [...prev.loadingTabs].filter((id) => id !== tabId)
+            [...prev.loadingTabs].filter((id) => id !== tabId),
           ),
           errorTabs: new Set([...prev.errorTabs, tabId]),
         }));
@@ -435,7 +314,7 @@ export function TabsContainer({
       enableLazyLoading,
       lazyLoadingState.loadedTabs,
       lazyLoadingState.loadingTabs,
-    ]
+    ],
   );
 
   const preloadTab = React.useCallback(
@@ -453,7 +332,7 @@ export function TabsContainer({
       // Load the tab content
       await loadTab(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.preloadedTabs, loadTab]
+    [enableLazyLoading, lazyLoadingState.preloadedTabs, loadTab],
   );
 
   const retryLoadTab = React.useCallback(
@@ -478,7 +357,7 @@ export function TabsContainer({
       // Attempt to load again
       await loadTab(tabId);
     },
-    [lazyLoadingState.retryCount, maxRetries, retryDelay, loadTab]
+    [lazyLoadingState.retryCount, maxRetries, retryDelay, loadTab],
   );
 
   // Utility functions for checking tab states
@@ -486,21 +365,21 @@ export function TabsContainer({
     (tabId: string): boolean => {
       return !enableLazyLoading || lazyLoadingState.loadedTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.loadedTabs]
+    [enableLazyLoading, lazyLoadingState.loadedTabs],
   );
 
   const isTabLoading = React.useCallback(
     (tabId: string): boolean => {
       return enableLazyLoading && lazyLoadingState.loadingTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.loadingTabs]
+    [enableLazyLoading, lazyLoadingState.loadingTabs],
   );
 
   const isTabError = React.useCallback(
     (tabId: string): boolean => {
       return enableLazyLoading && lazyLoadingState.errorTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.errorTabs]
+    [enableLazyLoading, lazyLoadingState.errorTabs],
   );
 
   // Preload adjacent tabs when active tab changes
@@ -564,7 +443,7 @@ export function TabsContainer({
         setAnimationState({
           isTransitioning: true,
           previousTab: currentTab,
-          animationPhase: 'exit',
+          animationPhase: "exit",
           staggerIndex: 0,
         });
 
@@ -579,7 +458,7 @@ export function TabsContainer({
         setTimeout(() => {
           setAnimationState((prev) => ({
             ...prev,
-            animationPhase: 'enter',
+            animationPhase: "enter",
           }));
 
           // Update URL and state
@@ -592,7 +471,7 @@ export function TabsContainer({
           setAnimationState({
             isTransitioning: false,
             previousTab: null,
-            animationPhase: 'idle',
+            animationPhase: "idle",
             staggerIndex: 0,
           });
           setIsDebouncing(false);
@@ -618,7 +497,7 @@ export function TabsContainer({
       enableLazyLoading,
       isTabLoaded,
       loadTab,
-    ]
+    ],
   );
 
   // Cleanup timeouts on unmount
@@ -684,18 +563,13 @@ export function TabsContainer({
       isTabLoaded,
       isTabLoading,
       isTabError,
-    ]
+    ],
   );
-
-  // End performance measurement
-  React.useLayoutEffect(() => {
-    performanceMonitor.endMeasurement();
-  });
 
   // Always provide context, regardless of URL sync setting
   return (
     <URLTabsContext.Provider value={contextValue}>
-      <div className={cn('w-full', className)}>{children}</div>
+      <div className={cn("w-full", className)}>{children}</div>
     </URLTabsContext.Provider>
   );
 }
@@ -711,8 +585,8 @@ export function URLTabsList({ children, className }: URLTabsListProps) {
     <div
       role="tablist"
       className={cn(
-        'inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
-        className
+        "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+        className,
       )}
     >
       {children}
@@ -742,15 +616,15 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
 
     // Performance monitoring for development
     React.useLayoutEffect(() => {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         const start = performance.now();
         return () => {
           const end = performance.now();
           if (end - start > 16) {
             console.warn(
               `[URLTabsTrigger-${value}] Slow render: ${(end - start).toFixed(
-                2
-              )}ms`
+                2,
+              )}ms`,
             );
           }
         };
@@ -760,7 +634,7 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
     // Prevent interaction during transitions
     const isInteractionDisabled = React.useMemo(
       () => disabled || (enableAnimations && animationState.isTransitioning),
-      [disabled, enableAnimations, animationState.isTransitioning]
+      [disabled, enableAnimations, animationState.isTransitioning],
     );
 
     const handleClick = React.useCallback(() => {
@@ -775,33 +649,33 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
         if (!tablist) return;
 
         const tabs = Array.from(
-          tablist.querySelectorAll('[role="tab"]:not([disabled])')
+          tablist.querySelectorAll('[role="tab"]:not([disabled])'),
         ) as HTMLButtonElement[];
         const currentIndex = tabs.indexOf(event.currentTarget);
 
         let nextIndex = currentIndex;
 
         switch (event.key) {
-          case 'ArrowRight':
-          case 'ArrowDown':
+          case "ArrowRight":
+          case "ArrowDown":
             event.preventDefault();
             nextIndex = (currentIndex + 1) % tabs.length;
             break;
-          case 'ArrowLeft':
-          case 'ArrowUp':
+          case "ArrowLeft":
+          case "ArrowUp":
             event.preventDefault();
             nextIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
             break;
-          case 'Home':
+          case "Home":
             event.preventDefault();
             nextIndex = 0;
             break;
-          case 'End':
+          case "End":
             event.preventDefault();
             nextIndex = tabs.length - 1;
             break;
-          case 'Enter':
-          case ' ':
+          case "Enter":
+          case " ":
             event.preventDefault();
             if (!isInteractionDisabled && isValidTab(value)) {
               setActiveTab(value);
@@ -814,26 +688,26 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
         // Focus the next tab
         tabs[nextIndex]?.focus();
       },
-      [isInteractionDisabled, isValidTab, value, setActiveTab]
+      [isInteractionDisabled, isValidTab, value, setActiveTab],
     );
 
     const computedClassName = React.useMemo(
       () =>
         cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+          "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           // Enhanced transition classes
           enableAnimations
-            ? 'tab-trigger-transition'
-            : 'transition-all duration-200',
+            ? "tab-trigger-transition"
+            : "transition-all duration-200",
           // State-based styling
           isSelected
-            ? 'bg-background text-foreground shadow-sm'
-            : 'text-muted-foreground hover:bg-background/50 hover:text-foreground',
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:bg-background/50 hover:text-foreground",
           // Transition state styling
-          animationState.isTransitioning && 'cursor-wait',
-          className
+          animationState.isTransitioning && "cursor-wait",
+          className,
         ),
-      [enableAnimations, isSelected, animationState.isTransitioning, className]
+      [enableAnimations, isSelected, animationState.isTransitioning, className],
     );
 
     return (
@@ -853,7 +727,7 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 // Default skeleton component for loading states
@@ -864,7 +738,7 @@ interface TabsSkeletonProps {
 
 function TabsSkeleton({ rows = 3, className }: TabsSkeletonProps) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {Array.from({ length: rows }).map((_, index) => (
         <div key={index} className="space-y-2">
           <Skeleton className="h-4 w-3/4" />
@@ -886,7 +760,7 @@ interface TabsErrorProps {
 
 function TabsError({ error, retry, className }: TabsErrorProps) {
   return (
-    <div className={cn('text-center py-8 space-y-4', className)}>
+    <div className={cn("text-center py-8 space-y-4", className)}>
       <div className="text-destructive">
         <svg
           className="mx-auto h-12 w-12 mb-4"
@@ -903,7 +777,7 @@ function TabsError({ error, retry, className }: TabsErrorProps) {
         </svg>
         <h3 className="text-lg font-semibold mb-2">Failed to load content</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          {error.message || 'An error occurred while loading the tab content.'}
+          {error.message || "An error occurred while loading the tab content."}
         </p>
         <button
           onClick={retry}
@@ -951,8 +825,8 @@ class TabsErrorBoundary extends React.Component<
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('TabsErrorBoundary caught an error:', error, errorInfo);
+  componentDidCatch(error: Error) {
+    toast.error("TabsErrorBoundary caught an error:");
 
     if (this.props.onError) {
       this.props.onError(error, this.props.tabId);
@@ -1024,15 +898,15 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
 
     // Performance monitoring for development
     React.useLayoutEffect(() => {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         const start = performance.now();
         return () => {
           const end = performance.now();
           if (end - start > 16) {
             console.warn(
               `[URLTabsContent-${value}] Slow render: ${(end - start).toFixed(
-                2
-              )}ms`
+                2,
+              )}ms`,
             );
           }
         };
@@ -1042,8 +916,8 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
     const isSelected = activeTab === value;
     const isExiting =
       animationState.previousTab === value &&
-      animationState.animationPhase === 'exit';
-    const isEntering = isSelected && animationState.animationPhase === 'enter';
+      animationState.animationPhase === "exit";
+    const isEntering = isSelected && animationState.animationPhase === "enter";
 
     // Handle preloading if enabled - must be before any early returns
     React.useEffect(() => {
@@ -1073,35 +947,35 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       const transition = `all ${duration}ms ${easing}`;
 
       switch (transitionType) {
-        case 'fade':
+        case "fade":
           return {
             transition,
             opacity: isExiting ? 0 : isEntering ? 1 : isSelected ? 1 : 0,
           };
 
-        case 'slide':
+        case "slide":
           return {
             transition,
             transform: isExiting
-              ? 'translateX(-20px)'
+              ? "translateX(-20px)"
               : isEntering
-              ? 'translateX(0)'
-              : isSelected
-              ? 'translateX(0)'
-              : 'translateX(20px)',
+                ? "translateX(0)"
+                : isSelected
+                  ? "translateX(0)"
+                  : "translateX(20px)",
             opacity: isExiting ? 0 : isEntering ? 1 : isSelected ? 1 : 0,
           };
 
-        case 'scale':
+        case "scale":
           return {
             transition,
             transform: isExiting
-              ? 'scale(0.95)'
+              ? "scale(0.95)"
               : isEntering
-              ? 'scale(1)'
-              : isSelected
-              ? 'scale(1)'
-              : 'scale(0.95)',
+                ? "scale(1)"
+                : isSelected
+                  ? "scale(1)"
+                  : "scale(0.95)",
             opacity: isExiting ? 0 : isEntering ? 1 : isSelected ? 1 : 0,
           };
 
@@ -1135,22 +1009,22 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
         const childStyle: React.CSSProperties = {
           animationDelay: `${staggerDelay}ms`,
           animationDuration: `${animationConfig.duration}ms`,
-          animationFillMode: 'both',
+          animationFillMode: "both",
           animationTimingFunction: animationConfig.easing,
         };
 
         // Apply stagger animation class based on phase
-        let animationClass = '';
+        let animationClass = "";
         if (isEntering) {
           switch (transitionType) {
-            case 'fade':
-              animationClass = 'animate-fade-in-stagger';
+            case "fade":
+              animationClass = "animate-fade-in-stagger";
               break;
-            case 'slide':
-              animationClass = 'animate-slide-in-stagger';
+            case "slide":
+              animationClass = "animate-slide-in-stagger";
               break;
-            case 'scale':
-              animationClass = 'animate-scale-in-stagger';
+            case "scale":
+              animationClass = "animate-scale-in-stagger";
               break;
           }
         }
@@ -1164,10 +1038,10 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
               ...childStyle,
             },
             className: cn(
-              (childProps.className as string) || '',
-              animationClass
+              (childProps.className as string) || "",
+              animationClass,
             ),
-          }
+          },
         );
       });
     }, [
@@ -1192,7 +1066,7 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
         // Error state - show error component
         return (
           <ErrorComponent
-            error={new Error('Failed to load tab content')}
+            error={new Error("Failed to load tab content")}
             retry={handleRetry}
           />
         );
@@ -1230,8 +1104,8 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
       <TabsErrorBoundary
         tabId={value}
         fallback={ErrorComponent}
-        onError={(error, tabId) => {
-          console.error(`Error in tab ${tabId}:`, error);
+        onError={(_, tabId) => {
+          toast.error(`Error in tab ${tabId}:`);
         }}
       >
         <div
@@ -1240,15 +1114,15 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
           aria-labelledby={`tab-${value}`}
           style={animationStyles}
           className={cn(
-            'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            className
+            "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            className,
           )}
         >
           {renderedContent}
         </div>
       </TabsErrorBoundary>
     );
-  }
+  },
 );
 // Export all components and types
 export {
