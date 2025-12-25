@@ -2,6 +2,7 @@ import { Users, Car, MapPin, Star } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
 import { STATISTICS } from "@/constants/content-constant";
+import { usePublicStats } from "@/hooks/use-public-stats";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -22,12 +23,14 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
     threshold: 0.2,
   });
 
+  const { stats: publicStats } = usePublicStats();
+
   const stats: StatItem[] = [
     {
       icon: (
         <Users className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-chart-1 group-hover:scale-110 transition-transform duration-300" />
       ),
-      value: STATISTICS.users,
+      value: publicStats ? `${publicStats.users.toLocaleString()}+` : STATISTICS.users,
       label: "Active Users",
       color: "text-chart-1",
       delay: animationClasses.delay75,
@@ -36,7 +39,7 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
       icon: (
         <Car className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-chart-2 group-hover:scale-110 transition-transform duration-300" />
       ),
-      value: STATISTICS.drivers,
+      value: publicStats ? `${publicStats.drivers.toLocaleString()}+` : STATISTICS.drivers,
       label: "Drivers",
       color: "text-chart-2",
       delay: animationClasses.delay100,
@@ -45,7 +48,7 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
       icon: (
         <MapPin className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-chart-3 group-hover:scale-110 transition-transform duration-300" />
       ),
-      value: STATISTICS.cities,
+      value: publicStats ? `${publicStats.cities.toLocaleString()}+` : STATISTICS.cities,
       label: "Cities",
       color: "text-chart-3",
       delay: animationClasses.delay150,
@@ -54,7 +57,7 @@ export function StatsGrid({ className = "" }: StatsGridProps) {
       icon: (
         <Star className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-chart-4 group-hover:scale-110 transition-transform duration-300" />
       ),
-      value: STATISTICS.rating,
+      value: publicStats ? `${publicStats.rating}` : STATISTICS.rating,
       label: "Rating",
       color: "text-chart-4",
       delay: animationClasses.delay200,

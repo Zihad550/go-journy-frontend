@@ -1,15 +1,42 @@
-import { Card } from '@/components/ui/card';
-import { GradientBackground } from '@/components/ui/gradient-background';
-import {
-  Award,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Star,
-  Users,
-} from 'lucide-react';
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { ABOUT_CONTENT } from "@/constants/content-constant";
+import { usePublicStats } from "@/hooks/use-public-stats";
+import type { IAchievement } from "@/types";
 
 function AchievementsSection() {
+  const { stats: publicStats } = usePublicStats();
+
+  const achievements: IAchievement[] = ABOUT_CONTENT.achievements.map(
+    (item, index) => {
+      if (index === 0) {
+        return {
+          ...item,
+          metric: publicStats?.rides
+            ? `${(publicStats.rides / 1000).toFixed(0)}K+`
+            : item.metric,
+        };
+      }
+      if (index === 1) {
+        return {
+          ...item,
+          metric: publicStats?.totalDriverEarnings
+            ? `$${(publicStats.totalDriverEarnings / 1000000).toFixed(0)}M+`
+            : item.metric,
+        };
+      }
+      if (index === 3) {
+        return {
+          ...item,
+          metric: publicStats?.drivers
+            ? `${publicStats.drivers.toLocaleString()}+`
+            : item.metric,
+        };
+      }
+      return item;
+    },
+  );
+
   return (
     <GradientBackground className="py-16 lg:py-24">
       <div className="container mx-auto px-4">
@@ -24,61 +51,22 @@ function AchievementsSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <Award className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <div className="text-3xl font-bold mb-2">500K+</div>
-            <h3 className="font-semibold mb-2">Completed Rides</h3>
-            <p className="text-sm text-muted-foreground">
-              Successfully connecting riders and drivers across multiple
-              cities
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <DollarSign className="h-12 w-12 mx-auto mb-4 text-chart-1" />
-            <div className="text-3xl font-bold mb-2">$2M+</div>
-            <h3 className="font-semibold mb-2">Driver Earnings Paid</h3>
-            <p className="text-sm text-muted-foreground">
-              Empowering 2,500+ drivers with flexible income opportunities.
-              Average $15-25/hour with instant payouts.
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <Star className="h-12 w-12 mx-auto mb-4 text-chart-2" />
-            <div className="text-3xl font-bold mb-2">99.2%</div>
-            <h3 className="font-semibold mb-2">Safety Record</h3>
-            <p className="text-sm text-muted-foreground">
-              Maintaining the highest safety standards in the industry
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <Users className="h-12 w-12 mx-auto mb-4 text-chart-3" />
-            <div className="text-3xl font-bold mb-2">5K+</div>
-            <h3 className="font-semibold mb-2">Active Drivers</h3>
-            <p className="text-sm text-muted-foreground">
-              Growing community of verified and trusted drivers
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <Clock className="h-12 w-12 mx-auto mb-4 text-chart-4" />
-            <div className="text-3xl font-bold mb-2">3 Min</div>
-            <h3 className="font-semibold mb-2">Average Wait Time</h3>
-            <p className="text-sm text-muted-foreground">
-              Quick and efficient ride matching for better user experience
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-chart-5" />
-            <div className="text-3xl font-bold mb-2">98%</div>
-            <h3 className="font-semibold mb-2">Customer Satisfaction</h3>
-            <p className="text-sm text-muted-foreground">
-              Consistently exceeding user expectations and building trust
-            </p>
-          </Card>
+          {achievements.map((item: IAchievement, index: number) => {
+            const Icon = item.icon;
+            return (
+              <Card
+                key={index}
+                className="p-8 text-center hover:shadow-lg transition-shadow"
+              >
+                <Icon className={`h-12 w-12 mx-auto mb-4 ${item.colorClass}`} />
+                <div className="text-3xl font-bold mb-2">{item.metric}</div>
+                <h3 className="font-semibold mb-2">{item.label}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </GradientBackground>

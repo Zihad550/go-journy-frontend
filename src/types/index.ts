@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { LucideIcon } from "lucide-react";
 
 export type * from "./admin-ride.type";
 export type * from "./analytics-type";
@@ -17,6 +18,14 @@ export interface ISidebarItem {
     url: string;
     component: ComponentType;
   }[];
+}
+
+export interface IAchievement {
+  metric: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  colorClass: string;
 }
 
 type ZodIssue = {

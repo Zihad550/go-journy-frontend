@@ -3,6 +3,7 @@ import { Users, Car } from 'lucide-react';
 import { ProcessFlow } from './process-flow';
 import { StatisticsDisplay } from './statistics-display';
 import { TAB_STATISTICS, TAB_CONTENT } from '../../constants/how-it-works-section-constants';
+import { usePublicStats } from '@/hooks/use-public-stats';
 import type { ProcessStep } from '@/constants/how-it-works.constant';
 
 interface TabContentProps {
@@ -13,7 +14,8 @@ interface TabContentProps {
 function TabContentComponent({ type, steps }: TabContentProps) {
   const is_rider = type === 'rider';
   const content = TAB_CONTENT[type];
-  const statistics = TAB_STATISTICS[type];
+  const { stats } = usePublicStats();
+  const statistics = stats?.[type] || TAB_STATISTICS[type];
   const Icon = is_rider ? Users : Car;
   const gradient_class = is_rider
     ? 'from-primary via-chart-1 to-primary'

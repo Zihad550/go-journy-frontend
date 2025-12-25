@@ -1,3 +1,12 @@
+import {
+  Award,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Star,
+  Users,
+} from 'lucide-react';
+
 // Brand and messaging constants for consistent content across public pages
 
 export const BRAND = {
@@ -133,21 +142,50 @@ export const ABOUT_CONTENT = {
     {
       metric: '500K+',
       label: 'Completed Rides',
-      description: 'Safe trips completed',
+      description:
+        'Successfully connecting riders and drivers across multiple cities',
+      icon: Award,
+      colorClass: 'text-primary',
     },
     {
       metric: '$2M+',
-      label: 'Driver Earnings',
-      description: 'Paid to drivers',
+      label: 'Driver Earnings Paid',
+      description:
+        'Empowering 2,500+ drivers with flexible income opportunities. Average $15-25/hour with instant payouts.',
+      icon: DollarSign,
+      colorClass: 'text-chart-1',
     },
     {
       metric: '99.2%',
       label: 'Safety Record',
-      description: 'Incident-free trips',
+      description:
+        'Maintaining the highest safety standards in the industry',
+      icon: Star,
+      colorClass: 'text-chart-2',
     },
-    { metric: '5K+', label: 'Active Drivers', description: 'Verified drivers' },
-    { metric: '3 min', label: 'Average Wait', description: 'Pickup time' },
-    { metric: '98%', label: 'Satisfaction', description: 'Happy customers' },
+    {
+      metric: '5K+',
+      label: 'Active Drivers',
+      description: 'Growing community of verified and trusted drivers',
+      icon: Users,
+      colorClass: 'text-chart-3',
+    },
+    {
+      metric: '3 Min',
+      label: 'Average Wait Time',
+      description:
+        'Quick and efficient ride matching for better user experience',
+      icon: Clock,
+      colorClass: 'text-chart-4',
+    },
+    {
+      metric: '98%',
+      label: 'Customer Satisfaction',
+      description:
+        'Consistently exceeding user expectations and building trust',
+      icon: CheckCircle,
+      colorClass: 'text-chart-5',
+    },
   ],
 };
 

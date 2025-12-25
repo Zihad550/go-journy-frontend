@@ -3,9 +3,11 @@ import {
   serviceHighlights,
   type ServiceHighlight,
 } from "@/constants/service-highlights.constant";
+import { usePublicStats } from "@/hooks/use-public-stats";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { animationClasses } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { formatMetric } from "@/utils/number-format-utils";
 import React, { useEffect, useRef, useState } from "react";
 
 interface ServiceHighlightsProps {
@@ -100,7 +102,7 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
     <Card
       ref={card_animation.ref}
       className={cn(
-        "group relative overflow-hidden transition-all duration-300 ease-out",
+        "h-full group relative overflow-hidden transition-all duration-300 ease-out",
         "hover:scale-105 hover:shadow-2xl hover:-translate-y-2",
         "bg-card/50 backdrop-blur-sm border-border/50",
         "transform-gpu",
@@ -171,6 +173,39 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
 export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
   className,
 }) => {
+  // Fetch public stats for dynamic metrics
+  const { stats } = usePublicStats();
+
+  // Create dynamic service highlights with real user count
+  const dynamicServiceHighlights: ServiceHighlight[] = serviceHighlights.map(
+    (highlight) => {
+      if (highlight.title === "Trusted Community" && stats) {
+        return {
+          ...highlight,
+          metric: formatMetric(stats.users),
+          description: highlight.description.replace(
+            "over 2 million satisfied riders",
+            `over ${formatMetric(stats.users).replace('+', '')} satisfied riders`
+          ),
+        };
+      }
+      return highlight;
+    }
+  );
+
+  // Create dynamic CTA statistics
+  const dynamicStats = stats ? [
+    { value: stats.rider[0].value, label: "Happy Riders", color: "bg-chart-1" },
+    { value: stats.driver[1].value, label: "Active Drivers", color: "bg-chart-2" },
+    { value: formatMetric(stats.cities) + "+", label: "Cities", color: "bg-chart-3" },
+    { value: stats.rider[1].value, label: "Rating", color: "bg-chart-4" },
+  ] : [
+    { value: "10K+", label: "Happy Riders", color: "bg-chart-1" },
+    { value: "2K+", label: "Active Drivers", color: "bg-chart-2" },
+    { value: "50+", label: "Cities", color: "bg-chart-3" },
+    { value: "4.9★", label: "Rating", color: "bg-chart-4" },
+  ];
+
   // Animation refs are handled by useScrollAnimation
 
   // Animation hooks for section elements
@@ -236,8 +271,8 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
           role="list"
           aria-label="Platform benefits and service highlights"
         >
-          {serviceHighlights.map((highlight, index) => (
-            <div key={highlight.title} role="listitem">
+          {dynamicServiceHighlights.map((highlight, index) => (
+            <div className="h-full" key={highlight.title} role="listitem">
               <HighlightCard highlight={highlight} index={index} />
             </div>
           ))}
@@ -262,34 +297,15 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
             role="list"
             aria-label="Platform statistics"
           >
-            <div className="flex items-center gap-1.5 sm:gap-2" role="listitem">
-              <div
-                className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-chart-1 rounded-full"
-                aria-hidden="true"
-              />
-              <span>10K+ Happy Riders</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2" role="listitem">
-              <div
-                className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-chart-2 rounded-full"
-                aria-hidden="true"
-              />
-              <span>2K+ Active Drivers</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2" role="listitem">
-              <div
-                className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-chart-3 rounded-full"
-                aria-hidden="true"
-              />
-              <span>50+ Cities</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2" role="listitem">
-              <div
-                className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-chart-4 rounded-full"
-                aria-hidden="true"
-              />
-              <span>4.9★ Rating</span>
-            </div>
+            {dynamicStats.map((stat) => (
+              <div key={stat.label} className="flex items-center gap-1.5 sm:gap-2" role="listitem">
+                <div
+                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 ${stat.color} rounded-full`}
+                  aria-hidden="true"
+                />
+                <span>{stat.value} {stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
