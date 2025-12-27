@@ -34,3 +34,15 @@ export interface IRideRequest {
 export interface IRideStatusUpdate {
   status: ObjectValues<typeof RideStatus>;
 }
+
+export interface IRideFilters {
+  minPrice?: number;
+  maxPrice?: number;
+  riderName?: string;
+  pickupLat?: string;
+  pickupLng?: string;
+  pickupRadius?: number;
+  destLat?: string;
+  destLng?: string;
+  destRadius?: number;
+}
