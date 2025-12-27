@@ -168,7 +168,10 @@ export const TestimonialsSection: React.FC<TestimonialsProps> = ({
               </div>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Skeleton key={star} className="h-3 w-3 sm:h-4 sm:w-4 rounded" />
+                  <Skeleton
+                    key={star}
+                    className="h-3 w-3 sm:h-4 sm:w-4 rounded"
+                  />
                 ))}
               </div>
               <div className="flex items-center gap-3">

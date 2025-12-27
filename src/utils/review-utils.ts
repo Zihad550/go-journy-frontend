@@ -5,17 +5,17 @@ import type { IReviewForComponent } from "@/types/review-type";
  * Get initials from a name for avatar fallback
  */
 export const getInitials = (name: string): string => {
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    return 'U'; // Default fallback for unknown user
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    return "U"; // Default fallback for unknown user
   }
 
   const nameParts = name
     .trim()
-    .split(' ')
+    .split(" ")
     .filter((part) => part.length > 0);
 
   if (nameParts.length === 0) {
-    return 'U';
+    return "U";
   }
 
   if (nameParts.length === 1) {
@@ -38,23 +38,23 @@ export const formatRelativeTime = (dateString: string): string => {
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-      return 'Today';
+      return "Today";
     } else if (diffInDays === 1) {
-      return 'Yesterday';
+      return "Yesterday";
     } else if (diffInDays < 7) {
       return `${diffInDays} days ago`;
     } else if (diffInDays < 30) {
       const weeks = Math.floor(diffInDays / 7);
-      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+      return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
     } else if (diffInDays < 365) {
       const months = Math.floor(diffInDays / 30);
-      return `${months} month${months > 1 ? 's' : ''} ago`;
+      return `${months} month${months > 1 ? "s" : ""} ago`;
     } else {
       const years = Math.floor(diffInDays / 365);
-      return `${years} year${years > 1 ? 's' : ''} ago`;
+      return `${years} year${years > 1 ? "s" : ""} ago`;
     }
   } catch {
-    return 'Recently';
+    return "Recently";
   }
 };
 
@@ -63,20 +63,20 @@ export const formatRelativeTime = (dateString: string): string => {
  */
 export const transformReviewForComponent = (
   review: IReview,
-  role: 'rider' | 'driver' = 'rider'
+  role: "rider" | "driver" = "rider",
 ): IReviewForComponent => {
-  const isRiderReview = role === 'rider';
+  const isRiderReview = role === "rider";
 
   // Safely extract names with fallbacks
-  const riderName = review.rider?.name || 'Anonymous Rider';
-  const driverName = review.driver?.user?.name || 'Anonymous Driver';
+  const riderName = review.rider?.name || "Anonymous Rider";
+  const driverName = review.driver?.user?.name || "Anonymous Driver";
 
   return {
     ...review,
-    id: review._id || `review-${Date.now()}`,
+    id: review._id || `review-${Date.now() * Math.random()}`,
     name: isRiderReview ? riderName : driverName,
     role,
-    review: review.comment || 'No review text available',
+    review: review.comment || "No review text available",
     metric: formatRelativeTime(review.createdAt),
     // Keep original API structure for potential future use
     rider: review.rider,
@@ -89,22 +89,24 @@ export const transformReviewForComponent = (
  * Creates unified array with both rider and driver perspectives
  */
 export const transformReviewsForComponent = (
-  reviews: IReview[]
+  reviews: IReview[],
 ): IReviewForComponent[] => {
   const allReviews: IReviewForComponent[] = [];
 
   // Filter out invalid reviews and transform valid ones
   reviews
-    .filter((review) => review && review._id && (review.comment || review.rating))
+    .filter(
+      (review) => review && review._id && (review.comment || review.rating),
+    )
     .forEach((review) => {
       try {
         // Create rider perspective review
-        allReviews.push(transformReviewForComponent(review, 'rider'));
+        allReviews.push(transformReviewForComponent(review, "rider"));
 
         // Create driver perspective review
-        allReviews.push(transformReviewForComponent(review, 'driver'));
+        // allReviews.push(transformReviewForComponent(review, "driver"));
       } catch (error) {
-        console.warn('Failed to transform review:', review._id, error);
+        console.warn("Failed to transform review:", review._id, error);
       }
     });
 

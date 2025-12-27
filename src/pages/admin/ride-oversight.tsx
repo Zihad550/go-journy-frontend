@@ -60,46 +60,46 @@ interface RideStats {
 }
 
 const RideOversight = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedRide, setSelectedRide] = useState<IAdminRide | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
-  const [showStatusUpdate, setShowStatusUpdate] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [search_term, set_search_term] = useState("");
+  const [status_filter, set_status_filter] = useState<string>("all");
+  const [selected_ride, set_selected_ride] = useState<IAdminRide | null>(null);
+  const [show_details, set_show_details] = useState(false);
+  const [show_status_update, set_show_status_update] = useState(false);
+  const [show_delete_confirm, set_show_delete_confirm] = useState(false);
 
   // Driver History Modal State
-  const [showDriverHistory, setShowDriverHistory] = useState(false);
-  const [selectedDriverForHistory, setSelectedDriverForHistory] =
+  const [show_driver_history, set_show_driver_history] = useState(false);
+  const [selected_driver_for_history, set_selected_driver_for_history] =
     useState<IDriver | null>(null);
 
-  const [activeTab, setActiveTab] = useState<
+  const [active_tab, set_active_tab] = useState<
     "overview" | "active" | "issues" | "analytics"
   >("overview");
 
   // Analytics state
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<
+  const [analytics_period, set_analytics_period] = useState<
     "daily" | "weekly" | "monthly" | "yearly"
   >("monthly");
-  const [analyticsStartDate, setAnalyticsStartDate] = useState<string>("");
-  const [analyticsEndDate, setAnalyticsEndDate] = useState<string>("");
+  const [analytics_start_date, set_analytics_start_date] = useState<string>("");
+  const [analytics_end_date, set_analytics_end_date] = useState<string>("");
 
   const analyticsParams: IRideAnalyticsParams = {
-    period: analyticsPeriod,
-    ...(analyticsStartDate && { startDate: analyticsStartDate }),
-    ...(analyticsEndDate && { endDate: analyticsEndDate }),
+    period: analytics_period,
+    ...(analytics_start_date && { startDate: analytics_start_date }),
+    ...(analytics_end_date && { endDate: analytics_end_date }),
   };
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [current_page, set_current_page] = useState(1);
+  const [sort_by, set_sort_by] = useState("createdAt");
+  const [sort_order, set_sort_order] = useState<"asc" | "desc">("desc");
 
   // Admin ride overview with pagination and filtering
   const rideParams: IRideOverviewParams = {
-    ...(statusFilter !== "all" && { status: statusFilter }),
-    ...(searchTerm && { riderId: searchTerm }), // This would need backend adjustment for proper search
-    page: currentPage,
+    ...(status_filter !== "all" && { status: status_filter }),
+    ...(search_term && { riderId: search_term }), // This would need backend adjustment for proper search
+    page: current_page,
     limit: 20,
-    sortBy,
-    sortOrder,
+    sortBy: sort_by,
+    sortOrder: sort_order,
   };
 
   const {
@@ -117,7 +117,7 @@ const RideOversight = () => {
 
   // Loading state based on active tab
   const isCurrentTabLoading = useMemo(() => {
-    switch (activeTab) {
+    switch (active_tab) {
       case "active":
         return isActiveLoading;
       case "issues":
@@ -128,7 +128,7 @@ const RideOversight = () => {
         return isLoading;
     }
   }, [
-    activeTab,
+    active_tab,
     isLoading,
     isActiveLoading,
     isIssuesLoading,
@@ -139,7 +139,7 @@ const RideOversight = () => {
 
   // Get current data based on active tab
   const currentRidesData = useMemo(() => {
-    switch (activeTab) {
+    switch (active_tab) {
       case "active":
         return activeRidesData?.data || [];
       case "issues":
@@ -147,7 +147,7 @@ const RideOversight = () => {
       default:
         return ridesData?.data?.rides || [];
     }
-  }, [activeTab, ridesData, activeRidesData, rideIssuesData]);
+  }, [active_tab, ridesData, activeRidesData, rideIssuesData]);
 
   // Calculate ride statistics from overview data
   const rideStats: RideStats = useMemo(() => {
@@ -247,8 +247,8 @@ const RideOversight = () => {
 
   // Handle viewing driver history
   const handleViewDriverHistory = (driver: IDriver) => {
-    setSelectedDriverForHistory(driver);
-    setShowDriverHistory(true);
+    set_selected_driver_for_history(driver);
+    set_show_driver_history(true);
   };
 
   // Reset all modal states
@@ -258,18 +258,18 @@ const RideOversight = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    set_current_page(page);
   };
 
   // Get current pagination info
   const currentPagination = useMemo(() => {
-    switch (activeTab) {
+    switch (active_tab) {
       case "issues":
         return rideIssuesData?.data?.pagination;
       default:
         return ridesData?.data?.pagination;
     }
-  }, [activeTab, ridesData, rideIssuesData]);
+  }, [active_tab, ridesData, rideIssuesData]);
 
   return (
     <div className="space-y-6 p-6">
@@ -288,9 +288,9 @@ const RideOversight = () => {
         {/* Tab Navigation */}
         <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
           <button
-            onClick={() => setActiveTab("overview")}
+            onClick={() => set_active_tab("overview")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "overview"
+              active_tab === "overview"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
@@ -299,9 +299,9 @@ const RideOversight = () => {
             Overview
           </button>
           <button
-            onClick={() => setActiveTab("active")}
+            onClick={() => set_active_tab("active")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "active"
+              active_tab === "active"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
@@ -310,9 +310,9 @@ const RideOversight = () => {
             Active Rides ({activeRidesData?.data?.length || 0})
           </button>
           <button
-            onClick={() => setActiveTab("issues")}
+            onClick={() => set_active_tab("issues")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "issues"
+              active_tab === "issues"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
@@ -321,9 +321,9 @@ const RideOversight = () => {
             Issues ({rideIssuesData?.data?.pagination?.total || 0})
           </button>
           <button
-            onClick={() => setActiveTab("analytics")}
+            onClick={() => set_active_tab("analytics")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "analytics"
+              active_tab === "analytics"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
@@ -415,8 +415,8 @@ const RideOversight = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search rides by rider, driver, ID, or price..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={search_term}
+                  onChange={(e) => set_search_term(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -425,8 +425,8 @@ const RideOversight = () => {
             {/* Status Filter */}
             <div>
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                value={status_filter}
+                onChange={(e) => set_status_filter(e.target.value)}
                 className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
                 <option value="all">All Statuses</option>
@@ -441,11 +441,11 @@ const RideOversight = () => {
             {/* Sort By */}
             <div>
               <select
-                value={`${sortBy}-${sortOrder}`}
+                value={`${sort_by}-${sort_order}`}
                 onChange={(e) => {
                   const [field, order] = e.target.value.split("-");
-                  setSortBy(field);
-                  setSortOrder(order as "asc" | "desc");
+                  set_sort_by(field);
+                  set_sort_order(order as "asc" | "desc");
                 }}
                 className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
@@ -475,7 +475,7 @@ const RideOversight = () => {
       </Card>
 
       {/* Main Content */}
-      {activeTab === "analytics" ? (
+      {active_tab === "analytics" ? (
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -494,9 +494,9 @@ const RideOversight = () => {
                   <div className="flex items-center space-x-2">
                     <label className="text-sm font-medium">Period:</label>
                     <select
-                      value={analyticsPeriod}
+                      value={analytics_period}
                       onChange={(e) =>
-                        setAnalyticsPeriod(
+                        set_analytics_period(
                           e.target.value as
                             | "daily"
                             | "weekly"
@@ -518,8 +518,8 @@ const RideOversight = () => {
                     <label className="text-sm font-medium">From:</label>
                     <input
                       type="date"
-                      value={analyticsStartDate}
-                      onChange={(e) => setAnalyticsStartDate(e.target.value)}
+                      value={analytics_start_date}
+                      onChange={(e) => set_analytics_start_date(e.target.value)}
                       className="px-3 py-1 border border-input bg-background rounded-md text-sm"
                     />
                   </div>
@@ -528,20 +528,20 @@ const RideOversight = () => {
                     <label className="text-sm font-medium">To:</label>
                     <input
                       type="date"
-                      value={analyticsEndDate}
-                      onChange={(e) => setAnalyticsEndDate(e.target.value)}
+                      value={analytics_end_date}
+                      onChange={(e) => set_analytics_end_date(e.target.value)}
                       className="px-3 py-1 border border-input bg-background rounded-md text-sm"
                     />
                   </div>
 
                   {/* Clear Dates Button */}
-                  {(analyticsStartDate || analyticsEndDate) && (
+                  {(analytics_start_date || analytics_end_date) && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setAnalyticsStartDate("");
-                        setAnalyticsEndDate("");
+                        set_analytics_start_date("");
+                        set_analytics_end_date("");
                       }}
                     >
                       Clear Dates
@@ -759,17 +759,17 @@ const RideOversight = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              {activeTab === "active" && "Active Rides"}
-              {activeTab === "issues" && "Ride Issues"}
-              {activeTab === "overview" && "All Rides"}(
+              {active_tab === "active" && "Active Rides"}
+              {active_tab === "issues" && "Ride Issues"}
+              {active_tab === "overview" && "All Rides"}(
               {currentRidesData.length})
             </CardTitle>
             <CardDescription>
-              {activeTab === "active" &&
+              {active_tab === "active" &&
                 "Currently ongoing rides (requested, accepted, in transit)"}
-              {activeTab === "issues" &&
+              {active_tab === "issues" &&
                 "Rides requiring admin attention and review"}
-              {activeTab === "overview" &&
+              {active_tab === "overview" &&
                 "Complete overview of all ride requests and their current status"}
             </CardDescription>
           </CardHeader>
@@ -785,11 +785,11 @@ const RideOversight = () => {
                 <Route className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No rides found</h3>
                 <p className="text-muted-foreground">
-                  {searchTerm || statusFilter !== "all"
+                  {search_term || status_filter !== "all"
                     ? "Try adjusting your search or filter criteria"
-                    : activeTab === "active"
+                    : active_tab === "active"
                       ? "No active rides at the moment"
-                      : activeTab === "issues"
+                      : active_tab === "issues"
                         ? "No ride issues found"
                         : "No rides have been created yet"}
                 </p>
@@ -873,8 +873,8 @@ const RideOversight = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                setSelectedRide(ride);
-                                setShowDetails(true);
+                                set_selected_ride(ride);
+                                set_show_details(true);
                               }}
                             >
                               <Eye className="h-4 w-4 mr-1" />
@@ -924,38 +924,38 @@ const RideOversight = () => {
 
       {/* Modals */}
       <RideDetailsModal
-        open={showDetails}
-        onOpenChange={setShowDetails}
-        ride={selectedRide}
+        open={show_details}
+        onOpenChange={set_show_details}
+        ride={selected_ride}
         onStatusUpdate={() => {
-          setShowDetails(false);
-          setShowStatusUpdate(true);
+          set_show_details(false);
+          set_show_status_update(true);
         }}
         onDelete={() => {
-          setShowDetails(false);
-          setShowDeleteConfirm(true);
+          set_show_details(false);
+          set_show_delete_confirm(true);
         }}
       />
 
       <StatusUpdateModal
-        open={showStatusUpdate}
-        onOpenChange={setShowStatusUpdate}
-        ride={selectedRide}
+        open={show_status_update}
+        onOpenChange={set_show_status_update}
+        ride={selected_ride}
         onSuccess={handleModalSuccess}
       />
 
       <DeleteConfirmModal
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        ride={selectedRide}
+        open={show_delete_confirm}
+        onOpenChange={set_show_delete_confirm}
+        ride={selected_ride}
         onSuccess={handleModalSuccess}
       />
 
       {/* Driver History Modal */}
       <DriverHistoryModal
-        open={showDriverHistory}
-        driver={selectedDriverForHistory}
-        onOpenChange={setShowDriverHistory}
+        open={show_driver_history}
+        driver={selected_driver_for_history}
+        onOpenChange={set_show_driver_history}
       />
     </div>
   );

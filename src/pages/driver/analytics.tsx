@@ -24,7 +24,7 @@ import { useState } from "react";
 import { formatPeriodDateLabel } from "@/utils/date-utils";
 
 const Analytics = () => {
-  const [period, setPeriod] = useState<
+  const [period, set_period] = useState<
     "daily" | "weekly" | "monthly" | "yearly"
   >("monthly");
 
@@ -179,7 +179,7 @@ const Analytics = () => {
                 <button
                   key={periodOption}
                   onClick={() =>
-                    setPeriod(
+                    set_period(
                       periodOption as "daily" | "weekly" | "monthly" | "yearly",
                     )
                   }
@@ -332,35 +332,35 @@ const Analytics = () => {
         <CardHeader>
           <CardTitle>Recent Rides</CardTitle>
           <CardDescription>Your latest ride history</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="h-6 w-20" />
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Skeleton className="h-4 w-4" />
-                          <Skeleton className="h-4 w-32" />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Skeleton className="h-4 w-4" />
-                          <Skeleton className="h-4 w-40" />
-                        </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
+                  <div className="flex items-center space-x-4">
+                    <Skeleton className="h-6 w-20" />
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-4 w-40" />
                       </div>
                     </div>
-                    <div className="text-right">
-                      <Skeleton className="h-5 w-20 ml-auto" />
-                    </div>
                   </div>
-                ))}
-              </div>
-            ) : error ? (
+                  <div className="text-right">
+                    <Skeleton className="h-5 w-20 ml-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
             <div className="text-red-500 text-center py-8">
               Error loading ride history
             </div>

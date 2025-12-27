@@ -41,9 +41,9 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
   autoUpdate = true,
   updateInterval = 30, // 30 seconds
 }) => {
-  const [etaData, setEtaData] = useState<ETAData | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [isStale, setIsStale] = useState(false);
+  const [eta_data, set_eta_data] = useState<ETAData | null>(null);
+  const [last_update, set_last_update] = useState<Date>(new Date());
+  const [is_stale, set_is_stale] = useState(false);
 
   const [calculateETA, { isLoading: isCalculatingETA, error: etaError }] =
     useCalculateETAMutation();
@@ -60,9 +60,9 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
       }).unwrap();
 
       if (result.data) {
-        setEtaData(result.data);
-        setLastUpdate(new Date());
-        setIsStale(false);
+        set_eta_data(result.data);
+        set_last_update(new Date());
+        set_is_stale(false);
       }
     } catch {
       toast.error("Failed to calculate ETA");
@@ -75,7 +75,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
       if (data.rideId === rideId) {
         // WebSocket ETA update doesn't have all fields, so we'll keep existing data
         // and just update the ETA time
-        setEtaData((prev) =>
+        set_eta_data((prev) =>
           prev
             ? {
                 ...prev,
@@ -83,8 +83,8 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
               }
             : null,
         );
-        setLastUpdate(new Date());
-        setIsStale(false);
+        set_last_update(new Date());
+        set_is_stale(false);
       }
     });
 
@@ -111,17 +111,17 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
     const checkStale = () => {
       const now = new Date();
       const diffInMinutes =
-        (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
+        (now.getTime() - last_update.getTime()) / (1000 * 60);
 
       if (diffInMinutes > 5) {
         // Consider stale after 5 minutes
-        setIsStale(true);
+        set_is_stale(true);
       }
     };
 
     const staleCheckInterval = setInterval(checkStale, 60000); // Check every minute
     return () => clearInterval(staleCheckInterval);
-  }, [lastUpdate]);
+  }, [last_update]);
 
   // Format duration
   const formatDuration = (seconds: number): string => {
@@ -144,10 +144,10 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
 
   // Calculate arrival time
   const getArrivalTime = (): string => {
-    if (!etaData) return "--:--";
+    if (!eta_data) return "--:--";
 
     const now = new Date();
-    const arrivalTime = new Date(now.getTime() + etaData.duration * 1000);
+    const arrivalTime = new Date(now.getTime() + eta_data.duration * 1000);
 
     return arrivalTime.toLocaleTimeString([], {
       hour: "2-digit",
@@ -158,11 +158,11 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
 
   // Get traffic status
   const getTrafficStatus = (): { status: string; color: string } => {
-    if (!etaData || etaData.trafficDelay === 0) {
+    if (!eta_data || eta_data.trafficDelay === 0) {
       return { status: "Clear", color: "bg-green-500" };
     }
 
-    const delayMinutes = etaData.trafficDelay / 60;
+    const delayMinutes = eta_data.trafficDelay / 60;
 
     if (delayMinutes < 5) {
       return { status: "Light", color: "bg-yellow-500" };
@@ -203,7 +203,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             >
               {isConnected() ? "Live" : "Offline"}
             </Badge>
-            {isStale && (
+            {is_stale && (
               <Badge variant="outline" className="text-xs text-orange-600">
                 <AlertTriangle className="h-3 w-3 mr-1" />
                 Stale
@@ -214,7 +214,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {etaData ? (
+        {eta_data ? (
           <>
             {/* Main ETA Display */}
             <div className="text-center">
@@ -228,7 +228,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-xl font-semibold text-primary">
-                  {formatDuration(etaData.duration)}
+                  {formatDuration(eta_data.duration)}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Time Remaining
@@ -237,7 +237,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
 
               <div className="text-center">
                 <div className="text-xl font-semibold text-primary">
-                  {formatDistance(etaData.distance)}
+                  {formatDistance(eta_data.distance)}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Distance Left
@@ -246,7 +246,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
             </div>
 
             {/* Traffic Information */}
-            {etaData.trafficDelay > 0 && (
+            {eta_data.trafficDelay > 0 && (
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center gap-2">
                   <div
@@ -257,28 +257,28 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
                   </span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  +{formatDuration(etaData.trafficDelay)}
+                  +{formatDuration(eta_data.trafficDelay)}
                 </div>
               </div>
             )}
 
             {/* Route Information */}
-            {showRoute && etaData.route && (
+            {showRoute && eta_data.route && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Navigation className="h-4 w-4" />
                   <span className="font-medium">Route Details</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                  <div>Duration: {formatDuration(etaData.route.duration)}</div>
-                  <div>Distance: {formatDistance(etaData.route.distance)}</div>
+                  <div>Duration: {formatDuration(eta_data.route.duration)}</div>
+                  <div>Distance: {formatDistance(eta_data.route.distance)}</div>
                 </div>
               </div>
             )}
 
             {/* Last Update */}
             <div className="text-xs text-muted-foreground text-center">
-              Last updated: {lastUpdate.toLocaleTimeString()}
+              Last updated: {last_update.toLocaleTimeString()}
             </div>
           </>
         ) : (
@@ -309,7 +309,7 @@ const ETADisplay: React.FC<ETADisplayProps> = ({
         )}
 
         {/* Manual Update Button */}
-        {etaData && autoUpdate && (
+        {eta_data && autoUpdate && (
           <div className="text-center">
             <button
               onClick={fetchETA}

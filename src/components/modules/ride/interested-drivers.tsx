@@ -1,32 +1,30 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ButtonSpinner } from '@/components/ui/spinner';
-import { PaymentModal } from './payment-modal';
-import { User, Car, Star, Clock } from 'lucide-react';
-import { useState } from 'react';
-import type { IRide, IDriver } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ButtonSpinner } from "@/components/ui/spinner";
+import { PaymentModal } from "./payment-modal";
+import { User, Car, Star, Clock } from "lucide-react";
+import { useState } from "react";
+import type { IRide, IDriver } from "@/types";
 
 interface InterestedDriversProps {
   ride: IRide;
 }
 
-export function InterestedDrivers({
-  ride,
-}: InterestedDriversProps) {
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState<string | IDriver | null>(null);
+export function InterestedDrivers({ ride }: InterestedDriversProps) {
+  const [payment_modal_open, set_payment_modal_open] = useState(false);
+  const [selected_driver, set_selected_driver] = useState<
+    string | IDriver | null
+  >(null);
 
   const handleAcceptDriver = (driver: string | IDriver) => {
-    setSelectedDriver(driver);
-    setPaymentModalOpen(true);
+    set_selected_driver(driver);
+    set_payment_modal_open(true);
   };
 
-
-
   const handleModalClose = () => {
-    setPaymentModalOpen(false);
-    setSelectedDriver(null);
+    set_payment_modal_open(false);
+    set_selected_driver(null);
   };
 
   const interestedDrivers = ride.interestedDrivers || [];
@@ -65,7 +63,7 @@ export function InterestedDrivers({
           <div className="grid gap-4">
             {interestedDrivers.map((driver) => (
               <DriverCard
-                key={typeof driver === 'string' ? driver : driver._id}
+                key={typeof driver === "string" ? driver : driver._id}
                 driver={driver}
                 onAccept={handleAcceptDriver}
                 isLoading={false}
@@ -75,12 +73,12 @@ export function InterestedDrivers({
         </CardContent>
       </Card>
 
-      {selectedDriver && (
+      {selected_driver && (
         <PaymentModal
-          isOpen={paymentModalOpen}
+          isOpen={payment_modal_open}
           onClose={handleModalClose}
           ride={ride}
-          selectedDriver={selectedDriver}
+          selectedDriver={selected_driver}
         />
       )}
     </>
@@ -95,18 +93,18 @@ interface DriverCardProps {
 
 function DriverCard({ driver, onAccept, isLoading }: DriverCardProps) {
   // Handle both string ID and populated driver object
-  const driverId = typeof driver === 'string' ? driver : driver._id;
+  const driverId = typeof driver === "string" ? driver : driver._id;
   const driverName =
-    typeof driver === 'string'
-      ? 'Driver'
-      : typeof driver.user === 'string'
-      ? driver.user
-      : driver.user?.name || 'Driver';
+    typeof driver === "string"
+      ? "Driver"
+      : typeof driver.user === "string"
+        ? driver.user
+        : driver.user?.name || "Driver";
   const vehicleName =
-    typeof driver === 'string' ? 'Vehicle' : driver.vehicle?.name || 'Vehicle';
+    typeof driver === "string" ? "Vehicle" : driver.vehicle?.name || "Vehicle";
   const vehicleModel =
-    typeof driver === 'string' ? '' : driver.vehicle?.model || '';
-  const experience = typeof driver === 'string' ? 0 : driver.experience || 0;
+    typeof driver === "string" ? "" : driver.vehicle?.model || "";
+  const experience = typeof driver === "string" ? 0 : driver.experience || 0;
 
   return (
     <Card className="border border-border/50 hover:border-primary/50 transition-colors">

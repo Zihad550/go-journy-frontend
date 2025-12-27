@@ -38,7 +38,7 @@ export function PaymentModal({
 }: PaymentModalProps) {
   const [initPayment, { isLoading: isInitiatingPayment }] =
     useInitPaymentMutation();
-  const [paymentStep, setPaymentStep] = useState<
+  const [payment_step, set_payment_step] = useState<
     "confirm" | "processing" | "success" | "error"
   >("confirm");
 
@@ -62,7 +62,7 @@ export function PaymentModal({
 
   const handlePaymentInitiation = async () => {
     try {
-      setPaymentStep("processing");
+      set_payment_step("processing");
 
       // Store driver information for payment success callback
       const driverInfo = {
@@ -91,20 +91,20 @@ export function PaymentModal({
         throw new Error("Failed to get payment URL");
       }
     } catch {
-      setPaymentStep("error");
+      set_payment_step("error");
       toast.error("❌ Failed to initiate payment. Please try again.");
     }
   };
 
   const handleClose = () => {
-    if (paymentStep !== "processing") {
+    if (payment_step !== "processing") {
       onClose();
-      setPaymentStep("confirm");
+      set_payment_step("confirm");
     }
   };
 
   const renderContent = () => {
-    switch (paymentStep) {
+    switch (payment_step) {
       case "confirm":
         return (
           <div className="space-y-6">
@@ -290,11 +290,11 @@ export function PaymentModal({
             Complete Payment
           </DialogTitle>
           <DialogDescription>
-            {paymentStep === "confirm"
+            {payment_step === "confirm"
               ? "Review your ride details and complete payment to accept this driver"
-              : paymentStep === "processing"
+              : payment_step === "processing"
                 ? "Processing your payment..."
-                : paymentStep === "success"
+                : payment_step === "success"
                   ? "Payment completed successfully!"
                   : "Payment failed. Please try again."}
           </DialogDescription>
@@ -303,7 +303,7 @@ export function PaymentModal({
         <div className="py-4">{renderContent()}</div>
 
         <DialogFooter className="flex gap-2">
-          {paymentStep === "confirm" && (
+          {payment_step === "confirm" && (
             <>
               <Button variant="outline" onClick={handleClose}>
                 Cancel
@@ -328,12 +328,12 @@ export function PaymentModal({
             </>
           )}
 
-          {paymentStep === "error" && (
+          {payment_step === "error" && (
             <>
               <Button variant="outline" onClick={handleClose}>
                 Close
               </Button>
-              <Button onClick={() => setPaymentStep("confirm")}>
+              <Button onClick={() => set_payment_step("confirm")}>
                 Try Again
               </Button>
             </>

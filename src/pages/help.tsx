@@ -40,20 +40,20 @@ const categories = [
 ];
 
 function Help() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [search_term, set_search_term] = useState("");
+  const [selected_category, set_selected_category] = useState<string>("all");
 
   const filteredFAQs = useMemo(() => {
     let filtered = FAQ_DATA;
 
     // Filter by category
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((faq) => faq.category === selectedCategory);
+    if (selected_category !== "all") {
+      filtered = filtered.filter((faq) => faq.category === selected_category);
     }
 
     // Filter by search term
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase();
+    if (search_term.trim()) {
+      const searchLower = search_term.toLowerCase();
       filtered = filtered.filter(
         (faq) =>
           faq.question.toLowerCase().includes(searchLower) ||
@@ -68,7 +68,7 @@ function Help() {
       if (!a.popular && b.popular) return 1;
       return 0;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [search_term, selected_category]);
 
   const popularFAQs = useMemo(() => {
     return POPULAR_FAQS.slice(0, 6);
@@ -100,11 +100,11 @@ function Help() {
                 <Input
                   type="text"
                   placeholder={FAQ_MESSAGING.searchPlaceholder}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={search_term}
+                  onChange={(e) => set_search_term(e.target.value)}
                   className="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-3 text-base sm:text-lg bg-background/50 backdrop-blur-sm border-2 focus:border-primary min-h-[48px]"
                 />
-               </div>
+              </div>
             </div>
           </div>
         </SectionWrapper>
@@ -120,7 +120,7 @@ function Help() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {categories.map((category) => {
               const Icon = category.icon;
-              const isActive = selectedCategory === category.id;
+              const isActive = selected_category === category.id;
 
               return (
                 <Card
@@ -129,7 +129,7 @@ function Help() {
                     "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105",
                     isActive && "ring-2 ring-primary bg-primary/5",
                   )}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => set_selected_category(category.id)}
                 >
                   <CardHeader className="pb-2 sm:pb-3">
                     <div className="flex items-center space-x-2 sm:space-x-3">
@@ -162,7 +162,7 @@ function Help() {
         </div>
 
         {/* Popular Questions (shown when no search term and all categories)  */}
-        {!searchTerm && selectedCategory === "all" && (
+        {!search_term && selected_category === "all" && (
           <div className="mb-6 sm:mb-8 md:mb-10">
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 flex items-center">
               <span className="mr-2">🔥</span>
@@ -174,7 +174,7 @@ function Help() {
                   key={faq.id}
                   question={faq.question}
                   answer={faq.answer}
-                  searchTerm={searchTerm}
+                  searchTerm={search_term}
                 />
               ))}
             </div>
@@ -185,11 +185,11 @@ function Help() {
         <div className="mb-6 sm:mb-8 md:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
             <h2 className="text-xl sm:text-2xl font-semibold">
-              {searchTerm
+              {search_term
                 ? `Search Results (${filteredFAQs.length})`
-                : selectedCategory === "all"
+                : selected_category === "all"
                   ? "All Questions"
-                  : categories.find((c) => c.id === selectedCategory)?.name}
+                  : categories.find((c) => c.id === selected_category)?.name}
             </h2>
             {filteredFAQs.length > 0 && (
               <Badge variant="outline" className="w-fit">
@@ -206,7 +206,7 @@ function Help() {
                   key={faq.id}
                   question={faq.question}
                   answer={faq.answer}
-                  searchTerm={searchTerm}
+                  searchTerm={search_term}
                 />
               ))}
             </div>
@@ -218,14 +218,14 @@ function Help() {
                   No questions found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-2 sm:px-0">
-                  {searchTerm
+                  {search_term
                     ? `${FAQ_MESSAGING.noResults} Try different keywords or browse by category.`
                     : "No questions available in this category."}
                 </p>
-                {searchTerm && (
+                {search_term && (
                   <Button
                     variant="outline"
-                    onClick={() => setSearchTerm("")}
+                    onClick={() => set_search_term("")}
                     className="w-full sm:w-auto"
                   >
                     Clear Search

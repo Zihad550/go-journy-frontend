@@ -43,9 +43,9 @@ export default function RideHistory() {
     error,
     refetch,
   } = useGetRidesQuery(undefined);
-  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
-  const [filterBy, setFilterBy] = useState<FilterOption>("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [sort_by, set_sort_by] = useState<SortOption>("date-desc");
+  const [filter_by, set_filter_by] = useState<FilterOption>("all");
+  const [search_term, set_search_term] = useState("");
 
   const rides = useMemo(() => ridesResponse?.data || [], [ridesResponse?.data]);
 
@@ -54,13 +54,13 @@ export default function RideHistory() {
     let filtered = rides;
 
     // Apply status filter
-    if (filterBy !== "all") {
-      filtered = filtered.filter((ride) => ride.status === filterBy);
+    if (filter_by !== "all") {
+      filtered = filtered.filter((ride) => ride.status === filter_by);
     }
 
     // Apply search filter (search in ride ID, price, or status)
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (search_term) {
+      const searchLower = search_term.toLowerCase();
       filtered = filtered.filter(
         (ride) =>
           ride._id.toLowerCase().includes(searchLower) ||
@@ -71,7 +71,7 @@ export default function RideHistory() {
 
     // Apply sorting
     const sorted = [...filtered].sort((a, b) => {
-      switch (sortBy) {
+      switch (sort_by) {
         case "date-desc": {
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
@@ -106,7 +106,7 @@ export default function RideHistory() {
     });
 
     return sorted;
-  }, [rides, filterBy, searchTerm, sortBy]);
+  }, [rides, filter_by, search_term, sort_by]);
 
   const stats = useMemo(
     () => ({
@@ -237,8 +237,8 @@ export default function RideHistory() {
               <input
                 type="text"
                 placeholder="Search rides by ID, status, or price..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={search_term}
+                onChange={(e) => set_search_term(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -247,8 +247,8 @@ export default function RideHistory() {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Select
-                value={filterBy}
-                onValueChange={(value) => setFilterBy(value as FilterOption)}
+                value={filter_by}
+                onValueChange={(value) => set_filter_by(value as FilterOption)}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
@@ -266,14 +266,14 @@ export default function RideHistory() {
 
             {/* Sort */}
             <div className="flex items-center gap-2">
-              {sortBy.includes("desc") ? (
+              {sort_by.includes("desc") ? (
                 <SortDesc className="h-4 w-4 text-muted-foreground" />
               ) : (
                 <SortAsc className="h-4 w-4 text-muted-foreground" />
               )}
               <Select
-                value={sortBy}
-                onValueChange={(value) => setSortBy(value as SortOption)}
+                value={sort_by}
+                onValueChange={(value) => set_sort_by(value as SortOption)}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
@@ -293,7 +293,9 @@ export default function RideHistory() {
       {/* Rides List */}
       {isLoading ? (
         <div className="space-y-6">
-          {[1, 2, 3].map((i) => <RideHistoryCardSkeleton key={i} />)}
+          {[1, 2, 3].map((i) => (
+            <RideHistoryCardSkeleton key={i} />
+          ))}
         </div>
       ) : filteredAndSortedRides.length === 0 ? (
         <GradientBackground className="rounded-3xl">
@@ -306,7 +308,7 @@ export default function RideHistory() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">No Rides Found</h3>
                   <p className="text-muted-foreground">
-                    {searchTerm || filterBy !== "all"
+                    {search_term || filter_by !== "all"
                       ? "No rides match your current filters. Try adjusting your search or filter criteria."
                       : "You haven't driven any rides yet. Start accepting rides to build your history!"}
                   </p>

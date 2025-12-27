@@ -105,13 +105,13 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const routeLayerRef = useRef<string | null>(null);
 
-  const [selectedProfile, setSelectedProfile] = useState<
+  const [selected_profile, set_selected_profile] = useState<
     "driving" | "driving-traffic" | "walking" | "cycling"
   >("driving-traffic");
-  const [routeData, setRouteData] = useState<RouteData | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [route_data, set_route_data] = useState<RouteData | null>(null);
+  const [is_calculating, set_is_calculating] = useState(false);
 
-  const [calculateRoute, { isLoading: isCalculatingRoute }] =
+  const [calculateRoute, { isLoading: is_calculatingRoute }] =
     useCalculateRouteMutation();
   const { data: storedRouteData, isLoading: isLoadingStoredRoute } =
     useGetRouteQuery(rideId, {
@@ -279,8 +279,8 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
   // Calculate route
   const handleCalculateRoute = useCallback(
     async (profile?: string) => {
-      const routeProfile = profile || selectedProfile;
-      setIsCalculating(true);
+      const routeProfile = profile || selected_profile;
+      set_is_calculating(true);
 
       try {
         const result = await calculateRoute({
@@ -292,7 +292,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
 
         if (result.data) {
           const route = result.data;
-          setRouteData(route);
+          set_route_data(route);
 
           if (showMap) {
             displayRouteOnMap(route);
@@ -300,15 +300,15 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
 
           onRouteCalculated?.(route);
         }
-      } catch (error) {
-        console.error("Failed to calculate route:", error);
+      } catch {
+        toast.error("Failed to calculate route");
       } finally {
-        setIsCalculating(false);
+        set_is_calculating(false);
       }
     },
     [
       rideId,
-      selectedProfile,
+      selected_profile,
       calculateRoute,
       showMap,
       displayRouteOnMap,
@@ -319,7 +319,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
   // Handle profile change
   const handleProfileChange = useCallback(
     (profile: string) => {
-      setSelectedProfile(profile as typeof selectedProfile);
+      set_selected_profile(profile as typeof selected_profile);
       handleCalculateRoute(profile);
     },
     [handleCalculateRoute],
@@ -368,13 +368,13 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
 
   // Load stored route if available
   useEffect(() => {
-    if (storedRouteData?.data && !routeData) {
-      setRouteData(storedRouteData.data);
+    if (storedRouteData?.data && !route_data) {
+      set_route_data(storedRouteData.data);
       if (showMap) {
         displayRouteOnMap(storedRouteData.data);
       }
     }
-  }, [storedRouteData, routeData, showMap, displayRouteOnMap]);
+  }, [storedRouteData, route_data, showMap, displayRouteOnMap]);
 
   return (
     <Card className={cn("w-full", className)}>
@@ -389,7 +389,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
         {/* Route Profile Selection */}
         <div className="flex items-center gap-4">
           <label className="text-sm font-medium">Route Type:</label>
-          <Select value={selectedProfile} onValueChange={handleProfileChange}>
+          <Select value={selected_profile} onValueChange={handleProfileChange}>
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
@@ -407,10 +407,10 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
 
           <Button
             onClick={() => handleCalculateRoute()}
-            disabled={isCalculating || isCalculatingRoute}
+            disabled={is_calculating || is_calculatingRoute}
             size="sm"
           >
-            {isCalculating || isCalculatingRoute ? (
+            {is_calculating || is_calculatingRoute ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
             Recalculate
@@ -418,12 +418,12 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
         </div>
 
         {/* Route Information */}
-        {routeData && (
+        {route_data && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-muted rounded-lg">
               <Clock className="h-6 w-6 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold text-primary">
-                {formatDuration(routeData.duration)}
+                {formatDuration(route_data.duration)}
               </div>
               <div className="text-sm text-muted-foreground">Duration</div>
             </div>
@@ -431,7 +431,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
             <div className="text-center p-4 bg-muted rounded-lg">
               <Route className="h-6 w-6 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold text-primary">
-                {formatDistance(routeData.distance)}
+                {formatDistance(route_data.distance)}
               </div>
               <div className="text-sm text-muted-foreground">Distance</div>
             </div>
@@ -439,7 +439,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
             <div className="text-center p-4 bg-muted rounded-lg">
               <MapPin className="h-6 w-6 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold text-primary">
-                {routeData.instructions?.length || 0}
+                {route_data.instructions?.length || 0}
               </div>
               <div className="text-sm text-muted-foreground">Steps</div>
             </div>
@@ -447,11 +447,11 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
         )}
 
         {/* Route Instructions */}
-        {routeData?.instructions && routeData.instructions.length > 0 && (
+        {route_data?.instructions && route_data.instructions.length > 0 && (
           <div className="space-y-2">
             <h4 className="font-medium">Turn-by-Turn Directions</h4>
             <div className="max-h-40 overflow-y-auto space-y-1">
-              {routeData.instructions.map((instruction, index) => (
+              {route_data.instructions.map((instruction, index) => (
                 <div
                   key={index}
                   className="flex items-start gap-3 p-2 bg-muted rounded text-sm"
@@ -482,7 +482,7 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
         )}
 
         {/* Loading State */}
-        {(isCalculating || isCalculatingRoute || isLoadingStoredRoute) && (
+        {(is_calculating || is_calculatingRoute || isLoadingStoredRoute) && (
           <div className="flex items-center justify-center py-8">
             <div className="flex items-center gap-2">
               <Loader2 className="h-6 w-6 animate-spin" />
@@ -496,9 +496,9 @@ const RouteOptimization: React.FC<RouteOptimizationProps> = ({
         )}
 
         {/* Error State */}
-        {!routeData &&
-          !isCalculating &&
-          !isCalculatingRoute &&
+        {!route_data &&
+          !is_calculating &&
+          !is_calculatingRoute &&
           !isLoadingStoredRoute && (
             <div className="text-center py-8">
               <Route className="mx-auto h-12 w-12 text-muted-foreground mb-4" />

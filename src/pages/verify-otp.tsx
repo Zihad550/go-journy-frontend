@@ -53,10 +53,10 @@ export default function Verify() {
   const [email] = useState(location.state);
   const [sendOtp] = useSendOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
-  const [timer, setTimer] = useState(120);
-  const [isLoading, setIsLoading] = useState(false);
-  const [otpError, setOtpError] = useState("");
-  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [timer, set_timer] = useState(120);
+  const [is_loading, set_is_loading] = useState(false);
+  const [otp_error, set_otp_error] = useState("");
+  const [show_otp_input, set_show_otp_input] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,8 +67,8 @@ export default function Verify() {
   });
 
   const handleSendOtp = async () => {
-    setIsLoading(true);
-    setOtpError("");
+    set_is_loading(true);
+    set_otp_error("");
     const toastId = toast.loading("Sending OTP");
 
     try {
@@ -76,20 +76,20 @@ export default function Verify() {
 
       if (res.success) {
         toast.success("OTP Sent", { id: toastId });
-        setShowOtpInput(true);
-        setTimer(120);
+        set_show_otp_input(true);
+        set_timer(120);
       }
     } catch {
       toast.error("Failed to send OTP", { id: toastId });
-      setOtpError("Failed to send verification code. Please try again.");
+      set_otp_error("Failed to send verification code. Please try again.");
     } finally {
-      setIsLoading(false);
+      set_is_loading(false);
     }
   };
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setIsLoading(true);
-    setOtpError("");
+    set_is_loading(true);
+    set_otp_error("");
     const toastId = toast.loading("Verifying OTP");
     const userInfo = {
       email,
@@ -104,36 +104,36 @@ export default function Verify() {
       }
     } catch {
       toast.error("Invalid OTP", { id: toastId });
-      setOtpError("Invalid verification code. Please check and try again.");
+      set_otp_error("Invalid verification code. Please check and try again.");
     } finally {
-      setIsLoading(false);
+      set_is_loading(false);
     }
   };
 
   const handleBackToSendOtp = () => {
-    setShowOtpInput(false);
-    setOtpError("");
-    setTimer(60);
+    set_show_otp_input(false);
+    set_otp_error("");
+    set_timer(60);
     form.reset();
   };
 
   const handleAlreadyHaveCode = () => {
-    setShowOtpInput(true);
-    setOtpError("");
+    set_show_otp_input(true);
+    set_otp_error("");
   };
 
   useEffect(() => {
     if (!email) navigate("/");
-    if (!showOtpInput) {
+    if (!show_otp_input) {
       return;
     }
 
     const timerId = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+      set_timer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [email, showOtpInput, navigate]);
+  }, [email, show_otp_input, navigate]);
 
   return (
     <div className="min-h-svh bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 lg:grid lg:grid-cols-2">
@@ -145,7 +145,7 @@ export default function Verify() {
         </div>
         <div className="flex flex-1 items-center justify-center py-8 sm:py-12">
           <div className="w-full max-w-sm sm:max-w-md px-4 sm:px-0">
-            {showOtpInput ? (
+            {show_otp_input ? (
               <Card className="shadow-2xl border-0 bg-gradient-to-br from-white via-white to-slate-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/50 backdrop-blur-xl relative overflow-hidden animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
                 {/* Background decoration */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
@@ -229,10 +229,10 @@ export default function Verify() {
                             </FormControl>
 
                             {/* Error Message */}
-                            {otpError && (
+                            {otp_error && (
                               <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-lg border border-red-200 dark:border-red-800">
                                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                                <span>{otpError}</span>
+                                <span>{otp_error}</span>
                               </div>
                             )}
 
@@ -245,7 +245,7 @@ export default function Verify() {
                                 onClick={handleSendOtp}
                                 type="button"
                                 variant="ghost"
-                                disabled={timer !== 0 || isLoading}
+                                disabled={timer !== 0 || is_loading}
                                 className={cn(
                                   "font-medium text-primary hover:text-primary/80 hover:bg-primary/5 px-4 py-2 rounded-lg transition-all duration-200",
                                   {
@@ -255,7 +255,7 @@ export default function Verify() {
                                   },
                                 )}
                               >
-                                {isLoading ? (
+                                {is_loading ? (
                                   <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                     Sending...
@@ -279,10 +279,10 @@ export default function Verify() {
                   <Button
                     form="otp-form"
                     type="submit"
-                    disabled={isLoading}
+                    disabled={is_loading}
                     className="w-full h-14 sm:h-16 font-semibold text-base sm:text-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl border-0 active:scale-[0.98] touch-manipulation"
                   >
-                    {isLoading ? (
+                    {is_loading ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                         Verifying...
@@ -327,11 +327,11 @@ export default function Verify() {
                 </CardHeader>
 
                 {/* Error Message */}
-                {otpError && (
+                {otp_error && (
                   <div className="px-4 sm:px-6 md:px-8 pb-4 relative z-10">
                     <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-lg border border-red-200 dark:border-red-800">
                       <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                      <span>{otpError}</span>
+                      <span>{otp_error}</span>
                     </div>
                   </div>
                 )}
@@ -339,10 +339,10 @@ export default function Verify() {
                 <CardFooter className="px-4 sm:px-6 md:px-8 pb-6 sm:pb-8 relative z-10">
                   <Button
                     onClick={handleSendOtp}
-                    disabled={isLoading}
+                    disabled={is_loading}
                     className="w-full h-14 sm:h-16 font-semibold text-base sm:text-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl border-0 active:scale-[0.98] touch-manipulation"
                   >
-                    {isLoading ? (
+                    {is_loading ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                         Sending Code...

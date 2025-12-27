@@ -46,14 +46,18 @@ type SortOption = "date-desc" | "date-asc" | "rating-desc" | "rating-asc";
 type FilterOption = "all" | "5" | "4" | "3" | "2" | "1";
 
 export default function MyReviews() {
-  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
-  const [filterBy, setFilterBy] = useState<FilterOption>("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [editingReview, setEditingReview] = useState<IRiderReview | null>(null);
-  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
-  const [editRating, setEditRating] = useState(0);
-  const [editComment, setEditComment] = useState("");
+  const [sort_by, set_sort_by] = useState<SortOption>("date-desc");
+  const [filter_by, set_filter_by] = useState<FilterOption>("all");
+  const [search_term, set_search_term] = useState("");
+  const [page, set_page] = useState(1);
+  const [editing_review, set_editing_review] = useState<IRiderReview | null>(
+    null,
+  );
+  const [delete_review_id, set_delete_review_id] = useState<string | null>(
+    null,
+  );
+  const [edit_rating, set_edit_rating] = useState(0);
+  const [edit_comment, set_edit_comment] = useState("");
 
   const {
     data: reviewsResponse,
@@ -89,14 +93,14 @@ export default function MyReviews() {
   const filteredAndSortedReviews = useMemo(() => {
     let filtered = reviews;
 
-    if (filterBy !== "all") {
+    if (filter_by !== "all") {
       filtered = filtered.filter(
-        (review) => review.rating === Number.parseInt(filterBy),
+        (review) => review.rating === Number.parseInt(filter_by),
       );
     }
 
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (search_term) {
+      const searchLower = search_term.toLowerCase();
       filtered = filtered.filter(
         (review) =>
           review.driver.user.name.toLowerCase().includes(searchLower) ||
@@ -106,7 +110,7 @@ export default function MyReviews() {
     }
 
     const sorted = [...filtered].sort((a, b) => {
-      switch (sortBy) {
+      switch (sort_by) {
         case "date-desc":
           return (
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -125,34 +129,34 @@ export default function MyReviews() {
     });
 
     return sorted;
-  }, [reviews, filterBy, searchTerm, sortBy]);
+  }, [reviews, filter_by, search_term, sort_by]);
 
   const handleEditClick = (review: IRiderReview) => {
-    setEditingReview(review);
-    setEditRating(review.rating);
-    setEditComment(review.comment || "");
+    set_editing_review(review);
+    set_edit_rating(review.rating);
+    set_edit_comment(review.comment || "");
   };
 
   const handleSaveEdit = async () => {
-    if (!editingReview) return;
+    if (!editing_review) return;
 
     try {
       await updateReview({
-        id: editingReview._id,
-        data: { rating: editRating, comment: editComment },
+        id: editing_review._id,
+        data: { rating: edit_rating, comment: edit_comment },
       }).unwrap();
-      setEditingReview(null);
+      set_editing_review(null);
     } catch {
       toast.error("Failed to update review");
     }
   };
 
   const handleDeleteReview = async () => {
-    if (!deleteReviewId) return;
+    if (!delete_review_id) return;
 
     try {
-      await deleteReview(deleteReviewId).unwrap();
-      setDeleteReviewId(null);
+      await deleteReview(delete_review_id).unwrap();
+      set_delete_review_id(null);
     } catch {
       toast.error("Failed to delete review");
     }
@@ -259,8 +263,8 @@ export default function MyReviews() {
               <input
                 type="text"
                 placeholder="Search by driver name or vehicle..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={search_term}
+                onChange={(e) => set_search_term(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -268,8 +272,8 @@ export default function MyReviews() {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Select
-                value={filterBy}
-                onValueChange={(value) => setFilterBy(value as FilterOption)}
+                value={filter_by}
+                onValueChange={(value) => set_filter_by(value as FilterOption)}
               >
                 <SelectTrigger className="w-[140px]">
                   <SelectValue />
@@ -286,14 +290,14 @@ export default function MyReviews() {
             </div>
 
             <div className="flex items-center gap-2">
-              {sortBy.includes("desc") ? (
+              {sort_by.includes("desc") ? (
                 <SortDesc className="h-4 w-4 text-muted-foreground" />
               ) : (
                 <SortAsc className="h-4 w-4 text-muted-foreground" />
               )}
               <Select
-                value={sortBy}
-                onValueChange={(value) => setSortBy(value as SortOption)}
+                value={sort_by}
+                onValueChange={(value) => set_sort_by(value as SortOption)}
               >
                 <SelectTrigger className="w-[160px]">
                   <SelectValue />
@@ -329,7 +333,7 @@ export default function MyReviews() {
                     No Reviews Found
                   </h3>
                   <p className="text-muted-foreground">
-                    {searchTerm || filterBy !== "all"
+                    {search_term || filter_by !== "all"
                       ? "No reviews match your current filters. Try adjusting your search or filter criteria."
                       : "You haven't reviewed any drivers yet. Complete a ride to share your experience!"}
                   </p>
@@ -345,7 +349,7 @@ export default function MyReviews() {
               key={review._id}
               review={review}
               onEdit={() => handleEditClick(review)}
-              onDelete={() => setDeleteReviewId(review._id)}
+              onDelete={() => set_delete_review_id(review._id)}
             />
           ))}
         </div>
@@ -355,7 +359,7 @@ export default function MyReviews() {
         <div className="flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => set_page((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
@@ -365,7 +369,7 @@ export default function MyReviews() {
           </span>
           <Button
             variant="outline"
-            onClick={() => setPage((p) => Math.min(meta.totalPage, p + 1))}
+            onClick={() => set_page((p) => Math.min(meta.totalPage, p + 1))}
             disabled={page === meta.totalPage}
           >
             Next
@@ -374,8 +378,8 @@ export default function MyReviews() {
       )}
 
       <Dialog
-        open={!!editingReview}
-        onOpenChange={(open) => !open && setEditingReview(null)}
+        open={!!editing_review}
+        onOpenChange={(open) => !open && set_editing_review(null)}
       >
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -392,13 +396,13 @@ export default function MyReviews() {
                   <button
                     key={star}
                     type="button"
-                    onClick={() => setEditRating(star)}
+                    onClick={() => set_edit_rating(star)}
                     className="p-2 rounded-lg transition-colors hover:bg-muted"
                   >
                     <Star
                       className={cn(
                         "h-8 w-8",
-                        star <= editRating
+                        star <= edit_rating
                           ? "fill-primary text-primary"
                           : "text-muted-foreground",
                       )}
@@ -410,25 +414,25 @@ export default function MyReviews() {
             <div>
               <label className="text-sm font-medium mb-2 block">Comment</label>
               <Textarea
-                value={editComment}
-                onChange={(e) => setEditComment(e.target.value)}
+                value={edit_comment}
+                onChange={(e) => set_edit_comment(e.target.value)}
                 placeholder="Share your experience..."
                 rows={4}
                 maxLength={500}
                 className="resize-none"
               />
               <div className="text-xs text-muted-foreground mt-1 text-right">
-                {editComment.length}/500
+                {edit_comment.length}/500
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingReview(null)}>
+            <Button variant="outline" onClick={() => set_editing_review(null)}>
               Cancel
             </Button>
             <Button
               onClick={handleSaveEdit}
-              disabled={isUpdating || editRating === 0}
+              disabled={isUpdating || edit_rating === 0}
             >
               {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
@@ -437,8 +441,8 @@ export default function MyReviews() {
       </Dialog>
 
       <Dialog
-        open={!!deleteReviewId}
-        onOpenChange={(open) => !open && setDeleteReviewId(null)}
+        open={!!delete_review_id}
+        onOpenChange={(open) => !open && set_delete_review_id(null)}
       >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -452,7 +456,10 @@ export default function MyReviews() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteReviewId(null)}>
+            <Button
+              variant="outline"
+              onClick={() => set_delete_review_id(null)}
+            >
               Cancel
             </Button>
             <Button

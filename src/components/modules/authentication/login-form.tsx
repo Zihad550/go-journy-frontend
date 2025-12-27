@@ -42,7 +42,7 @@ export function LoginForm({
     },
   });
   const [login, { isLoading }] = useLoginMutation();
-  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+  const [demo_loading, set_demo_loading] = useState<string | null>(null);
   const on_submit = async (data: z.infer<typeof login_schema>) => {
     try {
       const res = await login(data).unwrap();
@@ -69,7 +69,7 @@ export function LoginForm({
   };
 
   const handleDemoLogin = async (role: "driver" | "rider" | "admin") => {
-    setDemoLoading(role);
+    set_demo_loading(role);
     try {
       const res = await login(demoCredentials[role]).unwrap();
       if (res.success) {
@@ -91,7 +91,7 @@ export function LoginForm({
         navigate("/verify-otp", { state: demoCredentials[role].email });
       }
     } finally {
-      setDemoLoading(null);
+      set_demo_loading(null);
     }
   };
 
@@ -179,25 +179,25 @@ export function LoginForm({
             variant="outline"
             className="w-full"
             onClick={() => handleDemoLogin("driver")}
-            disabled={demoLoading !== null}
+            disabled={demo_loading !== null}
           >
-            {demoLoading === "driver" ? "Loading..." : "Demo Driver"}
+            {demo_loading === "driver" ? "Loading..." : "Demo Driver"}
           </Button>
           <Button
             variant="outline"
             className="w-full"
             onClick={() => handleDemoLogin("rider")}
-            disabled={demoLoading !== null}
+            disabled={demo_loading !== null}
           >
-            {demoLoading === "rider" ? "Loading..." : "Demo Rider"}
+            {demo_loading === "rider" ? "Loading..." : "Demo Rider"}
           </Button>
           <Button
             variant="outline"
             className="w-full"
             onClick={() => handleDemoLogin("admin")}
-            disabled={demoLoading !== null}
+            disabled={demo_loading !== null}
           >
-            {demoLoading === "admin" ? "Loading..." : "Demo Admin"}
+            {demo_loading === "admin" ? "Loading..." : "Demo Admin"}
           </Button>
         </div>
       </div>

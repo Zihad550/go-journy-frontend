@@ -8,9 +8,9 @@ import { toast } from "sonner";
 
 function PaymentSuccess() {
   const [searchParams] = useSearchParams();
-  const [isProcessing, setIsProcessing] = useState(true);
-  const [driverAccepted, setDriverAccepted] = useState(false);
-  const [driverInfo, setDriverInfo] = useState<any>(null);
+  const [is_processing, set_is_processing] = useState(true);
+  const [driver_accepted, set_driver_accepted] = useState(false);
+  const [driver_info, set_driver_info] = useState<any>(null);
   const [acceptDriver] = useAcceptDriverMutation();
 
   const transactionId = searchParams.get("transactionId");
@@ -26,7 +26,7 @@ function PaymentSuccess() {
 
         if (pendingDriverData) {
           const driverData = JSON.parse(pendingDriverData);
-          setDriverInfo(driverData);
+          set_driver_info(driverData);
 
           // Accept the driver automatically
           try {
@@ -35,7 +35,7 @@ function PaymentSuccess() {
               driverId: driverData.driverId,
             }).unwrap();
 
-            setDriverAccepted(true);
+            set_driver_accepted(true);
             toast.success("Driver accepted successfully! 🚗");
           } catch {
             toast.error(
@@ -50,22 +50,22 @@ function PaymentSuccess() {
         // Here you would typically validate the payment with your backend
         // For now, we'll just simulate a delay
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsProcessing(false);
+        set_is_processing(false);
         toast.success("Payment processed successfully!");
       } catch {
         toast.error("There was an issue processing your payment.");
-        setIsProcessing(false);
+        set_is_processing(false);
       }
     };
 
     if (transactionId) {
       processPaymentCallback();
     } else {
-      setIsProcessing(false);
+      set_is_processing(false);
     }
   }, [transactionId, acceptDriver]);
 
-  if (isProcessing) {
+  if (is_processing) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -97,12 +97,12 @@ function PaymentSuccess() {
             <p className="text-muted-foreground">
               Your payment has been processed successfully.
             </p>
-            {driverAccepted && driverInfo && (
+            {driver_accepted && driver_info && (
               <div className="bg-primary/5 rounded-lg p-3 mt-4">
                 <div className="flex items-center justify-center gap-2 text-primary">
                   <User className="w-4 h-4" />
                   <span className="font-medium">
-                    Driver {driverInfo.driverName} has been accepted!
+                    Driver {driver_info.driverName} has been accepted!
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">

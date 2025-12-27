@@ -10,14 +10,17 @@ export function CTAButtons({
   isAuthenticated = false,
   className = "",
 }: CTAButtonsProps) {
-  const { ctaAnimation: cta_animation, primaryButtonHover: primary_button_hover, secondaryButtonHover: secondary_button_hover } =
-    useHomeAnimations();
+  const {
+    ctaAnimation: cta_animation,
+    primaryButtonHover: primary_button_hover,
+    secondaryButtonHover: secondary_button_hover,
+  } = useHomeAnimations();
 
   return (
     <div
       ref={cta_animation.ref as React.RefObject<HTMLDivElement>}
       className={`space-y-3 sm:space-y-4 md:space-y-6 px-2 sm:px-0 transition-all duration-500 ${
-        cta_animation.isVisible
+        cta_animation.is_visible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-6"
       } ${className}`}

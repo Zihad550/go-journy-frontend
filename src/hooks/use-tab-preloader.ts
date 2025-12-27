@@ -62,17 +62,17 @@ export function useTabPreloader({
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
   // User behavior tracking
-  const [behaviorPatterns, setBehaviorPatterns] = useState<
+  const [behavior_patterns, set_behavior_patterns] = useState<
     Map<string, UserBehaviorPattern>
   >(new Map());
 
   // Preload cache
-  const [preloadCache, setPreloadCache] = useState<Map<string, PreloadCache>>(
+  const [preload_cache, set_preload_cache] = useState<Map<string, PreloadCache>>(
     new Map(),
   );
 
   // Current preload priorities
-  const [preloadPriorities, setPreloadPriorities] = useState<PreloadPriority[]>(
+  const [preload_priorities, set_preload_priorities] = useState<PreloadPriority[]>(
     [],
   );
 
@@ -117,7 +117,7 @@ export function useTabPreloader({
       const now = Date.now();
       const timeSpent = now - tabStartTime.current;
 
-      setBehaviorPatterns((prev) => {
+      set_behavior_patterns((prev) => {
         const newPatterns = new Map(prev);
         const existing = newPatterns.get(tabId) || {
           tabId,
@@ -152,7 +152,7 @@ export function useTabPreloader({
     (fromTab: string, toTab: string) => {
       if (!finalConfig.behaviorTrackingEnabled || !fromTab || !toTab) return;
 
-      setBehaviorPatterns((prev) => {
+      set_behavior_patterns((prev) => {
         const newPatterns = new Map(prev);
         const fromPattern = newPatterns.get(fromTab);
 
@@ -197,7 +197,7 @@ export function useTabPreloader({
     }
 
     // Frequently visited tabs
-    behaviorPatterns.forEach((pattern) => {
+    behavior_patterns.forEach((pattern) => {
       if (pattern.tabId === activeTab) return;
 
       const recencyScore = Math.max(
@@ -222,7 +222,7 @@ export function useTabPreloader({
     });
 
     // Predicted tabs based on transition patterns
-    const currentPattern = behaviorPatterns.get(activeTab);
+    const currentPattern = behavior_patterns.get(activeTab);
     if (currentPattern) {
       const totalTransitions = Array.from(
         currentPattern.transitionProbability.values(),
@@ -257,7 +257,7 @@ export function useTabPreloader({
     return Array.from(uniquePriorities.values()).sort(
       (a, b) => b.priority - a.priority,
     );
-  }, [validTabs, activeTab, behaviorPatterns, finalConfig.preloadThreshold]);
+  }, [validTabs, activeTab, behavior_patterns, finalConfig.preloadThreshold]);
 
   // Update preload priority for a specific tab
   const updatePreloadPriority = useCallback(
@@ -266,7 +266,7 @@ export function useTabPreloader({
       reason: PreloadPriority["reason"],
       additionalPriority: number,
     ) => {
-      setPreloadPriorities((prev) => {
+      set_preload_priorities((prev) => {
         const newPriorities = [...prev];
         const existingIndex = newPriorities.findIndex((p) => p.tabId === tabId);
 
@@ -298,7 +298,7 @@ export function useTabPreloader({
     const now = Date.now();
     const maxAge = finalConfig.maxCacheAge;
 
-    setPreloadCache((prev) => {
+    set_preload_cache((prev) => {
       const newCache = new Map(prev);
       const toEvict: string[] = [];
 
@@ -321,7 +321,7 @@ export function useTabPreloader({
 
   // Cache size management
   const manageCacheSize = useCallback(() => {
-    setPreloadCache((prev) => {
+    set_preload_cache((prev) => {
       const entries = Array.from(prev.entries());
       const totalSize = entries.reduce((sum, [, entry]) => sum + entry.size, 0);
       const maxSizeBytes = finalConfig.maxCacheSize * 1024 * 1024; // Convert MB to bytes
@@ -356,7 +356,7 @@ export function useTabPreloader({
   // Preload tab content
   const preloadTab = useCallback(
     async (tabId: string): Promise<boolean> => {
-      if (!validTabs.includes(tabId) || preloadCache.has(tabId)) {
+      if (!validTabs.includes(tabId) || preload_cache.has(tabId)) {
         return true;
       }
 
@@ -376,7 +376,7 @@ export function useTabPreloader({
         const contentSize = JSON.stringify(mockContent).length;
 
         // Add to cache
-        setPreloadCache((prev) => {
+        set_preload_cache((prev) => {
           const newCache = new Map(prev);
           newCache.set(tabId, {
             tabId,
@@ -396,17 +396,17 @@ export function useTabPreloader({
         return false;
       }
     },
-    [validTabs, preloadCache, onPreloadComplete],
+    [validTabs, preload_cache, onPreloadComplete],
   );
 
   // Get cached content
   const getCachedContent = useCallback(
     (tabId: string) => {
-      const cached = preloadCache.get(tabId);
+      const cached = preload_cache.get(tabId);
       if (!cached) return null;
 
       // Update access statistics
-      setPreloadCache((prev) => {
+      set_preload_cache((prev) => {
         const newCache = new Map(prev);
         const entry = newCache.get(tabId);
         if (entry) {
@@ -421,13 +421,13 @@ export function useTabPreloader({
 
       return cached.content;
     },
-    [preloadCache],
+    [preload_cache],
   );
 
   // Execute preloading based on priorities
   const executePreloading = useCallback(async () => {
     const priorities = calculatePreloadPriorities();
-    setPreloadPriorities(priorities);
+    set_preload_priorities(priorities);
 
     // Clear existing timeouts
     preloadTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
@@ -467,7 +467,7 @@ export function useTabPreloader({
 
   // Clear cache for specific tab
   const clearTabCache = useCallback((tabId: string) => {
-    setPreloadCache((prev) => {
+    set_preload_cache((prev) => {
       const newCache = new Map(prev);
       newCache.delete(tabId);
       return newCache;
@@ -476,7 +476,7 @@ export function useTabPreloader({
 
   // Clear all cache
   const clearAllCache = useCallback(() => {
-    setPreloadCache(new Map());
+    set_preload_cache(new Map());
   }, []);
 
   // Track active tab changes
@@ -488,7 +488,7 @@ export function useTabPreloader({
   useEffect(() => {
     const timeoutId = setTimeout(executePreloading, 100);
     return () => clearTimeout(timeoutId);
-  }, [activeTab, behaviorPatterns]);
+  }, [activeTab, behavior_patterns]);
 
   // Periodic cache maintenance
   useEffect(() => {
@@ -526,9 +526,9 @@ export function useTabPreloader({
 
   return {
     // State
-    behaviorPatterns,
-    preloadCache,
-    preloadPriorities,
+    behavior_patterns,
+    preload_cache,
+    preload_priorities,
 
     // Actions
     preloadTab,
@@ -540,23 +540,23 @@ export function useTabPreloader({
     observeTabTrigger,
 
     // Utilities
-    isTabCached: (tabId: string) => preloadCache.has(tabId),
+    isTabCached: (tabId: string) => preload_cache.has(tabId),
     getCacheSize: () =>
-      Array.from(preloadCache.values()).reduce(
+      Array.from(preload_cache.values()).reduce(
         (sum, entry) => sum + entry.size,
         0,
       ),
     getCacheStats: () => ({
-      totalEntries: preloadCache.size,
-      totalSize: Array.from(preloadCache.values()).reduce(
+      totalEntries: preload_cache.size,
+      totalSize: Array.from(preload_cache.values()).reduce(
         (sum, entry) => sum + entry.size,
         0,
       ),
       oldestEntry: Math.min(
-        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp),
+        ...Array.from(preload_cache.values()).map((entry) => entry.timestamp),
       ),
       newestEntry: Math.max(
-        ...Array.from(preloadCache.values()).map((entry) => entry.timestamp),
+        ...Array.from(preload_cache.values()).map((entry) => entry.timestamp),
       ),
     }),
   };

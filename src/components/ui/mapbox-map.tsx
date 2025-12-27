@@ -164,11 +164,11 @@ export function MapboxMap({
   height = "h-80",
 }: MapboxMapProps) {
   const mapRef = useRef<any>(null);
-  const [popupInfo, setPopupInfo] = useState<{
+  const [popup_info, set_popup_info] = useState<{
     location: Location;
     type: string;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [is_loading, set_is_loading] = useState(false);
 
   // Calculate map bounds to fit all markers
   const calculateBounds = useCallback(() => {
@@ -249,7 +249,7 @@ export function MapboxMap({
 
   // Handle marker click
   const handleMarkerClick = useCallback((location: Location, type: string) => {
-    setPopupInfo({ location, type });
+    set_popup_info({ location, type });
   }, []);
 
   // Calculate route when pickup and destination are available
@@ -263,7 +263,7 @@ export function MapboxMap({
   const calculateRoute = async () => {
     if (!pickupLocation || !destination) return;
 
-    setIsLoading(true);
+    set_is_loading(true);
     try {
       const response = await fetch(
         `${MAPBOX_CONFIG.api.directions}/mapbox/driving/${pickupLocation.lng},${pickupLocation.lat};${destination.lng},${destination.lat}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_CONFIG.accessToken}`,
@@ -292,7 +292,7 @@ export function MapboxMap({
     } catch {
       toast.error("Failed to calculate route");
     } finally {
-      setIsLoading(false);
+      set_is_loading(false);
     }
   };
 
@@ -519,23 +519,23 @@ export function MapboxMap({
             )}
 
             {/* Popup */}
-            {popupInfo && (
+            {popup_info && (
               <Popup
-                latitude={popupInfo.location.lat}
-                longitude={popupInfo.location.lng}
-                onClose={() => setPopupInfo(null)}
+                latitude={popup_info.location.lat}
+                longitude={popup_info.location.lng}
+                onClose={() => set_popup_info(null)}
                 closeButton={true}
                 closeOnClick={false}
                 offset={[0, -10]}
               >
                 <div className="p-2">
-                  <h3 className="font-semibold text-sm">{popupInfo.type}</h3>
+                  <h3 className="font-semibold text-sm">{popup_info.type}</h3>
                   <p className="text-xs text-muted-foreground">
-                    {popupInfo.location.lat.toFixed(6)},{" "}
-                    {popupInfo.location.lng.toFixed(6)}
+                    {popup_info.location.lat.toFixed(6)},{" "}
+                    {popup_info.location.lng.toFixed(6)}
                   </p>
-                  {popupInfo.location.address && (
-                    <p className="text-xs mt-1">{popupInfo.location.address}</p>
+                  {popup_info.location.address && (
+                    <p className="text-xs mt-1">{popup_info.location.address}</p>
                   )}
                 </div>
               </Popup>
@@ -543,7 +543,7 @@ export function MapboxMap({
           </Map>
 
           {/* Loading Overlay */}
-          {isLoading && (
+          {is_loading && (
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
               <div className="bg-white rounded-lg p-4 shadow-lg">
                 <div className="flex items-center gap-2">

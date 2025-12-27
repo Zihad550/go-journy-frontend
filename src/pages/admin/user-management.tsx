@@ -219,18 +219,18 @@ const UserTable: React.FC<UserTableProps & { currentUserRole?: string }> = ({
 };
 
 export default function UserManagement() {
-  const [filters, setFilters] = useState<UserFilters>({
+  const [filters, set_filters] = useState<UserFilters>({
     search: "",
     role: "all",
     status: "all",
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [current_page, set_current_page] = useState(1);
   const [pageSize] = useState(10);
-  const [editingUser, setEditingUser] = useState<IUser | null>(null);
-  const [viewingUser, setViewingUser] = useState<IUser | null>(null);
-  const [blockingUserId, setBlockingUserId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({
+  const [editing_user, set_editing_user] = useState<IUser | null>(null);
+  const [viewing_user, set_viewing_user] = useState<IUser | null>(null);
+  const [blocking_user_id, set_blocking_user_id] = useState<string | null>(null);
+  const [edit_form, set_edit_form] = useState({
     name: "",
     role: "",
     isActive: "",
@@ -242,7 +242,7 @@ export default function UserManagement() {
     error,
     refetch,
   } = useGetAllUsersQuery({
-    page: currentPage,
+    page: current_page,
     limit: pageSize,
     search: filters.search || undefined,
   });
@@ -281,7 +281,7 @@ export default function UserManagement() {
 
   const handleBlockUser = async (user: IUser) => {
     try {
-      setBlockingUserId(user._id);
+      set_blocking_user_id(user._id);
       // Determine the action based on current user status
       const status =
         user.isActive === UserAccountStatus.ACTIVE ? "blocked" : "active";
@@ -290,7 +290,7 @@ export default function UserManagement() {
     } catch {
       toast.error("Failed to block/unblock user");
     } finally {
-      setBlockingUserId(null);
+      set_blocking_user_id(null);
     }
   };
 
@@ -310,8 +310,8 @@ export default function UserManagement() {
   };
 
   const handleEditUser = (user: IUser) => {
-    setEditingUser(user);
-    setEditForm({
+    set_editing_user(user);
+    set_edit_form({
       name: user.name,
       role: user.role,
       isActive: user.isActive,
@@ -319,7 +319,7 @@ export default function UserManagement() {
   };
 
   const handleSaveUser = async () => {
-    if (!editingUser) return;
+    if (!editing_user) return;
 
     try {
       const updatePayload: {
@@ -328,17 +328,17 @@ export default function UserManagement() {
         isActive: string;
         role?: string;
       } = {
-        id: editingUser._id,
-        name: editForm.name,
-        isActive: editForm.isActive,
+        id: editing_user._id,
+        name: edit_form.name,
+        isActive: edit_form.isActive,
       };
 
-      if (editingUser.role === Role.RIDER) {
-        updatePayload.role = editForm.role;
+      if (editing_user.role === Role.RIDER) {
+        updatePayload.role = edit_form.role;
       }
 
       await updateAdminUser(updatePayload).unwrap();
-      setEditingUser(null);
+      set_editing_user(null);
       // Success notification would be handled by the mutation
     } catch {
       toast.error("Failed to update user");
@@ -346,7 +346,7 @@ export default function UserManagement() {
   };
 
   const handleViewUser = (user: IUser) => {
-    setViewingUser(user);
+    set_viewing_user(user);
   };
 
   return (
@@ -381,7 +381,7 @@ export default function UserManagement() {
                   placeholder="Search users by name or email..."
                   value={filters.search}
                   onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, search: e.target.value }))
+                    set_filters((prev) => ({ ...prev, search: e.target.value }))
                   }
                   className="pl-10"
                 />
@@ -391,7 +391,7 @@ export default function UserManagement() {
               <select
                 value={filters.role}
                 onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, role: e.target.value }))
+                  set_filters((prev) => ({ ...prev, role: e.target.value }))
                 }
                 className="px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
@@ -404,7 +404,7 @@ export default function UserManagement() {
               <select
                 value={filters.status}
                 onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, status: e.target.value }))
+                  set_filters((prev) => ({ ...prev, status: e.target.value }))
                 }
                 className="px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
@@ -446,7 +446,7 @@ export default function UserManagement() {
                 onBlock={handleBlockUser}
                 onDelete={handleDeleteUser}
                 onView={handleViewUser}
-                isLoading={!!blockingUserId}
+                isLoading={!!blocking_user_id}
                 currentUserRole={currentUserRole}
               />
 
@@ -454,8 +454,8 @@ export default function UserManagement() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-6">
                   <div className="text-sm text-muted-foreground">
-                    Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                    {Math.min(currentPage * pageSize, totalUsers)} of{" "}
+                    Showing {(current_page - 1) * pageSize + 1} to{" "}
+                    {Math.min(current_page * pageSize, totalUsers)} of{" "}
                     {totalUsers} users
                   </div>
                   <div className="flex gap-2">
@@ -463,9 +463,9 @@ export default function UserManagement() {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                        set_current_page((prev) => Math.max(1, prev - 1))
                       }
-                      disabled={currentPage === 1}
+                      disabled={current_page === 1}
                     >
                       Previous
                     </Button>
@@ -473,9 +473,9 @@ export default function UserManagement() {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                        set_current_page((prev) => Math.min(totalPages, prev + 1))
                       }
-                      disabled={currentPage === totalPages}
+                      disabled={current_page === totalPages}
                     >
                       Next
                     </Button>
@@ -488,7 +488,7 @@ export default function UserManagement() {
       </Card>
 
       {/* Edit User Dialog */}
-      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
+      <Dialog open={!!editing_user} onOpenChange={() => set_editing_user(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
@@ -500,20 +500,20 @@ export default function UserManagement() {
             <div>
               <label className="text-sm font-medium">Name</label>
               <Input
-                value={editForm.name}
+                value={edit_form.name}
                 onChange={(e) =>
-                  setEditForm((prev) => ({ ...prev, name: e.target.value }))
+                  set_edit_form((prev) => ({ ...prev, name: e.target.value }))
                 }
                 placeholder="Enter user name"
               />
             </div>
-            {editingUser?.role === Role.RIDER && (
+            {editing_user?.role === Role.RIDER && (
               <div>
                 <label className="text-sm font-medium">Role</label>
                 <Select
-                  value={editForm.role}
+                  value={edit_form.role}
                   onValueChange={(value) =>
-                    setEditForm((prev) => ({ ...prev, role: value }))
+                    set_edit_form((prev) => ({ ...prev, role: value }))
                   }
                 >
                   <SelectTrigger>
@@ -529,9 +529,9 @@ export default function UserManagement() {
             <div>
               <label className="text-sm font-medium">Status</label>
               <Select
-                value={editForm.isActive}
+                value={edit_form.isActive}
                 onValueChange={(value) =>
-                  setEditForm((prev) => ({ ...prev, isActive: value }))
+                  set_edit_form((prev) => ({ ...prev, isActive: value }))
                 }
               >
                 <SelectTrigger>
@@ -552,7 +552,7 @@ export default function UserManagement() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingUser(null)}>
+            <Button variant="outline" onClick={() => set_editing_user(null)}>
               Cancel
             </Button>
             <Button onClick={handleSaveUser}>Save Changes</Button>
@@ -561,7 +561,7 @@ export default function UserManagement() {
       </Dialog>
 
       {/* View User Details Dialog */}
-      <Dialog open={!!viewingUser} onOpenChange={() => setViewingUser(null)}>
+      <Dialog open={!!viewing_user} onOpenChange={() => set_viewing_user(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
@@ -569,7 +569,7 @@ export default function UserManagement() {
               View detailed information about this user account.
             </DialogDescription>
           </DialogHeader>
-          {viewingUser && (
+          {viewing_user && (
             <div className="space-y-6">
               {/* User Avatar and Basic Info */}
               <div className="flex items-center space-x-4">
@@ -577,8 +577,8 @@ export default function UserManagement() {
                   <Users className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">{viewingUser.name}</h3>
-                  <p className="text-muted-foreground">{viewingUser.email}</p>
+                  <h3 className="text-xl font-semibold">{viewing_user.name}</h3>
+                  <p className="text-muted-foreground">{viewing_user.email}</p>
                 </div>
               </div>
 
@@ -589,20 +589,20 @@ export default function UserManagement() {
                     <label className="text-sm font-medium text-muted-foreground">
                       Full Name
                     </label>
-                    <p className="text-sm font-medium">{viewingUser.name}</p>
+                    <p className="text-sm font-medium">{viewing_user.name}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       Email Address
                     </label>
-                    <p className="text-sm font-medium">{viewingUser.email}</p>
+                    <p className="text-sm font-medium">{viewing_user.email}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       Phone Number
                     </label>
                     <p className="text-sm font-medium font-mono">
-                      {viewingUser.phone}
+                      {viewing_user.phone}
                     </p>
                   </div>
                 </div>
@@ -612,14 +612,14 @@ export default function UserManagement() {
                     <label className="text-sm font-medium text-muted-foreground">
                       Role
                     </label>
-                    <div className="mt-1">{getRoleBadge(viewingUser.role)}</div>
+                    <div className="mt-1">{getRoleBadge(viewing_user.role)}</div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       Account Status
                     </label>
                     <div className="mt-1">
-                      {getStatusBadge(viewingUser.isActive)}
+                      {getStatusBadge(viewing_user.isActive)}
                     </div>
                   </div>
                   <div>
@@ -627,8 +627,8 @@ export default function UserManagement() {
                       Joined Date
                     </label>
                     <p className="text-sm font-medium">
-                      {viewingUser.createdAt
-                        ? new Date(viewingUser.createdAt).toLocaleDateString(
+                      {viewing_user.createdAt
+                        ? new Date(viewing_user.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -651,14 +651,14 @@ export default function UserManagement() {
                   <div>
                     <span className="text-muted-foreground">User ID:</span>
                     <span className="ml-2 font-mono text-xs">
-                      {viewingUser._id}
+                      {viewing_user._id}
                     </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Last Updated:</span>
                     <span className="ml-2">
-                      {viewingUser.updatedAt
-                        ? new Date(viewingUser.updatedAt).toLocaleDateString()
+                      {viewing_user.updatedAt
+                        ? new Date(viewing_user.updatedAt).toLocaleDateString()
                         : "N/A"}
                     </span>
                   </div>
@@ -667,7 +667,7 @@ export default function UserManagement() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setViewingUser(null)}>
+            <Button variant="outline" onClick={() => set_viewing_user(null)}>
               Close
             </Button>
           </DialogFooter>
@@ -675,7 +675,7 @@ export default function UserManagement() {
       </Dialog>
 
       {/* Full Screen Loading Spinner */}
-      {blockingUserId && (
+      {blocking_user_id && (
         <PageSpinner
           message="Updating user status..."
           fullScreen={true}

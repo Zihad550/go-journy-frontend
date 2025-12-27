@@ -26,8 +26,8 @@ export function RiderHeroContent({
   onRideCancelled,
   defaultFormValues,
 }: RiderHeroContentProps) {
-  const [currentRide, setCurrentRide] = useState<IRide | null>(null);
-  const [reviewData, setReviewData] = useState<{
+  const [current_ride, set_current_ride] = useState<IRide | null>(null);
+  const [review_data, set_review_data] = useState<{
     ride: IRide;
     driver: IDriver;
   } | null>(null);
@@ -45,26 +45,26 @@ export function RiderHeroContent({
       const activeRide = ridesResponse.data.find(
         (ride) => ride.status !== "completed" && ride.status !== "cancelled",
       );
-      setCurrentRide(activeRide || null);
+      set_current_ride(activeRide || null);
     }
   }, [ridesResponse]);
 
   const handleRideRequested = (ride: IRide) => {
-    setCurrentRide(ride);
+    set_current_ride(ride);
     onRideRequested?.(ride);
   };
 
   const handleRideCancelled = () => {
-    setCurrentRide(null);
+    set_current_ride(null);
     onRideCancelled?.();
   };
 
   const handleRideCompleted = (ride: IRide, driver: IDriver) => {
-    setReviewData({ ride, driver });
+    set_review_data({ ride, driver });
   };
 
   const handleReviewModalClose = () => {
-    setReviewData(null);
+    set_review_data(null);
   };
 
   if (isLoading) {
@@ -140,7 +140,7 @@ export function RiderHeroContent({
     <div className="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <GradientBackground className="rounded-2xl">
         <div className="bg-card/50 backdrop-blur-sm border border-border/30 rounded-2xl shadow-xl overflow-hidden">
-          {!currentRide ? (
+          {!current_ride ? (
             <div className="p-8">
               {/* Header Section */}
               <div className="text-center mb-8">
@@ -165,7 +165,7 @@ export function RiderHeroContent({
             </div>
           ) : (
             <div className="space-y-0">
-              {currentRide.status === "requested" ? (
+              {current_ride.status === "requested" ? (
                 <>
                   {/* Header with gradient background */}
                   <div className="bg-gradient-to-r from-primary/20 via-chart-1/20 to-chart-2/20 p-8 border-b border-border/30">
@@ -193,7 +193,7 @@ export function RiderHeroContent({
                           </h3>
                         </div>
                         <RideDetails
-                          ride={currentRide}
+                          ride={current_ride}
                           onRideCancelled={handleRideCancelled}
                           onRideCompleted={handleRideCompleted}
                           className="max-w-none"
@@ -207,7 +207,7 @@ export function RiderHeroContent({
                             Available Drivers
                           </h3>
                         </div>
-                        <InterestedDrivers ride={currentRide} />
+                        <InterestedDrivers ride={current_ride} />
                       </div>
                     </div>
                   </div>
@@ -233,7 +233,7 @@ export function RiderHeroContent({
                   <div className="p-4 sm:p-6 lg:p-8">
                     <div className="max-w-5xl mx-auto">
                       <RideDetails
-                        ride={currentRide}
+                        ride={current_ride}
                         onRideCancelled={handleRideCancelled}
                         onRideCompleted={handleRideCompleted}
                         className="max-w-none"
@@ -247,12 +247,12 @@ export function RiderHeroContent({
         </div>
 
         {/* Review Modal */}
-        {reviewData && (
+        {review_data && (
           <ReviewModal
-            isOpen={!!reviewData}
+            isOpen={!!review_data}
             onClose={handleReviewModalClose}
-            ride={reviewData.ride}
-            driver={reviewData.driver}
+            ride={review_data.ride}
+            driver={review_data.driver}
           />
         )}
       </GradientBackground>

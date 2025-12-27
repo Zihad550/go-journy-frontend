@@ -108,7 +108,7 @@ const HighlightCard: React.FC<HighlightCardProps> = ({ highlight, index }) => {
         "bg-card/50 backdrop-blur-sm border-border/50",
         "transform-gpu",
         animationClasses.hoverLift,
-        card_animation.isVisible
+        card_animation.is_visible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8",
       )}
@@ -278,7 +278,7 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
           ref={header_animation.ref}
           className={cn(
             "text-center mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0 transition-all duration-800",
-            header_animation.isVisible
+            header_animation.is_visible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6",
           )}
@@ -327,7 +327,7 @@ export const ServiceHighlightsSection: React.FC<ServiceHighlightsProps> = ({
           ref={cta_animation.ref}
           className={cn(
             "text-center mt-8 sm:mt-12 md:mt-16 px-4 sm:px-0 transition-all duration-600",
-            cta_animation.isVisible
+            cta_animation.is_visible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4",
           )}

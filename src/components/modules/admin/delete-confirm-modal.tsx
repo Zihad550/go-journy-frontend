@@ -24,16 +24,16 @@ interface DeleteConfirmModalProps {
 }
 
 const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfirmModalProps) => {
-  const [reason, setReason] = useState('');
-  const [confirmText, setConfirmText] = useState('');
+  const [reason, set_reason] = useState('');
+  const [confirm_text, set_confirm_text] = useState('');
 
   const [deleteRide, { isLoading }] = useForceDeleteRideMutation();
 
   const confirmationPhrase = 'DELETE RIDE';
 
   const handleSubmit = async () => {
-    if (!ride || !reason.trim() || confirmText !== confirmationPhrase) {
-      if (confirmText !== confirmationPhrase) {
+    if (!ride || !reason.trim() || confirm_text !== confirmationPhrase) {
+      if (confirm_text !== confirmationPhrase) {
         toast.error('Please type the confirmation phrase exactly');
       } else {
         toast.error('Please provide a reason for deletion');
@@ -56,8 +56,8 @@ const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfi
   };
 
   const handleClose = () => {
-    setReason('');
-    setConfirmText('');
+    set_reason('');
+    set_confirm_text('');
     onOpenChange(false);
   };
 
@@ -99,7 +99,7 @@ const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfi
             <Textarea
               id="reason"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              onChange={(e) => set_reason(e.target.value)}
               placeholder="e.g., Data privacy request - customer account deletion, Legal compliance requirement, etc."
               className="mt-2"
               rows={3}
@@ -118,8 +118,8 @@ const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfi
             <input
               id="confirm"
               type="text"
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
+              value={confirm_text}
+              onChange={(e) => set_confirm_text(e.target.value)}
               placeholder={confirmationPhrase}
               className="mt-2 w-full px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             />
@@ -152,7 +152,7 @@ const DeleteConfirmModal = ({ open, onOpenChange, ride, onSuccess }: DeleteConfi
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading || !reason.trim() || confirmText !== confirmationPhrase}
+            disabled={isLoading || !reason.trim() || confirm_text !== confirmationPhrase}
             variant="destructive"
           >
             {isLoading && <Spinner size="sm" className="mr-2" />}

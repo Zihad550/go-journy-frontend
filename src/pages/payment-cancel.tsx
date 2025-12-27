@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 function PaymentCancel() {
   const [searchParams] = useSearchParams();
-  const [isProcessing, setIsProcessing] = useState(true);
+  const [is_processing, set_is_processing] = useState(true);
 
   const transactionId = searchParams.get("transactionId");
   const amount = searchParams.get("amount");
@@ -18,21 +18,21 @@ function PaymentCancel() {
       try {
         // Here you would typically validate the payment with your backend
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsProcessing(false);
+        set_is_processing(false);
         toast.warning("Payment was cancelled.");
       } catch {
-        setIsProcessing(false);
+        set_is_processing(false);
       }
     };
 
     if (transactionId) {
       processPaymentCallback();
     } else {
-      setIsProcessing(false);
+      set_is_processing(false);
     }
   }, [transactionId]);
 
-  if (isProcessing) {
+  if (is_processing) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">

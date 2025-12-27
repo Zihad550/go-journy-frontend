@@ -151,9 +151,9 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
 
-  const [driverMarker, setDriverMarker] = useState<DriverMarker | null>(null);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [playbackState, setPlaybackState] = useState<PlaybackState>({
+  const [driver_marker, set_driver_marker] = useState<DriverMarker | null>(null);
+  const [is_map_loaded, set_is_map_loaded] = useState(false);
+  const [playback_state, set_playback_state] = useState<PlaybackState>({
     isPlaying: false,
     currentIndex: 0,
     speed: 1,
@@ -190,12 +190,12 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   const { data: locationHistoryData } = useGetLocationHistoryQuery(
     {
       rideId: rideId || "",
-      startTime: playbackState.startTime,
-      endTime: playbackState.endTime,
+      startTime: playback_state.startTime,
+      endTime: playback_state.endTime,
       limit: 1000,
     },
     {
-      skip: !rideId || !playbackState.startTime,
+      skip: !rideId || !playback_state.startTime,
     },
   );
 
@@ -237,7 +237,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
     });
 
     map.on("load", () => {
-      setIsMapLoaded(true);
+      set_is_map_loaded(true);
       mapInstanceRef.current = map;
 
       // Add navigation controls
@@ -245,8 +245,8 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
       map.addControl(new window.mapboxgl.FullscreenControl(), "top-right");
 
       // Fit bounds if we have driver location
-      if (driverMarker) {
-        map.setCenter([driverMarker.lng, driverMarker.lat]);
+      if (driver_marker) {
+        map.setCenter([driver_marker.lng, driver_marker.lat]);
         map.setZoom(15);
       }
     });
@@ -254,12 +254,12 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
     map.on("error", () => {
       toast.error("Failed to initialize map");
     });
-  }, [driverMarker]);
+  }, [driver_marker]);
 
   // Update driver marker on map
   const updateDriverMarker = useCallback(
     (location: DriverMarker) => {
-      if (!mapInstanceRef.current || !isMapLoaded) return;
+      if (!mapInstanceRef.current || !is_map_loaded) return;
 
       const map = mapInstanceRef.current;
 
@@ -294,9 +294,9 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
       // Update map center if driver is moving
       if (
-        driverMarker &&
-        (Math.abs(driverMarker.lat - location.lat) > 0.001 ||
-          Math.abs(driverMarker.lng - location.lng) > 0.001)
+        driver_marker &&
+        (Math.abs(driver_marker.lat - location.lat) > 0.001 ||
+          Math.abs(driver_marker.lng - location.lng) > 0.001)
       ) {
         map.easeTo({
           center: [location.lng, location.lat],
@@ -304,7 +304,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         });
       }
     },
-    [driverMarker, isMapLoaded],
+    [driver_marker, is_map_loaded],
   );
 
   // WebSocket event handlers
@@ -322,7 +322,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
           timestamp: data.location.timestamp,
         };
 
-        setDriverMarker(newLocation);
+        set_driver_marker(newLocation);
         updateDriverMarker(newLocation);
       }
     });
@@ -407,23 +407,23 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
   // Update driver marker when location data changes
   useEffect(() => {
-    if (driverLocationData?.data && !driverMarker) {
+    if (driverLocationData?.data && !driver_marker) {
       const location: DriverMarker = {
         id: driverLocationData.data.driverId,
         lat: driverLocationData.data.location.lat,
         lng: driverLocationData.data.location.lng,
         timestamp: driverLocationData.data.lastUpdated,
       };
-      setDriverMarker(location);
+      set_driver_marker(location);
       updateDriverMarker(location);
     }
-  }, [driverLocationData, driverMarker, updateDriverMarker]);
+  }, [driverLocationData, driver_marker, updateDriverMarker]);
 
   // Playback animation logic
   useEffect(() => {
     if (
-      !playbackState.isPlaying ||
-      !playbackState.isHistoryMode ||
+      !playback_state.isPlaying ||
+      !playback_state.isHistoryMode ||
       !locationHistoryData?.data?.locations
     ) {
       return;
@@ -431,7 +431,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
     const locations = locationHistoryData.data.locations;
     const interval = setInterval(() => {
-      setPlaybackState((prev) => {
+      set_playback_state((prev) => {
         const nextIndex = prev.currentIndex + 1;
         if (nextIndex >= locations.length) {
           // Loop back to start or stop
@@ -446,24 +446,24 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
           currentIndex: nextIndex,
         };
       });
-    }, 1000 / playbackState.speed); // Adjust speed
+    }, 1000 / playback_state.speed); // Adjust speed
 
     return () => clearInterval(interval);
   }, [
-    playbackState.isPlaying,
-    playbackState.isHistoryMode,
-    playbackState.speed,
+    playback_state.isPlaying,
+    playback_state.isHistoryMode,
+    playback_state.speed,
     locationHistoryData,
   ]);
 
   // Update map marker during playback
   useEffect(() => {
-    if (!playbackState.isHistoryMode || !locationHistoryData?.data?.locations) {
+    if (!playback_state.isHistoryMode || !locationHistoryData?.data?.locations) {
       return;
     }
 
     const locations = locationHistoryData.data.locations;
-    const currentLocation = locations[playbackState.currentIndex];
+    const currentLocation = locations[playback_state.currentIndex];
 
     if (currentLocation) {
       const location: DriverMarker = {
@@ -475,12 +475,12 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         timestamp: currentLocation.timestamp || new Date().toISOString(),
       };
 
-      setDriverMarker(location);
+      set_driver_marker(location);
       updateDriverMarker(location);
     }
   }, [
-    playbackState.currentIndex,
-    playbackState.isHistoryMode,
+    playback_state.currentIndex,
+    playback_state.isHistoryMode,
     locationHistoryData,
     driverId,
     updateDriverMarker,
@@ -488,14 +488,14 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
 
   // Playback controls for location history
   const togglePlayback = () => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       isPlaying: !prev.isPlaying,
     }));
   };
 
   const resetPlayback = () => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       currentIndex: 0,
       isPlaying: false,
@@ -503,14 +503,14 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   };
 
   const changePlaybackSpeed = (speed: number) => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       speed,
     }));
   };
 
   const toggleHistoryMode = () => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       isHistoryMode: !prev.isHistoryMode,
       isPlaying: false,
@@ -519,7 +519,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   };
 
   const handleTimelineChange = (index: number) => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       currentIndex: index,
       isPlaying: false,
@@ -527,7 +527,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   };
 
   const skipToStart = () => {
-    setPlaybackState((prev) => ({
+    set_playback_state((prev) => ({
       ...prev,
       currentIndex: 0,
       isPlaying: false,
@@ -537,7 +537,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
   const skipToEnd = () => {
     const locations = locationHistoryData?.data?.locations;
     if (locations && locations.length > 0) {
-      setPlaybackState((prev) => ({
+      set_playback_state((prev) => ({
         ...prev,
         currentIndex: locations.length - 1,
         isPlaying: false,
@@ -624,33 +624,33 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         />
 
         {/* Status Information */}
-        {driverMarker && (
+        {driver_marker && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.speed
-                  ? `${Math.round(driverMarker.speed * 3.6)} km/h`
+                {driver_marker.speed
+                  ? `${Math.round(driver_marker.speed * 3.6)} km/h`
                   : "--"}
               </div>
               <div className="text-sm text-muted-foreground">Speed</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.heading
-                  ? `${Math.round(driverMarker.heading)}°`
+                {driver_marker.heading
+                  ? `${Math.round(driver_marker.heading)}°`
                   : "--"}
               </div>
               <div className="text-sm text-muted-foreground">Heading</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.lat.toFixed(4)}
+                {driver_marker.lat.toFixed(4)}
               </div>
               <div className="text-sm text-muted-foreground">Latitude</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {driverMarker.lng.toFixed(4)}
+                {driver_marker.lng.toFixed(4)}
               </div>
               <div className="text-sm text-muted-foreground">Longitude</div>
             </div>
@@ -662,11 +662,11 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
           locationHistoryData.data.locations.length > 0 && (
             <div className="flex items-center justify-center gap-2 p-2">
               <Button
-                variant={playbackState.isHistoryMode ? "default" : "outline"}
+                variant={playback_state.isHistoryMode ? "default" : "outline"}
                 size="sm"
                 onClick={toggleHistoryMode}
               >
-                {playbackState.isHistoryMode ? "History Mode" : "Live Mode"}
+                {playback_state.isHistoryMode ? "History Mode" : "Live Mode"}
               </Button>
             </div>
           )}
@@ -674,14 +674,14 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
         {/* Playback Controls */}
         {locationHistoryData?.data?.locations &&
           locationHistoryData.data.locations.length > 0 &&
-          playbackState.isHistoryMode && (
+          playback_state.isHistoryMode && (
             <div className="space-y-4">
               {/* Timeline */}
               <Timeline
                 locations={locationHistoryData.data.locations.filter(
                   (loc) => loc.timestamp,
                 )}
-                currentIndex={playbackState.currentIndex}
+                currentIndex={playback_state.currentIndex}
                 onIndexChange={handleTimelineChange}
                 startTime={locationHistoryData.data.timeRange?.start || ""}
                 endTime={locationHistoryData.data.timeRange?.end || ""}
@@ -698,7 +698,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
                 </Button>
 
                 <Button variant="outline" size="sm" onClick={togglePlayback}>
-                  {playbackState.isPlaying ? (
+                  {playback_state.isPlaying ? (
                     <Pause className="h-4 w-4" />
                   ) : (
                     <Play className="h-4 w-4" />
@@ -712,7 +712,7 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
                 <div className="flex items-center gap-1 ml-4">
                   <Button
                     variant={
-                      playbackState.speed === 0.5 ? "default" : "outline"
+                      playback_state.speed === 0.5 ? "default" : "outline"
                     }
                     size="sm"
                     onClick={() => changePlaybackSpeed(0.5)}
@@ -720,14 +720,14 @@ const LiveTracking: React.FC<LiveTrackingProps> = ({
                     0.5x
                   </Button>
                   <Button
-                    variant={playbackState.speed === 1 ? "default" : "outline"}
+                    variant={playback_state.speed === 1 ? "default" : "outline"}
                     size="sm"
                     onClick={() => changePlaybackSpeed(1)}
                   >
                     1x
                   </Button>
                   <Button
-                    variant={playbackState.speed === 2 ? "default" : "outline"}
+                    variant={playback_state.speed === 2 ? "default" : "outline"}
                     size="sm"
                     onClick={() => changePlaybackSpeed(2)}
                   >

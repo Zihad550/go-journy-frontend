@@ -56,17 +56,17 @@ interface LocationPickerProps {
 
 interface MapClickHandlerProps {
   onLocationSelect: (lat: number, lng: number) => void;
-  setSelectedPosition: (position: LatLng | null) => void;
+  set_selected_position: (position: LatLng | null) => void;
 }
 
 function MapClickHandler({
   onLocationSelect,
-  setSelectedPosition,
+  set_selected_position,
 }: MapClickHandlerProps) {
   useMapEvents({
     click: (e) => {
       const { lat, lng } = e.latlng;
-      setSelectedPosition(e.latlng);
+      set_selected_position(e.latlng);
       onLocationSelect(lat, lng);
     },
   });
@@ -83,9 +83,9 @@ export function LocationPicker({
   pickupLocation,
   className,
 }: LocationPickerProps) {
-  const [selectedPosition, setSelectedPosition] = useState<LatLng | null>(null);
-  const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [selected_position, set_selected_position] = useState<LatLng | null>(null);
+  const [current_location, set_current_location] = useState<LatLng | null>(null);
+  const [is_getting_location, set_is_getting_location] = useState(false);
   const mapRef = useRef<any>(null);
 
   // Default center (Dhaka, Bangladesh)
@@ -94,29 +94,29 @@ export function LocationPicker({
   useEffect(() => {
     if (initialPosition) {
       const position = new LatLng(initialPosition.lat, initialPosition.lng);
-      setSelectedPosition(position);
+      set_selected_position(position);
     }
   }, [initialPosition]);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
-      setIsGettingLocation(true);
+      set_is_getting_location(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           const newPosition = new LatLng(latitude, longitude);
-          setCurrentLocation(newPosition);
-          setSelectedPosition(newPosition);
+          set_current_location(newPosition);
+          set_selected_position(newPosition);
 
           // Pan map to current location
           if (mapRef.current) {
             mapRef.current.setView([latitude, longitude], 15);
           }
 
-          setIsGettingLocation(false);
+          set_is_getting_location(false);
         },
         () => {
-          setIsGettingLocation(false);
+          set_is_getting_location(false);
         },
         {
           enableHighAccuracy: true,
@@ -128,8 +128,8 @@ export function LocationPicker({
   };
 
   const handleConfirm = () => {
-    if (selectedPosition) {
-      onLocationSelect(selectedPosition.lat, selectedPosition.lng);
+    if (selected_position) {
+      onLocationSelect(selected_position.lat, selected_position.lng);
       onClose();
     }
   };
@@ -159,9 +159,9 @@ export function LocationPicker({
               variant="outline"
               size="sm"
               onClick={getCurrentLocation}
-              disabled={isGettingLocation}
+              disabled={is_getting_location}
             >
-              {isGettingLocation ? (
+              {is_getting_location ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : (
                 <Locate className="h-4 w-4" />
@@ -193,9 +193,9 @@ export function LocationPicker({
 
               <MapClickHandler
                 onLocationSelect={(lat, lng) =>
-                  setSelectedPosition(new LatLng(lat, lng))
+                  set_selected_position(new LatLng(lat, lng))
                 }
-                setSelectedPosition={setSelectedPosition}
+                set_selected_position={set_selected_position}
               />
 
               {/* Show pickup location marker when selecting destination */}
@@ -206,16 +206,16 @@ export function LocationPicker({
                 />
               )}
 
-              {selectedPosition && (
+              {selected_position && (
                 <Marker
-                  position={[selectedPosition.lat, selectedPosition.lng]}
+                  position={[selected_position.lat, selected_position.lng]}
                   icon={type === 'pickup' ? pickupIcon : destinationIcon}
                 />
               )}
 
-              {currentLocation && (
+              {current_location && (
                 <Marker
-                  position={[currentLocation.lat, currentLocation.lng]}
+                  position={[current_location.lat, current_location.lng]}
                   icon={defaultIcon}
                 />
               )}
@@ -244,10 +244,10 @@ export function LocationPicker({
 
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                {selectedPosition ? (
+                {selected_position ? (
                   <span>
-                    Selected: {selectedPosition.lat.toFixed(6)},{' '}
-                    {selectedPosition.lng.toFixed(6)}
+                    Selected: {selected_position.lat.toFixed(6)},{' '}
+                    {selected_position.lng.toFixed(6)}
                   </span>
                 ) : (
                   <span>Click on the map to select a location</span>
@@ -260,7 +260,7 @@ export function LocationPicker({
                 </Button>
                 <Button
                   onClick={handleConfirm}
-                  disabled={!selectedPosition}
+                  disabled={!selected_position}
                   className="gap-2"
                 >
                   <Check className="h-4 w-4" />

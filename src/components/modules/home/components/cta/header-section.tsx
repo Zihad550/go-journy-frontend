@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { STATISTICS } from "@/constants/content-constant";
-import { useHomeAnimations } from '../../hooks/use-home-animations';
+import { useHomeAnimations } from "../../hooks/use-home-animations";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import type { StatisticsData } from "../../types";
@@ -15,7 +15,7 @@ export function HeaderSection() {
       ref={headerAnimation.ref as React.RefObject<HTMLDivElement>}
       className={cn(
         "text-center mb-8 sm:mb-12 md:mb-16 px-2 sm:px-0 transition-all duration-800",
-        headerAnimation.isVisible
+        headerAnimation.is_visible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-6",
       )}
@@ -40,8 +40,8 @@ export function HeaderSection() {
       </h2>
 
       <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed">
-        Join thousands of satisfied users who've already discovered the
-        future of transportation
+        Join thousands of satisfied users who've already discovered the future
+        of transportation
       </p>
 
       {/* Social Proof Statistics - Mobile Optimized */}
@@ -49,7 +49,7 @@ export function HeaderSection() {
         ref={ctaStatsAnimation.ref as React.RefObject<HTMLDivElement>}
         className={cn(
           "grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 transition-all duration-700",
-          ctaStatsAnimation.isVisible
+          ctaStatsAnimation.is_visible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8",
         )}

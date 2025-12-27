@@ -29,7 +29,7 @@ const ContactCard = ({
   badge,
   buttonText,
 }: ContactCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [is_hovered, set_is_hovered] = useState(false);
 
   const handleClick = () => {
     if (isExternal) {
@@ -45,9 +45,9 @@ const ContactCard = ({
         available
           ? "border-border hover:border-primary/30"
           : "border-muted bg-muted/50"
-      } ${isHovered ? "transform hover:scale-[1.02] hover:-translate-y-1" : ""}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      } ${is_hovered ? "transform hover:scale-[1.02] hover:-translate-y-1" : ""}`}
+      onMouseEnter={() => set_is_hovered(true)}
+      onMouseLeave={() => set_is_hovered(false)}
     >
       {/* Hover Effect Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-chart-1/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

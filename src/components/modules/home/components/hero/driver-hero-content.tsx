@@ -20,7 +20,7 @@ interface DriverHeroContentProps {
 }
 
 export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
-  const [activeRide, setActiveRide] = useState<IRide | null>(null);
+  const [active_ride, set_active_ride] = useState<IRide | null>(null);
   const {
     data: ridesResponse,
     isLoading,
@@ -39,7 +39,7 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
       const driverActiveRide = ridesResponse.data.find(
         (ride) => ride.status === "accepted" || ride.status === "in_transit",
       );
-      setActiveRide(driverActiveRide || null);
+      set_active_ride(driverActiveRide || null);
 
       // Notify parent if there's an active ride
       if (driverActiveRide && onRideAccepted) {
@@ -88,10 +88,10 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
   const handleRideStatusChanged = (newStatus: string) => {
     // If ride is completed or cancelled, clear active ride
     if (newStatus === "completed" || newStatus === "cancelled") {
-      setActiveRide(null);
+      set_active_ride(null);
     } else {
       // Update the active ride status
-      setActiveRide((prev) =>
+      set_active_ride((prev) =>
         prev
           ? {
               ...prev,
@@ -103,11 +103,11 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
   };
 
   // If driver has an active ride, show driver-specific ride details
-  if (activeRide) {
+  if (active_ride) {
     return (
       <div className="mt-12 max-w-4xl mx-auto">
         <DriverRideDetails
-          ride={activeRide}
+          ride={active_ride}
           onRideStatusChanged={handleRideStatusChanged}
           className="max-w-2xl mx-auto"
         />

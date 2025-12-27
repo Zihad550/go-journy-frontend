@@ -471,13 +471,13 @@ function Tabs({
   children,
   className,
 }: TabsProps) {
-  const [internalValue, setInternalValue] = React.useState(defaultValue || "");
-  const value = controlledValue ?? internalValue;
+  const [internal_value, set_internal_value] = React.useState(defaultValue || "");
+  const value = controlledValue ?? internal_value;
 
   const handleValueChange = React.useCallback(
     (newValue: string) => {
       if (controlledValue === undefined) {
-        setInternalValue(newValue);
+        set_internal_value(newValue);
       }
 
       if (onValueChange) {

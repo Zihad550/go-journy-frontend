@@ -27,7 +27,7 @@ import {
 import { useState } from "react";
 
 const Analytics = () => {
-  const [revenuePeriod, setRevenuePeriod] = useState<
+  const [revenue_period, set_revenue_period] = useState<
     "daily" | "weekly" | "monthly"
   >("daily");
 
@@ -50,7 +50,7 @@ const Analytics = () => {
     data: revenueData,
     isLoading: isRevenueLoading,
     error: revenueError,
-  } = useGetRevenueTrendQuery({ period: revenuePeriod, days: 30 });
+  } = useGetRevenueTrendQuery({ period: revenue_period, days: 30 });
 
   // Overview stats cards data
   const overviewCards = [
@@ -187,7 +187,7 @@ const Analytics = () => {
 
   // Prepare revenue trend data for simple line visualization
   const revenueTrendData =
-    revenueData?.data?.[revenuePeriod]?.map((item) => ({
+    revenueData?.data?.[revenue_period]?.map((item) => ({
       label: new Date(item.date).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -442,10 +442,10 @@ const Analytics = () => {
               <button
                 key={period}
                 onClick={() =>
-                  setRevenuePeriod(period as "daily" | "weekly" | "monthly")
+                  set_revenue_period(period as "daily" | "weekly" | "monthly")
                 }
                 className={`px-3 py-1 rounded-md text-sm capitalize ${
-                  revenuePeriod === period
+                  revenue_period === period
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}

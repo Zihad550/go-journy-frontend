@@ -104,12 +104,12 @@ export function MapboxLocationPicker({
   className,
 }: MapboxLocationPickerProps) {
   const mapRef = useRef<any>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+  const [selected_location, set_selected_location] = useState<Location | null>(
     null,
   );
-  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [popupInfo, setPopupInfo] = useState<{
+  const [current_location, set_current_location] = useState<Location | null>(null);
+  const [is_getting_location, set_is_getting_location] = useState(false);
+  const [popup_info, set_popup_info] = useState<{
     location: Location;
     type: string;
   } | null>(null);
@@ -120,7 +120,7 @@ export function MapboxLocationPicker({
       initialLocation &&
       validateCoordinates(initialLocation.lat, initialLocation.lng)
     ) {
-      setSelectedLocation(initialLocation);
+      set_selected_location(initialLocation);
     }
   }, [initialLocation]);
 
@@ -131,7 +131,7 @@ export function MapboxLocationPicker({
       return;
     }
 
-    setIsGettingLocation(true);
+    set_is_getting_location(true);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -146,8 +146,8 @@ export function MapboxLocationPicker({
           timestamp: new Date(),
         };
 
-        setCurrentLocation(location);
-        setSelectedLocation(location);
+        set_current_location(location);
+        set_selected_location(location);
 
         // Pan map to current location
         if (mapRef.current) {
@@ -158,11 +158,11 @@ export function MapboxLocationPicker({
           });
         }
 
-        setIsGettingLocation(false);
+        set_is_getting_location(false);
       },
       () => {
         toast.error("Error getting location:");
-        setIsGettingLocation(false);
+        set_is_getting_location(false);
       },
       GEOLOCATION_OPTIONS,
     );
@@ -177,28 +177,28 @@ export function MapboxLocationPicker({
       timestamp: new Date(),
     };
 
-    setSelectedLocation(location);
+    set_selected_location(location);
   }, []);
 
   // Handle marker click
   const handleMarkerClick = useCallback((location: Location, type: string) => {
-    setPopupInfo({ location, type });
+    set_popup_info({ location, type });
   }, []);
 
   // Confirm selected location
   const handleConfirm = useCallback(() => {
-    if (selectedLocation) {
-      onLocationSelect(selectedLocation);
+    if (selected_location) {
+      onLocationSelect(selected_location);
       onClose();
     }
-  }, [selectedLocation, onLocationSelect, onClose]);
+  }, [selected_location, onLocationSelect, onClose]);
 
   // Calculate map bounds to show both pickup and destination
   const calculateBounds = useCallback(() => {
     const locations: Location[] = [];
 
     if (pickupLocation) locations.push(pickupLocation);
-    if (selectedLocation) locations.push(selectedLocation);
+    if (selected_location) locations.push(selected_location);
 
     if (locations.length === 0) return null;
 
@@ -209,11 +209,11 @@ export function MapboxLocationPicker({
       [Math.min(...lngs), Math.min(...lats)], // Southwest
       [Math.max(...lngs), Math.max(...lats)], // Northeast
     ];
-  }, [pickupLocation, selectedLocation]);
+  }, [pickupLocation, selected_location]);
 
   // Fit bounds when locations change
   useEffect(() => {
-    if (pickupLocation || selectedLocation) {
+    if (pickupLocation || selected_location) {
       const bounds = calculateBounds();
       if (bounds && mapRef.current) {
         mapRef.current.fitBounds(bounds, {
@@ -222,7 +222,7 @@ export function MapboxLocationPicker({
         });
       }
     }
-  }, [pickupLocation, selectedLocation, calculateBounds]);
+  }, [pickupLocation, selected_location, calculateBounds]);
 
   // Don't render if not open
   if (!isOpen) return null;
@@ -298,9 +298,9 @@ export function MapboxLocationPicker({
               variant="outline"
               size="sm"
               onClick={getCurrentLocation}
-              disabled={isGettingLocation}
+              disabled={is_getting_location}
             >
-              {isGettingLocation ? (
+              {is_getting_location ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : (
                 <Locate className="h-4 w-4 mr-2" />
@@ -349,54 +349,54 @@ export function MapboxLocationPicker({
                 )}
 
               {/* Selected location marker */}
-              {selectedLocation &&
+              {selected_location &&
                 validateCoordinates(
-                  selectedLocation.lat,
-                  selectedLocation.lng,
+                  selected_location.lat,
+                  selected_location.lng,
                 ) && (
                   <CustomMarker
-                    location={selectedLocation}
+                    location={selected_location}
                     type={type}
                     onClick={() =>
-                      handleMarkerClick(selectedLocation, "Selected Location")
+                      handleMarkerClick(selected_location, "Selected Location")
                     }
                   />
                 )}
 
               {/* Current location marker */}
-              {currentLocation &&
+              {current_location &&
                 validateCoordinates(
-                  currentLocation.lat,
-                  currentLocation.lng,
+                  current_location.lat,
+                  current_location.lng,
                 ) && (
                   <CustomMarker
-                    location={currentLocation}
+                    location={current_location}
                     type="selected"
                     onClick={() =>
-                      handleMarkerClick(currentLocation, "Current Location")
+                      handleMarkerClick(current_location, "Current Location")
                     }
                   />
                 )}
 
               {/* Popup */}
-              {popupInfo && (
+              {popup_info && (
                 <Popup
-                  latitude={popupInfo.location.lat}
-                  longitude={popupInfo.location.lng}
-                  onClose={() => setPopupInfo(null)}
+                  latitude={popup_info.location.lat}
+                  longitude={popup_info.location.lng}
+                  onClose={() => set_popup_info(null)}
                   closeButton={true}
                   closeOnClick={false}
                   offset={[0, -10]}
                 >
                   <div className="p-2">
-                    <h3 className="font-semibold text-sm">{popupInfo.type}</h3>
+                    <h3 className="font-semibold text-sm">{popup_info.type}</h3>
                     <p className="text-xs text-muted-foreground">
-                      {popupInfo.location.lat.toFixed(6)},{" "}
-                      {popupInfo.location.lng.toFixed(6)}
+                      {popup_info.location.lat.toFixed(6)},{" "}
+                      {popup_info.location.lng.toFixed(6)}
                     </p>
-                    {popupInfo.location.accuracy && (
+                    {popup_info.location.accuracy && (
                       <p className="text-xs mt-1">
-                        Accuracy: ±{popupInfo.location.accuracy.toFixed(0)}m
+                        Accuracy: ±{popup_info.location.accuracy.toFixed(0)}m
                       </p>
                     )}
                   </div>
@@ -436,10 +436,10 @@ export function MapboxLocationPicker({
 
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                {selectedLocation ? (
+                {selected_location ? (
                   <span>
-                    Selected: {selectedLocation.lat.toFixed(6)},{" "}
-                    {selectedLocation.lng.toFixed(6)}
+                    Selected: {selected_location.lat.toFixed(6)},{" "}
+                    {selected_location.lng.toFixed(6)}
                   </span>
                 ) : (
                   <span>Click on the map to select a location</span>
@@ -452,7 +452,7 @@ export function MapboxLocationPicker({
                 </Button>
                 <Button
                   onClick={handleConfirm}
-                  disabled={!selectedLocation}
+                  disabled={!selected_location}
                   className="gap-2"
                 >
                   <Check className="h-4 w-4" />

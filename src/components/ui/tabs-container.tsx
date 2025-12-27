@@ -27,7 +27,7 @@ interface AnimationConfig {
 // Animation state management
 interface AnimationState {
   isTransitioning: boolean;
-  previousTab: string | null;
+  previous_tab: string | null;
   animationPhase: "idle" | "exit" | "enter";
   staggerIndex: number;
 }
@@ -63,7 +63,7 @@ interface TabsContainerProps {
   validTabs?: string[];
   urlParamName?: string;
   replaceHistory?: boolean;
-  onTabChange?: (tabId: string, previousTab: string | null) => void;
+  onTabChange?: (tabId: string, previous_tab: string | null) => void;
   enableAnimations?: boolean;
   transitionType?: "fade" | "slide" | "scale";
   staggerChildren?: boolean;
@@ -81,14 +81,14 @@ interface URLTabsContextValue {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isValidTab: (tab: string) => boolean;
-  previousTab: string | null;
-  animationState: AnimationState;
+  previous_tab: string | null;
+  animation_state: AnimationState;
   animationConfig: AnimationConfig;
   enableAnimations: boolean;
   transitionType: "fade" | "slide" | "scale";
   staggerChildren: boolean;
   // Lazy loading state and actions
-  lazyLoadingState: LazyLoadingState;
+  lazy_loading_state: LazyLoadingState;
   enableLazyLoading: boolean;
   preloadAdjacent: boolean;
   maxRetries: number;
@@ -206,22 +206,22 @@ export function TabsContainer({
   );
 
   // Animation state management
-  const [animationState, setAnimationState] = React.useState<AnimationState>({
+  const [animation_state, set_animation_state] = React.useState<AnimationState>({
     isTransitioning: false,
-    previousTab: null,
+    previous_tab: null,
     animationPhase: "idle",
     staggerIndex: 0,
   });
 
   // Track previous tab for callbacks
-  const [previousTab, setPreviousTab] = React.useState<string | null>(null);
+  const [previous_tab, set_previous_tab] = React.useState<string | null>(null);
 
   // Debounce rapid tab switching
-  const [isDebouncing, setIsDebouncing] = React.useState(false);
+  const [is_debouncing, set_is_debouncing] = React.useState(false);
   const debounceTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Lazy loading state management
-  const [lazyLoadingState, setLazyLoadingState] =
+  const [lazy_loading_state, set_lazy_loading_state] =
     React.useState<LazyLoadingState>({
       loadedTabs: new Set(defaultTab ? [defaultTab] : []),
       preloadedTabs: new Set(),
@@ -244,10 +244,10 @@ export function TabsContainer({
   });
 
   // Fallback state for non-URL sync mode
-  const [fallbackActiveTab, setFallbackActiveTab] = React.useState(defaultTab);
+  const [fallback_active_tab, set_fallback_active_tab] = React.useState(defaultTab);
 
-  const activeTab = urlSync ? urlTabsResult.activeTab : fallbackActiveTab;
-  const setURLTab = urlSync ? urlTabsResult.setActiveTab : setFallbackActiveTab;
+  const activeTab = urlSync ? urlTabsResult.active_tab : fallback_active_tab;
+  const setURLTab = urlSync ? urlTabsResult.setActiveTab : set_fallback_active_tab;
 
   const isValidTab = React.useMemo(() => {
     if (urlSync) {
@@ -261,14 +261,14 @@ export function TabsContainer({
     async (tabId: string): Promise<void> => {
       if (
         !enableLazyLoading ||
-        lazyLoadingState.loadedTabs.has(tabId) ||
-        lazyLoadingState.loadingTabs.has(tabId)
+        lazy_loading_state.loadedTabs.has(tabId) ||
+        lazy_loading_state.loadingTabs.has(tabId)
       ) {
         return;
       }
 
       // Mark as loading
-      setLazyLoadingState((prev) => ({
+      set_lazy_loading_state((prev) => ({
         ...prev,
         loadingTabs: new Set([...prev.loadingTabs, tabId]),
         errorTabs: new Set([...prev.errorTabs].filter((id) => id !== tabId)),
@@ -283,7 +283,7 @@ export function TabsContainer({
         });
 
         // Mark as loaded
-        setLazyLoadingState((prev) => ({
+        set_lazy_loading_state((prev) => ({
           ...prev,
           loadedTabs: new Set([...prev.loadedTabs, tabId]),
           loadingTabs: new Set(
@@ -298,7 +298,7 @@ export function TabsContainer({
         toast.error("Failed to load tab content for " + tabId);
 
         // Mark as error
-        setLazyLoadingState((prev) => ({
+        set_lazy_loading_state((prev) => ({
           ...prev,
           loadingTabs: new Set(
             [...prev.loadingTabs].filter((id) => id !== tabId),
@@ -312,19 +312,19 @@ export function TabsContainer({
     },
     [
       enableLazyLoading,
-      lazyLoadingState.loadedTabs,
-      lazyLoadingState.loadingTabs,
+      lazy_loading_state.loadedTabs,
+      lazy_loading_state.loadingTabs,
     ],
   );
 
   const preloadTab = React.useCallback(
     async (tabId: string): Promise<void> => {
-      if (!enableLazyLoading || lazyLoadingState.preloadedTabs.has(tabId)) {
+      if (!enableLazyLoading || lazy_loading_state.preloadedTabs.has(tabId)) {
         return;
       }
 
       // Mark as preloaded immediately to prevent duplicate preloading
-      setLazyLoadingState((prev) => ({
+      set_lazy_loading_state((prev) => ({
         ...prev,
         preloadedTabs: new Set([...prev.preloadedTabs, tabId]),
       }));
@@ -332,12 +332,12 @@ export function TabsContainer({
       // Load the tab content
       await loadTab(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.preloadedTabs, loadTab],
+    [enableLazyLoading, lazy_loading_state.preloadedTabs, loadTab],
   );
 
   const retryLoadTab = React.useCallback(
     async (tabId: string): Promise<void> => {
-      const currentRetries = lazyLoadingState.retryCount.get(tabId) || 0;
+      const currentRetries = lazy_loading_state.retryCount.get(tabId) || 0;
 
       if (currentRetries >= maxRetries) {
         console.warn(`Max retries (${maxRetries}) reached for tab ${tabId}`);
@@ -345,7 +345,7 @@ export function TabsContainer({
       }
 
       // Update retry count
-      setLazyLoadingState((prev) => ({
+      set_lazy_loading_state((prev) => ({
         ...prev,
         retryCount: new Map([...prev.retryCount, [tabId, currentRetries + 1]]),
         errorTabs: new Set([...prev.errorTabs].filter((id) => id !== tabId)),
@@ -357,29 +357,29 @@ export function TabsContainer({
       // Attempt to load again
       await loadTab(tabId);
     },
-    [lazyLoadingState.retryCount, maxRetries, retryDelay, loadTab],
+    [lazy_loading_state.retryCount, maxRetries, retryDelay, loadTab],
   );
 
   // Utility functions for checking tab states
   const isTabLoaded = React.useCallback(
     (tabId: string): boolean => {
-      return !enableLazyLoading || lazyLoadingState.loadedTabs.has(tabId);
+      return !enableLazyLoading || lazy_loading_state.loadedTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.loadedTabs],
+    [enableLazyLoading, lazy_loading_state.loadedTabs],
   );
 
   const isTabLoading = React.useCallback(
     (tabId: string): boolean => {
-      return enableLazyLoading && lazyLoadingState.loadingTabs.has(tabId);
+      return enableLazyLoading && lazy_loading_state.loadingTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.loadingTabs],
+    [enableLazyLoading, lazy_loading_state.loadingTabs],
   );
 
   const isTabError = React.useCallback(
     (tabId: string): boolean => {
-      return enableLazyLoading && lazyLoadingState.errorTabs.has(tabId);
+      return enableLazyLoading && lazy_loading_state.errorTabs.has(tabId);
     },
-    [enableLazyLoading, lazyLoadingState.errorTabs],
+    [enableLazyLoading, lazy_loading_state.errorTabs],
   );
 
   // Preload adjacent tabs when active tab changes
@@ -398,7 +398,7 @@ export function TabsContainer({
     ].filter(Boolean);
 
     adjacentTabs.forEach((tabId) => {
-      if (!lazyLoadingState.preloadedTabs.has(tabId)) {
+      if (!lazy_loading_state.preloadedTabs.has(tabId)) {
         preloadTab(tabId);
       }
     });
@@ -407,7 +407,7 @@ export function TabsContainer({
     validTabs,
     preloadAdjacent,
     enableLazyLoading,
-    lazyLoadingState.preloadedTabs,
+    lazy_loading_state.preloadedTabs,
     preloadTab,
   ]);
 
@@ -416,8 +416,8 @@ export function TabsContainer({
     (tab: string) => {
       // Prevent rapid switching during transitions
       if (
-        isDebouncing ||
-        (enableAnimations && animationState.isTransitioning)
+        is_debouncing ||
+        (enableAnimations && animation_state.isTransitioning)
       ) {
         return;
       }
@@ -430,7 +430,7 @@ export function TabsContainer({
       }
 
       // Update previous tab
-      setPreviousTab(currentTab);
+      set_previous_tab(currentTab);
 
       // Load tab content if lazy loading is enabled
       if (enableLazyLoading && !isTabLoaded(tab)) {
@@ -440,15 +440,15 @@ export function TabsContainer({
       // Handle animations if enabled
       if (enableAnimations && animationConfig.duration > 0) {
         // Start exit animation
-        setAnimationState({
+        set_animation_state({
           isTransitioning: true,
-          previousTab: currentTab,
+          previous_tab: currentTab,
           animationPhase: "exit",
           staggerIndex: 0,
         });
 
         // Set debouncing to prevent rapid switching
-        setIsDebouncing(true);
+        set_is_debouncing(true);
         if (debounceTimeoutRef.current) {
           clearTimeout(debounceTimeoutRef.current);
         }
@@ -456,7 +456,7 @@ export function TabsContainer({
         // Transition to enter phase after exit duration
         const exitDuration = animationConfig.duration * 0.4; // 40% for exit
         setTimeout(() => {
-          setAnimationState((prev) => ({
+          set_animation_state((prev) => ({
             ...prev,
             animationPhase: "enter",
           }));
@@ -468,13 +468,13 @@ export function TabsContainer({
         // Complete transition after full duration
         const totalDuration = animationConfig.duration;
         debounceTimeoutRef.current = setTimeout(() => {
-          setAnimationState({
+          set_animation_state({
             isTransitioning: false,
-            previousTab: null,
+            previous_tab: null,
             animationPhase: "idle",
             staggerIndex: 0,
           });
-          setIsDebouncing(false);
+          set_is_debouncing(false);
         }, totalDuration);
       } else {
         // No animations - immediate switch
@@ -492,8 +492,8 @@ export function TabsContainer({
       onTabChange,
       enableAnimations,
       animationConfig.duration,
-      animationState.isTransitioning,
-      isDebouncing,
+      animation_state.isTransitioning,
+      is_debouncing,
       enableLazyLoading,
       isTabLoaded,
       loadTab,
@@ -524,13 +524,13 @@ export function TabsContainer({
       activeTab,
       setActiveTab,
       isValidTab,
-      previousTab,
-      animationState,
+      previous_tab,
+      animation_state,
       animationConfig,
       enableAnimations,
       transitionType,
       staggerChildren,
-      lazyLoadingState,
+      lazy_loading_state,
       enableLazyLoading,
       preloadAdjacent,
       maxRetries,
@@ -546,13 +546,13 @@ export function TabsContainer({
       activeTab,
       setActiveTab,
       isValidTab,
-      previousTab,
-      animationState,
+      previous_tab,
+      animation_state,
       animationConfig,
       enableAnimations,
       transitionType,
       staggerChildren,
-      lazyLoadingState,
+      lazy_loading_state,
       enableLazyLoading,
       preloadAdjacent,
       maxRetries,
@@ -608,7 +608,7 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
       activeTab,
       setActiveTab,
       isValidTab,
-      animationState,
+      animation_state,
       enableAnimations,
     } = useURLTabs();
     const isSelected = activeTab === value;
@@ -633,8 +633,8 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
 
     // Prevent interaction during transitions
     const isInteractionDisabled = React.useMemo(
-      () => disabled || (enableAnimations && animationState.isTransitioning),
-      [disabled, enableAnimations, animationState.isTransitioning],
+      () => disabled || (enableAnimations && animation_state.isTransitioning),
+      [disabled, enableAnimations, animation_state.isTransitioning],
     );
 
     const handleClick = React.useCallback(() => {
@@ -704,10 +704,10 @@ export const URLTabsTrigger = React.memo<URLTabsTriggerProps>(
             ? "bg-background text-foreground shadow-sm"
             : "text-muted-foreground hover:bg-background/50 hover:text-foreground",
           // Transition state styling
-          animationState.isTransitioning && "cursor-wait",
+          animation_state.isTransitioning && "cursor-wait",
           className,
         ),
-      [enableAnimations, isSelected, animationState.isTransitioning, className],
+      [enableAnimations, isSelected, animation_state.isTransitioning, className],
     );
 
     return (
@@ -883,7 +883,7 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
   }) {
     const {
       activeTab,
-      animationState,
+      animation_state,
       animationConfig,
       enableAnimations,
       transitionType,
@@ -915,9 +915,9 @@ export const URLTabsContent = React.memo<URLTabsContentProps>(
 
     const isSelected = activeTab === value;
     const isExiting =
-      animationState.previousTab === value &&
-      animationState.animationPhase === "exit";
-    const isEntering = isSelected && animationState.animationPhase === "enter";
+      animation_state.previous_tab === value &&
+      animation_state.animationPhase === "exit";
+    const isEntering = isSelected && animation_state.animationPhase === "enter";
 
     // Handle preloading if enabled - must be before any early returns
     React.useEffect(() => {

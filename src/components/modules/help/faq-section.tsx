@@ -8,19 +8,19 @@ import { ChevronDown, ChevronUp, Search, HelpCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 
 function FAQSection() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedFAQs, setExpandedFAQs] = useState<Set<string>>(new Set());
+  const [search_query, set_search_query] = useState("");
+  const [expanded_faqs, set_expanded_faqs] = useState<Set<string>>(new Set());
 
   const filteredFAQs = useMemo(() => {
-    if (!searchQuery.trim()) return FAQ_DATA;
-    const query = searchQuery.toLowerCase();
+    if (!search_query.trim()) return FAQ_DATA;
+    const query = search_query.toLowerCase();
     return FAQ_DATA.filter(
       (faq) =>
         faq.question.toLowerCase().includes(query) ||
         faq.answer.toLowerCase().includes(query) ||
         faq.tags.some((tag) => tag.toLowerCase().includes(query))
     );
-  }, [searchQuery]);
+  }, [search_query]);
 
   const categorizedFAQs = useMemo(() => {
     return FAQ_CATEGORIES_DATA.map((category) => ({
@@ -30,13 +30,13 @@ function FAQSection() {
   }, [filteredFAQs]);
 
   const toggleFAQ = (faqId: string) => {
-    const newExpanded = new Set(expandedFAQs);
+    const newExpanded = new Set(expanded_faqs);
     if (newExpanded.has(faqId)) {
       newExpanded.delete(faqId);
     } else {
       newExpanded.add(faqId);
     }
-    setExpandedFAQs(newExpanded);
+    set_expanded_faqs(newExpanded);
   };
 
   return (
@@ -47,8 +47,8 @@ function FAQSection() {
         <Input
           type="text"
           placeholder="Search FAQs..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={search_query}
+          onChange={(e) => set_search_query(e.target.value)}
           className="pl-10"
         />
       </div>
@@ -86,7 +86,7 @@ function FAQSection() {
                         onClick={() => toggleFAQ(faq.id)}
                         className="h-6 w-6 p-0"
                       >
-                        {expandedFAQs.has(faq.id) ? (
+                        {expanded_faqs.has(faq.id) ? (
                           <ChevronUp className="h-4 w-4" />
                         ) : (
                           <ChevronDown className="h-4 w-4" />
@@ -94,7 +94,7 @@ function FAQSection() {
                       </Button>
                     </CardTitle>
                   </CardHeader>
-                  {expandedFAQs.has(faq.id) && (
+                  {expanded_faqs.has(faq.id) && (
                     <CardContent className="pt-0">
                       <p className="text-muted-foreground">{faq.answer}</p>
                     </CardContent>

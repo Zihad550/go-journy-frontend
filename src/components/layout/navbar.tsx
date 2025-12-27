@@ -183,7 +183,7 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <Link
               to="/"
-              className="text-primary hover:text-primary/90 transition-colors"
+              className="text-primary hover:text-primary/90 transition-colors hidden md:block"
             >
               <Logo />
             </Link>
@@ -216,6 +216,12 @@ export default function Navbar() {
             </NavigationMenu>
           </div>
         </div>
+        <Link
+          to="/"
+          className="text-primary hover:text-primary/90 transition-colors md:hidden"
+        >
+          <Logo />
+        </Link>
         {/* Right side */}
         <div className="flex items-center gap-3">
           {/* Driver Availability Control */}

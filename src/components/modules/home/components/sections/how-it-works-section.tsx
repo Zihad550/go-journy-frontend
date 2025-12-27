@@ -22,7 +22,8 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
 
   // Custom hooks for animations and accessibility
   const { createTabChangeHandler } = useTabAccessibility();
-  const { headerAnimation: header_animation, tabsAnimation: tabs_animation } = useSectionAnimations();
+  const { headerAnimation: header_animation, tabsAnimation: tabs_animation } =
+    useSectionAnimations();
 
   // Create tab change handler with setActiveTab
   const handle_tab_change = createTabChangeHandler(set_active_tab);
@@ -67,7 +68,7 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
           ref={header_animation.ref}
           className={cn(
             "text-center mb-8 sm:mb-12 md:mb-16 transition-all duration-800",
-            header_animation.isVisible
+            header_animation.is_visible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6",
           )}
@@ -98,7 +99,7 @@ export function HowItWorksSection({ className }: HowItWorksProps) {
           ref={tabs_animation.ref}
           className={cn(
             "w-full transition-all duration-600",
-            tabs_animation.isVisible
+            tabs_animation.is_visible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4",
           )}

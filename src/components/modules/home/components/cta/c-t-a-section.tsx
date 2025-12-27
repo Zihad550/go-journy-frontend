@@ -33,7 +33,7 @@ export function CTASection({ isRider }: CTASectionProps) {
           ref={ctaContainerAnimation.ref as React.RefObject<HTMLDivElement>}
           className={cn(
             "grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 mb-8 sm:mb-10 md:mb-12 px-2 sm:px-0 transition-all duration-600",
-            ctaContainerAnimation.isVisible
+            ctaContainerAnimation.is_visible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6",
           )}

@@ -33,7 +33,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   onRatingChange,
   readonly = false,
 }) => {
-  const [hoverRating, setHoverRating] = useState(0);
+  const [hover_rating, set_hover_rating] = useState(0);
 
   const handleClick = (starValue: number) => {
     if (!readonly) {
@@ -43,13 +43,13 @@ const StarRating: React.FC<StarRatingProps> = ({
 
   const handleMouseEnter = (starValue: number) => {
     if (!readonly) {
-      setHoverRating(starValue);
+      set_hover_rating(starValue);
     }
   };
 
   const handleMouseLeave = () => {
     if (!readonly) {
-      setHoverRating(0);
+      set_hover_rating(0);
     }
   };
 
@@ -69,7 +69,7 @@ const StarRating: React.FC<StarRatingProps> = ({
         >
           <Star
             className={`w-8 h-8 transition-colors ${
-              star <= (hoverRating || rating)
+              star <= (hover_rating || rating)
                 ? "text-yellow-400 fill-yellow-400"
                 : "text-gray-300"
             }`}
@@ -86,8 +86,8 @@ export function ReviewModal({
   ride,
   driver,
 }: ReviewModalProps) {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [rating, set_rating] = useState(0);
+  const [comment, set_comment] = useState("");
   const [createReview, { isLoading }] = useCreateReviewMutation();
 
   // Get driver information safely
@@ -121,8 +121,8 @@ export function ReviewModal({
       );
       onClose();
       // Reset form
-      setRating(0);
-      setComment("");
+      set_rating(0);
+      set_comment("");
     } catch (error: any) {
       const errorMessage =
         error?.data?.message || "Failed to submit review. Please try again.";
@@ -134,8 +134,8 @@ export function ReviewModal({
     if (!isLoading) {
       onClose();
       // Reset form when closing
-      setRating(0);
-      setComment("");
+      set_rating(0);
+      set_comment("");
     }
   };
 
@@ -232,7 +232,7 @@ export function ReviewModal({
                 Tap the stars to rate your experience
               </p>
               <div className="flex justify-center">
-                <StarRating rating={rating} onRatingChange={setRating} />
+                <StarRating rating={rating} onRatingChange={set_rating} />
               </div>
               {rating > 0 && (
                 <p className="text-center text-sm text-muted-foreground mt-2">
@@ -254,7 +254,7 @@ export function ReviewModal({
             <Textarea
               placeholder="Tell us more about your experience..."
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => set_comment(e.target.value)}
               rows={3}
               maxLength={500}
               className="resize-none"

@@ -41,7 +41,7 @@ function ProcessStepCardComponent({
       ref={step_animation.ref}
       className={cn(
         "relative flex flex-col items-center transition-all duration-600",
-        step_animation.isVisible
+        step_animation.is_visible
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-8",
       )}

@@ -24,7 +24,7 @@ interface AddNoteModalProps {
 }
 
 const AddNoteModal = ({ open, onOpenChange, ride, onSuccess }: AddNoteModalProps) => {
-  const [note, setNote] = useState('');
+  const [note, set_note] = useState('');
 
   const [addNote, { isLoading }] = useAddAdminNoteMutation();
 
@@ -49,7 +49,7 @@ const AddNoteModal = ({ open, onOpenChange, ride, onSuccess }: AddNoteModalProps
   };
 
   const handleClose = () => {
-    setNote('');
+    set_note('');
     onOpenChange(false);
   };
 
@@ -86,7 +86,7 @@ const AddNoteModal = ({ open, onOpenChange, ride, onSuccess }: AddNoteModalProps
             <Textarea
               id="note"
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={(e) => set_note(e.target.value)}
               placeholder="Enter details about this ride, customer interactions, issues resolved, etc..."
               className="mt-2"
               rows={5}

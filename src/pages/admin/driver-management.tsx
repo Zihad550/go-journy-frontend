@@ -33,8 +33,8 @@ import type { IDriver } from "@/types";
 type StatusFilter = "all" | "pending" | "approved" | "rejected";
 
 export default function DriverManagement() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [loadingDrivers, setLoadingDrivers] = useState<Record<string, boolean>>(
+  const [status_filter, set_status_filter] = useState<StatusFilter>("all");
+  const [loading_drivers, set_loading_drivers] = useState<Record<string, boolean>>(
     {},
   );
 
@@ -52,9 +52,9 @@ export default function DriverManagement() {
 
   // Filter drivers based on status
   const filteredDrivers = useMemo(() => {
-    if (statusFilter === "all") return drivers;
-    return drivers.filter((driver) => driver.driverStatus === statusFilter);
-  }, [drivers, statusFilter]);
+    if (status_filter === "all") return drivers;
+    return drivers.filter((driver) => driver.driverStatus === status_filter);
+  }, [drivers, status_filter]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -77,7 +77,7 @@ export default function DriverManagement() {
     newStatus: "approved" | "rejected",
   ) => {
     try {
-      setLoadingDrivers((prev) => ({ ...prev, [driverId]: true }));
+      set_loading_drivers((prev) => ({ ...prev, [driverId]: true }));
 
       await manageDriverRegistration({
         id: driverId,
@@ -93,7 +93,7 @@ export default function DriverManagement() {
           : `Failed to ${newStatus} driver`;
       toast.error(message);
     } finally {
-      setLoadingDrivers((prev) => ({ ...prev, [driverId]: false }));
+      set_loading_drivers((prev) => ({ ...prev, [driverId]: false }));
     }
   };
 
@@ -243,8 +243,8 @@ export default function DriverManagement() {
                 <span className="text-sm font-medium">Filter by status:</span>
               </div>
               <Select
-                value={statusFilter}
-                onValueChange={(value: StatusFilter) => setStatusFilter(value)}
+                value={status_filter}
+                onValueChange={(value: StatusFilter) => set_status_filter(value)}
               >
                 <SelectTrigger className="w-48">
                   <SelectValue />
@@ -268,9 +268,9 @@ export default function DriverManagement() {
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    {statusFilter === "all"
+                    {status_filter === "all"
                       ? "No driver registrations found"
-                      : `No ${statusFilter} drivers found`}
+                      : `No ${status_filter} drivers found`}
                   </p>
                 </div>
               </CardContent>
@@ -281,7 +281,7 @@ export default function DriverManagement() {
                 key={driver._id}
                 driver={driver}
                 onStatusUpdate={handleStatusUpdate}
-                isLoading={loadingDrivers[driver._id] || false}
+                isLoading={loading_drivers[driver._id] || false}
                 getStatusBadgeVariant={getStatusBadgeVariant}
                 getStatusIcon={getStatusIcon}
                 formatUserName={formatUserName}

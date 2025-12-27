@@ -39,13 +39,13 @@ const AssignDriverModal = ({
   availableDrivers, 
   onSuccess 
 }: AssignDriverModalProps) => {
-  const [selectedDriverId, setSelectedDriverId] = useState('');
+  const [selected_driver_id, set_selected_driver_id] = useState('');
   const [reason, setReason] = useState('');
 
   const [assignDriver, { isLoading }] = useAssignDriverToRideMutation();
 
   const handleSubmit = async () => {
-    if (!ride || !selectedDriverId || !reason.trim()) {
+    if (!ride || !selected_driver_id || !reason.trim()) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -53,7 +53,7 @@ const AssignDriverModal = ({
     try {
       await assignDriver({
         id: ride._id,
-        driverId: selectedDriverId,
+        driverId: selected_driver_id,
         reason: reason.trim()
       }).unwrap();
       
@@ -66,12 +66,12 @@ const AssignDriverModal = ({
   };
 
   const handleClose = () => {
-    setSelectedDriverId('');
+    set_selected_driver_id('');
     setReason('');
     onOpenChange(false);
   };
 
-  const selectedDriver = availableDrivers.find(driver => driver._id === selectedDriverId);
+  const selectedDriver = availableDrivers.find(driver => driver._id === selected_driver_id);
 
   if (!ride) return null;
 
@@ -104,7 +104,7 @@ const AssignDriverModal = ({
             <Label htmlFor="driver" className="text-sm font-medium">
               Select Driver <span className="text-red-500">*</span>
             </Label>
-            <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+            <Select value={selected_driver_id} onValueChange={set_selected_driver_id}>
               <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Choose a driver to assign" />
               </SelectTrigger>
@@ -192,7 +192,7 @@ const AssignDriverModal = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading || !selectedDriverId || !reason.trim()}
+            disabled={isLoading || !selected_driver_id || !reason.trim()}
           >
             {isLoading && <Spinner size="sm" className="mr-2" />}
             Assign Driver

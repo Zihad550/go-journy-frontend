@@ -19,7 +19,7 @@ export function FAQItem({
   defaultExpanded = false,
   className,
 }: FAQItemProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [is_expanded, set_is_expanded] = useState(defaultExpanded);
 
   const highlightText = (text: string, term: string) => {
     if (!term.trim()) return text;
@@ -50,14 +50,14 @@ export function FAQItem({
         <Button
           variant="ghost"
           className="w-full justify-between p-0 h-auto text-left hover:bg-transparent min-h-[44px] sm:min-h-auto"
-          onClick={() => setIsExpanded(!isExpanded)}
-          aria-expanded={isExpanded}
+          onClick={() => set_is_expanded(!is_expanded)}
+          aria-expanded={is_expanded}
           aria-controls={`faq-answer-${question.slice(0, 20)}`}
         >
           <h3 className="text-sm sm:text-base font-medium leading-relaxed pr-3 sm:pr-4 text-left">
             {highlightText(question, searchTerm)}
           </h3>
-          {isExpanded ? (
+          {is_expanded ? (
             <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
           ) : (
             <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
@@ -65,7 +65,7 @@ export function FAQItem({
         </Button>
       </CardHeader>
 
-      {isExpanded && (
+      {is_expanded && (
         <CardContent
           id={`faq-answer-${question.slice(0, 20)}`}
           className="pt-0 animate-in slide-in-from-top-2 duration-200"

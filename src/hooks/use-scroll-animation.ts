@@ -13,8 +13,8 @@ interface ScrollAnimationOptions {
 
 interface ScrollAnimationReturn<T extends HTMLElement = HTMLElement> {
   ref: React.RefObject<T | null>;
-  isVisible: boolean;
-  hasAnimated: boolean;
+  is_visible: boolean;
+  has_animated: boolean;
   triggerAnimation: () => void;
 }
 
@@ -32,15 +32,14 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
     animationType = "fade",
     duration = 600,
     easing = "cubic-bezier(0.4, 0, 0.2, 1)",
-    debounceMs = 16, // ~60fps
+    debounceMs = 16,
   } = options;
 
   const ref = useRef<T | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const [is_visible, set_is_visible] = useState(false);
+  const [has_animated, set_has_animated] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Check for reduced motion preference
   const prefersReducedMotion = useRef(
     typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -48,14 +47,14 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
 
   const triggerAnimation = useCallback(() => {
     if (prefersReducedMotion.current) {
-      setIsVisible(true);
-      setHasAnimated(true);
+      set_is_visible(true);
+      set_has_animated(true);
       return;
     }
 
-    setIsVisible(true);
+    set_is_visible(true);
     if (triggerOnce) {
-      setHasAnimated(true);
+      set_has_animated(true);
     }
   }, [triggerOnce]);
 
@@ -73,14 +72,12 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
     const element = ref.current;
     if (!element) return;
 
-    // Skip animation setup if reduced motion is preferred
     if (prefersReducedMotion.current) {
-      setIsVisible(true);
-      setHasAnimated(true);
+      set_is_visible(true);
+      set_has_animated(true);
       return;
     }
 
-    // Set initial styles for animation
     const initialStyles = getInitialStyles(animationType);
     Object.assign(element.style, {
       ...initialStyles,
@@ -92,11 +89,11 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            if (!hasAnimated || !triggerOnce) {
+            if (!has_animated || !triggerOnce) {
               debouncedTrigger();
             }
           } else if (!triggerOnce) {
-            setIsVisible(false);
+            set_is_visible(false);
           }
         });
       },
@@ -118,23 +115,21 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
     threshold,
     rootMargin,
     triggerOnce,
-    hasAnimated,
+    has_animated,
     debouncedTrigger,
     animationType,
     duration,
     easing,
   ]);
 
-  // Apply animation styles when visible
   useEffect(() => {
     const element = ref.current;
     if (!element || prefersReducedMotion.current) return;
 
-    if (isVisible) {
+    if (is_visible) {
       const animatedStyles = getAnimatedStyles(animationType);
       Object.assign(element.style, animatedStyles);
 
-      // Clean up will-change after animation completes
       const cleanup = setTimeout(() => {
         element.style.willChange = "auto";
       }, duration + 100);
@@ -147,27 +142,22 @@ export const useScrollAnimation = <T extends HTMLElement = HTMLElement>(
         willChange: "transform, opacity",
       });
     }
-  }, [isVisible, animationType, duration]);
+  }, [is_visible, animationType, duration]);
 
   return {
     ref,
-    isVisible,
-    hasAnimated,
+    is_visible,
+    has_animated,
     triggerAnimation,
   };
 };
 
-
-
-/**
- * Get initial styles for different animation types
- */
 function getInitialStyles(animationType: string): React.CSSProperties {
   switch (animationType) {
     case "fade":
       return {
         opacity: "0",
-        transform: "translateZ(0)", // GPU acceleration
+        transform: "translateZ(0)",
       };
     case "slide":
       return {
@@ -197,9 +187,6 @@ function getInitialStyles(animationType: string): React.CSSProperties {
   }
 }
 
-/**
- * Get animated styles for different animation types
- */
 function getAnimatedStyles(animationType: string): React.CSSProperties {
   switch (animationType) {
     case "fade":
@@ -227,9 +214,6 @@ function getAnimatedStyles(animationType: string): React.CSSProperties {
   }
 }
 
-/**
- * Hook for hover animations with performance optimization
- */
 export const useHoverAnimation = <T extends HTMLElement = HTMLElement>(
   options: {
     scale?: number;
@@ -248,7 +232,6 @@ export const useHoverAnimation = <T extends HTMLElement = HTMLElement>(
     const element = ref.current;
     if (!element) return;
 
-    // Check for reduced motion
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -264,7 +247,6 @@ export const useHoverAnimation = <T extends HTMLElement = HTMLElement>(
       element.style.transform = "scale(1) translateZ(0)";
       element.style.transition = `transform ${duration}ms ${easing}`;
 
-      // Clean up will-change after animation
       setTimeout(() => {
         element.style.willChange = "auto";
       }, duration + 50);
@@ -282,9 +264,6 @@ export const useHoverAnimation = <T extends HTMLElement = HTMLElement>(
   return ref;
 };
 
-/**
- * Hook for section transition animations
- */
 export const useSectionTransition = (
   options: {
     duration?: number;
@@ -298,17 +277,14 @@ export const useSectionTransition = (
     const element = ref.current;
     if (!element) return;
 
-    // Check for reduced motion
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (prefersReducedMotion) return;
 
-    // Set up smooth section transitions
     element.style.transition = `all ${duration}ms ${easing}`;
     element.style.willChange = "transform, opacity";
 
-    // Clean up will-change after initial setup
     const cleanup = setTimeout(() => {
       element.style.willChange = "auto";
     }, duration + 100);

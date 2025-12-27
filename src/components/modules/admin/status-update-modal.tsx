@@ -33,7 +33,7 @@ interface StatusUpdateModalProps {
 }
 
 const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdateModalProps) => {
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selected_status, set_selected_status] = useState('');
   const [reason, setReason] = useState('');
 
   const [updateStatus, { isLoading }] = useUpdateAdminRideStatusMutation();
@@ -64,7 +64,7 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
   };
 
   const handleSubmit = async () => {
-    if (!ride || !selectedStatus || !reason.trim()) {
+    if (!ride || !selected_status || !reason.trim()) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -72,7 +72,7 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
     try {
       await updateStatus({
         id: ride._id,
-        status: selectedStatus,
+        status: selected_status,
         reason: reason.trim()
       }).unwrap();
       
@@ -85,7 +85,7 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
   };
 
   const handleClose = () => {
-    setSelectedStatus('');
+    set_selected_status('');
     setReason('');
     onOpenChange(false);
   };
@@ -119,7 +119,7 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
             <Label htmlFor="status" className="text-sm font-medium">
               New Status <span className="text-red-500">*</span>
             </Label>
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <Select value={selected_status} onValueChange={set_selected_status}>
               <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Select new status" />
               </SelectTrigger>
@@ -175,7 +175,7 @@ const StatusUpdateModal = ({ open, onOpenChange, ride, onSuccess }: StatusUpdate
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading || !selectedStatus || !reason.trim()}
+            disabled={isLoading || !selected_status || !reason.trim()}
           >
             {isLoading && <Spinner size="sm" className="mr-2" />}
             Update Status

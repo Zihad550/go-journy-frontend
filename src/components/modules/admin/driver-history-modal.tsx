@@ -32,15 +32,15 @@ interface DriverHistoryModalProps {
 }
 
 const DriverHistoryModal = ({ open, onOpenChange, driver }: DriverHistoryModalProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [current_page, set_current_page] = useState(1);
+  const [status_filter, set_status_filter] = useState<string>('all');
 
   const { data: historyData, isLoading } = useGetDriverHistoryQuery(
     { 
       driverId: driver?._id || '', 
-      page: currentPage,
+      page: current_page,
       limit: 10,
-      ...(statusFilter !== 'all' && { status: statusFilter })
+      ...(status_filter !== 'all' && { status: status_filter })
     },
     { skip: !driver?._id || !open }
   );
@@ -83,7 +83,7 @@ const DriverHistoryModal = ({ open, onOpenChange, driver }: DriverHistoryModalPr
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    set_current_page(page);
   };
 
   if (!driver) return null;
@@ -187,10 +187,10 @@ const DriverHistoryModal = ({ open, onOpenChange, driver }: DriverHistoryModalPr
                 <div>
                   <label className="text-sm font-medium">Filter by Status</label>
                   <select
-                    value={statusFilter}
+                    value={status_filter}
                     onChange={(e) => {
-                      setStatusFilter(e.target.value);
-                      setCurrentPage(1); // Reset to first page when filtering
+                      set_status_filter(e.target.value);
+                      set_current_page(1); // Reset to first page when filtering
                     }}
                     className="ml-2 px-3 py-1 border border-input bg-background rounded-md text-sm"
                   >
@@ -294,8 +294,8 @@ const DriverHistoryModal = ({ open, onOpenChange, driver }: DriverHistoryModalPr
                   <Route className="mx-auto h-8 w-8 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No ride history</h3>
                   <p className="text-muted-foreground">
-                    {statusFilter !== 'all' 
-                      ? `No ${statusFilter} rides found for this driver`
+                    {status_filter !== 'all' 
+                      ? `No ${status_filter} rides found for this driver`
                       : 'This driver has no completed rides yet'
                     }
                   </p>

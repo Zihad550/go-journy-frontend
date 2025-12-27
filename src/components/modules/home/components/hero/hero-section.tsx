@@ -33,7 +33,7 @@ export function HeroSection({ isAuthenticated = false }: HeroSectionProps) {
             <div
               ref={badgeAnimation.ref as React.RefObject<HTMLDivElement>}
               className={`${badgeStyles.responsive} transition-all duration-300 ${
-                badgeAnimation.isVisible
+                badgeAnimation.is_visible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
@@ -54,7 +54,7 @@ export function HeroSection({ isAuthenticated = false }: HeroSectionProps) {
               id="hero-heading"
               ref={titleAnimation.ref as React.RefObject<HTMLHeadingElement>}
               className={`${titleStyles.base} ${
-                titleAnimation.isVisible
+                titleAnimation.is_visible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
               }`}
@@ -67,7 +67,7 @@ export function HeroSection({ isAuthenticated = false }: HeroSectionProps) {
             <div
               ref={subtitleAnimation.ref as React.RefObject<HTMLDivElement>}
               className={`${subtitleStyles.container} ${
-                subtitleAnimation.isVisible
+                subtitleAnimation.is_visible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-6"
               }`}

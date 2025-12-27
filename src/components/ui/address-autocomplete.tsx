@@ -39,14 +39,14 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   showCurrentLocation = false,
   currentLocation,
 }) => {
-  const [inputValue, setInputValue] = useState(value);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [input_value, set_input_value] = useState(value);
+  const [is_open, set_is_open] = useState(false);
+  const [selected_index, set_selected_index] = useState(-1);
+  const [is_getting_location, set_is_getting_location] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestions, set_suggestions] = useState<Suggestion[]>([]);
 
   // Geocoding query
   const {
@@ -55,11 +55,11 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     error: geocodeError,
   } = useGeocodeQuery(
     {
-      query: inputValue,
+      query: input_value,
       limit: 5,
     },
     {
-      skip: inputValue.length < 3,
+      skip: input_value.length < 3,
     },
   );
 
@@ -77,24 +77,24 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   useEffect(() => {
     const results = geocodeData?.data?.results;
     if (results) {
-      setSuggestions(results as Suggestion[]);
+      set_suggestions(results as Suggestion[]);
     } else {
-      setSuggestions([]);
+      set_suggestions([]);
     }
   }, [geocodeData?.data?.results]);
 
   // Update input value when prop changes
   useEffect(() => {
-    setInputValue(value);
+    set_input_value(value);
   }, [value]);
 
   // Handle input change
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      setInputValue(newValue);
-      setIsOpen(newValue.length >= 3);
-      setSelectedIndex(-1);
+      set_input_value(newValue);
+      set_is_open(newValue.length >= 3);
+      set_selected_index(-1);
     },
     [],
   );
@@ -107,9 +107,9 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         coordinates: suggestion.coordinates,
       };
 
-      setInputValue(suggestion.placeName);
-      setIsOpen(false);
-      setSelectedIndex(-1);
+      set_input_value(suggestion.placeName);
+      set_is_open(false);
+      set_selected_index(-1);
       onSelect(location);
     },
     [onSelect],
@@ -121,7 +121,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       return;
     }
 
-    setIsGettingLocation(true);
+    set_is_getting_location(true);
 
     try {
       const position = await new Promise<GeolocationPosition>(
@@ -145,7 +145,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           address: reverseGeocodeData.data.address.placeName,
           coordinates: coords,
         };
-        setInputValue(reverseGeocodeData.data.address.placeName);
+        set_input_value(reverseGeocodeData.data.address.placeName);
         onSelect(location);
       } else {
         // Fallback to coordinates only
@@ -153,52 +153,52 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           address: `${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`,
           coordinates: coords,
         };
-        setInputValue(location.address);
+        set_input_value(location.address);
         onSelect(location);
       }
     } catch {
       toast.error("Failed to get current location");
     } finally {
-      setIsGettingLocation(false);
+      set_is_getting_location(false);
     }
   }, [reverseGeocodeData, onSelect]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (!isOpen || !suggestions.length) return;
+      if (!is_open || !suggestions.length) return;
 
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          setSelectedIndex((prev) =>
+          set_selected_index((prev) =>
             prev < suggestions.length - 1 ? prev + 1 : prev,
           );
           break;
         case "ArrowUp":
           e.preventDefault();
-          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+          set_selected_index((prev) => (prev > 0 ? prev - 1 : -1));
           break;
         case "Enter":
           e.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-            handleSuggestionSelect(suggestions[selectedIndex]);
+          if (selected_index >= 0 && selected_index < suggestions.length) {
+            handleSuggestionSelect(suggestions[selected_index]);
           }
           break;
         case "Escape":
-          setIsOpen(false);
-          setSelectedIndex(-1);
+          set_is_open(false);
+          set_selected_index(-1);
           break;
       }
     },
-    [isOpen, suggestions, selectedIndex, handleSuggestionSelect],
+    [is_open, suggestions, selected_index, handleSuggestionSelect],
   );
 
   // Handle clear
   const handleClear = useCallback(() => {
-    setInputValue("");
-    setIsOpen(false);
-    setSelectedIndex(-1);
+    set_input_value("");
+    set_is_open(false);
+    set_selected_index(-1);
     onClear?.();
   }, [onClear]);
 
@@ -211,8 +211,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         suggestionsRef.current &&
         !suggestionsRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
-        setSelectedIndex(-1);
+        set_is_open(false);
+        set_selected_index(-1);
       }
     };
 
@@ -227,10 +227,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           <Input
             ref={inputRef}
             type="text"
-            value={inputValue}
+            value={input_value}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            onFocus={() => inputValue.length >= 3 && setIsOpen(true)}
+            onFocus={() => input_value.length >= 3 && set_is_open(true)}
             placeholder={placeholder}
             disabled={disabled}
             className="pr-20"
@@ -238,7 +238,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
           {/* Action buttons */}
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-            {inputValue && (
+            {input_value && (
               <Button
                 type="button"
                 variant="ghost"
@@ -256,10 +256,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleCurrentLocationSelect}
-                disabled={isGettingLocation}
+                disabled={is_getting_location}
                 className="h-6 w-6 p-0"
               >
-                {isGettingLocation ? (
+                {is_getting_location ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
                   <Navigation className="h-3 w-3" />
@@ -276,7 +276,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           </div>
         )}
 
-        {suggestions.length > 0 && isOpen && (
+        {suggestions.length > 0 && is_open && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
             {suggestions.map((suggestion, index) => (
               <button
@@ -285,7 +285,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 onClick={() => handleSuggestionSelect(suggestion)}
                 className={cn(
                   "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b last:border-b-0",
-                  selectedIndex === index && "bg-gray-50",
+                  selected_index === index && "bg-gray-50",
                 )}
               >
                 <div className="flex items-start gap-3">
@@ -326,14 +326,14 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         ) : null}
 
         {/* No results */}
-        {isOpen &&
+        {is_open &&
         !isGeocoding &&
         suggestions.length === 0 &&
-        inputValue.length >= 3 ? (
+        input_value.length >= 3 ? (
           <Card className="absolute z-50 w-full mt-1">
             <CardContent className="p-3">
               <div className="text-sm text-muted-foreground">
-                No addresses found for "{inputValue}"
+                No addresses found for "{input_value}"
               </div>
             </CardContent>
           </Card>
