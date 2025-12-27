@@ -4,6 +4,7 @@ import type {
   IRide,
   IRideRequest,
   IRideStatusUpdate,
+  IRideFilters,
 } from "@/types";
 
 export const rideApi = baseApi.injectEndpoints({
@@ -12,6 +13,14 @@ export const rideApi = baseApi.injectEndpoints({
       query: () => ({
         url: "/rides",
         method: "GET",
+      }),
+      providesTags: ["RIDE"],
+    }),
+    getAvailableRides: builder.query<IApiResponse<IRide[]>, IRideFilters>({
+      query: (filters) => ({
+        url: "/rides/available",
+        method: "GET",
+        params: filters,
       }),
       providesTags: ["RIDE"],
     }),
@@ -79,6 +88,7 @@ export const rideApi = baseApi.injectEndpoints({
 export const {
   useGetRidesQuery,
   useGetRideByIdQuery,
+  useGetAvailableRidesQuery,
   useRequestRideMutation,
   useAcceptRideMutation,
   useUpdateRideStatusMutation,

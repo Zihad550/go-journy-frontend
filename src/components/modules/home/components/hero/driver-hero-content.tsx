@@ -1,4 +1,5 @@
 import { DriverRideDetails } from "@/components/modules/ride/driver-ride-details";
+import { DriverRideFilters } from "@/components/ui/driver-ride-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,25 +8,50 @@ import { ButtonSpinner } from "@/components/ui/spinner";
 import { RideStatus } from "@/constants";
 import { useGetDriverProfileQuery } from "@/redux/features/driver/driver-api";
 import {
-  useGetRidesQuery,
+  useGetAvailableRidesQuery,
   useShowInterestMutation,
 } from "@/redux/features/ride/ride-api";
-import type { IRide, ObjectValues } from "@/types";
+import type { IRide, ObjectValues, IRideFilters } from "@/types";
 import { CheckCircle, Clock, DollarSign, MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchParams } from "react-router";
 
 interface DriverHeroContentProps {
   onRideAccepted?: (ride: IRide) => void;
 }
 
 export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
+  const [searchParams] = useSearchParams();
   const [active_ride, set_active_ride] = useState<IRide | null>(null);
+  const [filters, setFilters] = useState<IRideFilters>({
+    minPrice: searchParams.get("minPrice")
+      ? Number.parseFloat(searchParams.get("minPrice")!)
+      : undefined,
+    maxPrice: searchParams.get("maxPrice")
+      ? Number.parseFloat(searchParams.get("maxPrice")!)
+      : undefined,
+    riderName: searchParams.get("riderName") || undefined,
+    pickupLat: searchParams.get("pickupLat") || undefined,
+    pickupLng: searchParams.get("pickupLng") || undefined,
+    pickupRadius: searchParams.get("pickupRadius")
+      ? Number.parseFloat(searchParams.get("pickupRadius")!)
+      : undefined,
+    destLat: searchParams.get("destLat") || undefined,
+    destLng: searchParams.get("destLng") || undefined,
+    destRadius: searchParams.get("destRadius")
+      ? Number.parseFloat(searchParams.get("destRadius")!)
+      : undefined,
+  });
+
+  const debouncedFilters = useDebounce(filters, 500);
+
   const {
     data: ridesResponse,
     isLoading,
     error,
-  } = useGetRidesQuery(undefined, {
+  } = useGetAvailableRidesQuery(debouncedFilters, {
     pollingInterval: import.meta.env.VITE_APP_RIDE_REFETCH,
   });
   const { data: driverProfileResponse } = useGetDriverProfileQuery(undefined);
@@ -90,7 +116,7 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
     if (newStatus === "completed" || newStatus === "cancelled") {
       set_active_ride(null);
     } else {
-      // Update the active ride status
+      // Update active ride status
       set_active_ride((prev) =>
         prev
           ? {
@@ -100,6 +126,10 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
           : null,
       );
     }
+  };
+
+  const handleClearFilters = () => {
+    setFilters({});
   };
 
   // If driver has an active ride, show driver-specific ride details
@@ -120,15 +150,39 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
     ridesResponse?.data?.filter((ride) => ride.status === "requested") || [];
 
   return (
-    <div className="mt-12 max-w-6xl mx-auto">
+    <div className="mt-12 max-w-6xl mx-auto space-y-6">
+      {/* Filter Section - Desktop */}
+      <div className="hidden lg:block">
+        <DriverRideFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClearFilters={handleClearFilters}
+          isMobile={false}
+        />
+      </div>
+
       <Card className="bg-card/80 backdrop-blur-sm border border-border/50 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-center text-foreground">
-            Available Ride Requests
-          </CardTitle>
-          <p className="text-center text-muted-foreground">
-            Show interest in rides to get selected by riders
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-semibold text-foreground">
+                Available Ride Requests
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Show interest in rides to get selected by riders
+              </p>
+            </div>
+
+            {/* Filter Section - Mobile */}
+            <div className="lg:hidden">
+              <DriverRideFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                onClearFilters={handleClearFilters}
+                isMobile={true}
+              />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {availableRides.length === 0 ? (
