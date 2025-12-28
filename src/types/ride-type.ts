@@ -41,8 +41,6 @@ export interface IRideFilters {
   riderName?: string;
   pickupLat?: string;
   pickupLng?: string;
-  pickupRadius?: number;
   destLat?: string;
   destLng?: string;
-  destRadius?: number;
 }

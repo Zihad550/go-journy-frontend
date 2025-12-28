@@ -35,14 +35,8 @@ export function DriverHeroContent({ onRideAccepted }: DriverHeroContentProps) {
     riderName: searchParams.get("riderName") || undefined,
     pickupLat: searchParams.get("pickupLat") || undefined,
     pickupLng: searchParams.get("pickupLng") || undefined,
-    pickupRadius: searchParams.get("pickupRadius")
-      ? Number.parseFloat(searchParams.get("pickupRadius")!)
-      : undefined,
     destLat: searchParams.get("destLat") || undefined,
     destLng: searchParams.get("destLng") || undefined,
-    destRadius: searchParams.get("destRadius")
-      ? Number.parseFloat(searchParams.get("destRadius")!)
-      : undefined,
   });
 
   const debouncedFilters = useDebounce(filters, 500);

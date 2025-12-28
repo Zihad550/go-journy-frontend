@@ -67,12 +67,12 @@ export function DriverRideFilters({
 
 	const getActiveFiltersCount = () => {
 		return Object.entries(filters).filter(
-			([_key, value]) => value !== undefined && value !== ""
+			([, value]) => value !== undefined && value !== ""
 		).length;
 	};
 
 	const activeFilterBadges = Object.entries(filters)
-		.filter(([_key, value]) => value !== undefined && value !== "")
+		.filter(([, value]) => value !== undefined && value !== "")
 		.map(([key, value]) => (
 			<Badge key={key} variant="secondary" className="gap-1 text-xs">
 				{key}: {typeof value === "number" ? value : value}
@@ -198,7 +198,7 @@ export function DriverRideFilters({
 							id="pickupLat"
 							type="number"
 							step="any"
-							placeholder="40.7128"
+							placeholder="e.g., 64 for 64.965"
 							value={filters.pickupLat ?? ""}
 							onChange={(e) =>
 								updateFilter(
@@ -217,7 +217,7 @@ export function DriverRideFilters({
 							id="pickupLng"
 							type="number"
 							step="any"
-							placeholder="-74.0060"
+							placeholder="e.g., -74 for -74.006"
 							value={filters.pickupLng ?? ""}
 							onChange={(e) =>
 								updateFilter(
@@ -230,28 +230,6 @@ export function DriverRideFilters({
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-4">
-					<div className="space-y-2">
-						<Label htmlFor="pickupRadius" className="text-xs text-muted-foreground">
-							Radius (km)
-						</Label>
-						<Input
-							id="pickupRadius"
-							type="number"
-							min="1"
-							max="100"
-							placeholder="25"
-							value={filters.pickupRadius ?? ""}
-							onChange={(e) =>
-								updateFilter(
-									"pickupRadius",
-									e.target.value
-										? Number.parseFloat(e.target.value)
-										: undefined
-								)
-							}
-							className="h-9"
-						/>
-					</div>
 				</div>
 			</div>
 
@@ -269,7 +247,7 @@ export function DriverRideFilters({
 							id="destLat"
 							type="number"
 							step="any"
-							placeholder="40.7128"
+							placeholder="e.g., 64 for 64.965"
 							value={filters.destLat ?? ""}
 							onChange={(e) =>
 								updateFilter("destLat", e.target.value || undefined)
@@ -285,7 +263,7 @@ export function DriverRideFilters({
 							id="destLng"
 							type="number"
 							step="any"
-							placeholder="-74.0060"
+							placeholder="e.g., -74 for -74.006"
 							value={filters.destLng ?? ""}
 							onChange={(e) =>
 								updateFilter("destLng", e.target.value || undefined)
@@ -295,28 +273,6 @@ export function DriverRideFilters({
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-4">
-					<div className="space-y-2">
-						<Label htmlFor="destRadius" className="text-xs text-muted-foreground">
-							Radius (km)
-						</Label>
-						<Input
-							id="destRadius"
-							type="number"
-							min="1"
-							max="100"
-							placeholder="25"
-							value={filters.destRadius ?? ""}
-							onChange={(e) =>
-								updateFilter(
-									"destRadius",
-									e.target.value
-										? Number.parseFloat(e.target.value)
-										: undefined
-								)
-							}
-							className="h-9"
-						/>
-					</div>
 				</div>
 			</div>
 		</div>
